@@ -1,0 +1,13 @@
+language: go
+sudo: required
+services:
+  - docker
+go:
+  - 1.6
+install: make
+script:
+  - "make"
+  - "docker login -e ${DOCKER_EMAIL} -u ${DOCKER_USER} -p ${DOCKER_PASS}"
+  - "docker push vibioh/http"
+notifications:
+  email: false
