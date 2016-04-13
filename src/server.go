@@ -8,6 +8,7 @@ import "strings"
 
 const port = "1080"
 const directory = "/www/"
+const tenDaysOfCaching = "864000"
 
 type CustomFileServer struct {
 	io.Writer
@@ -20,7 +21,7 @@ func (w CustomFileServer) Write(b []byte) (int, error) {
 
 func (w CustomFileServer) WriteHeader(code int) {
 	if code == 200 {
-		w.Header().Add("Cache-Control", "max-age=3153600")
+		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
 	}
 	w.ResponseWriter.WriteHeader(code)
 }
