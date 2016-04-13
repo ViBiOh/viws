@@ -2,12 +2,20 @@ package main
 
 import "net/http"
 import "log"
+import "compress/gzip"
+import "io"
+import "strings"
 
 const port = "1080"
 const directory = "/www/"
 
 type CustomFileServer struct {
+	io.Writer
 	http.ResponseWriter
+}
+
+func (w CustomFileServer) Write(b []byte) (int, error) {
+	return w.Writer.Write(b)
 }
 
 func (w CustomFileServer) WriteHeader(code int) {
@@ -19,7 +27,14 @@ func (w CustomFileServer) WriteHeader(code int) {
 
 func customFileServer(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		h.ServeHTTP(CustomFileServer{w}, r)
+		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			h.ServeHTTP(CustomFileServer{ResponseWriter: w}, r)
+		}
+
+		w.Header().Set("Content-Encoding", "gzip")
+		gz := gzip.NewWriter(w)
+		defer gz.Close()
+		h.ServeHTTP(CustomFileServer{ResponseWriter: w, Writer: gz}, r)
 	})
 }
 
