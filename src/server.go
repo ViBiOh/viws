@@ -24,6 +24,7 @@ func (w CustomFileServer) WriteHeader(code int) {
 		w.Header().Add("Content-Security-Policy", "default-src 'self' https://apis.google.com")
 		w.Header().Add("X-Frame-Options", "SAMEORIGIN")
 		w.Header().Add("X-Content-Type-Options", "nosniff")
+		w.Header().Add("X-XSS-Protection", "1; mode=block")
 		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
 		w.Header().Add("Vary", "Accept-Encoding")
 	}
