@@ -21,6 +21,7 @@ func (w CustomFileServer) Write(b []byte) (int, error) {
 
 func (w CustomFileServer) WriteHeader(code int) {
 	if code == 200 {
+		w.Header().add("Content-Security-Policy", "default-src 'self' https://apis.google.com");
 		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
 		w.Header().Add("Vary", "Accept-Encoding")
 	}
