@@ -21,7 +21,7 @@ func (w CustomFileServer) Write(b []byte) (int, error) {
 
 func (w CustomFileServer) WriteHeader(code int) {
 	if code == 200 {
-		w.Header().Add("Content-Security-Policy", "default-src 'self' 'unsafe-inline' https://apis.google.com https://fonts.googleapis.com")
+		w.Header().Add("Content-Security-Policy", "default-src 'self' 'unsafe-inline' https://apis.google.com https://fonts.googleapis.com https://fonts.gstatic.com")
 		w.Header().Add("X-Frame-Options", "deny")
 		w.Header().Add("X-Content-Type-Options", "nosniff")
 		w.Header().Add("X-XSS-Protection", "1; mode=block")
