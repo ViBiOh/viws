@@ -1,0 +1,15 @@
+montdenis:
+  image: vibioh/http
+  labels:
+    traefik.frontend.value: '{subdomain:montdenis|static.montdenis}.${DOMAIN}'
+    traefik.frontend.passHostHeader: 'true'
+    traefik.frontend.rule: 'Host'
+    traefik.port: '1080'
+  volumes:
+  - ${WWW_DIR}:/www
+  log_opt:
+    max-size: '50m'
+  restart: 'no'
+  read_only: true
+  cpu_shares: 256
+  mem_limit: 134217728
