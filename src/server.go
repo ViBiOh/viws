@@ -27,6 +27,8 @@ func (w CustomFileServer) WriteHeader(code int) {
 		w.Header().Add("X-XSS-Protection", "1; mode=block")
 		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
 		w.Header().Add("Vary", "Accept-Encoding")
+	} else if code == 404 {
+		http.Redirect(w, this, "/", 301)
 	}
 	w.ResponseWriter.WriteHeader(code)
 }
