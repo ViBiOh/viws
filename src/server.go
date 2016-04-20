@@ -29,7 +29,7 @@ func (w CustomFileServer) WriteHeader(code int) {
 		w.Header().Add("Vary", "Accept-Encoding")
 	}
 	
-	log.Print(code)
+	log.Print(code + "\n")
 	w.ResponseWriter.WriteHeader(code)
 }
 
