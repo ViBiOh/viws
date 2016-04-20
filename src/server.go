@@ -33,7 +33,7 @@ func (w CustomFileServer) WriteHeader(code int) {
 
 func customFileServer(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasSuffix(r.URL.Path, "/") {
+		if len(r.URL.Path) > 1 && strings.HasSuffix(r.URL.Path, "/") {
 			http.NotFound(w, r)
 			return
 		}
