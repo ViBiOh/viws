@@ -5,6 +5,7 @@ import "log"
 import "compress/gzip"
 import "io"
 import "strings"
+import "strconv"
 
 const port = "1080"
 const directory = "/www/"
@@ -29,7 +30,7 @@ func (w CustomFileServer) WriteHeader(code int) {
 		w.Header().Add("Vary", "Accept-Encoding")
 	}
 	
-	log.Print(code + "\n")
+	log.Print(" : " + strconv.Itoa(code) + "\n")
 	w.ResponseWriter.WriteHeader(code)
 }
 
