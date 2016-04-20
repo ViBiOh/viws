@@ -50,12 +50,8 @@ func customFileServer(h http.Handler) http.Handler {
 	})
 }
 
-func redirectIndex(w http.ResponseWriter, r *http.Request) {
-}
-
 func main() {
 	http.Handle("/", customFileServer(http.FileServer(http.Dir(directory))))
-	http.NotFound = redirectIndex
 
 	log.Print("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
