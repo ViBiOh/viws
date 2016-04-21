@@ -66,7 +66,7 @@ func gzipFileHandler(h http.Handler) http.Handler {
 		gz := gzip.NewWriter(w)
 		defer gz.Close()
 
-		h.ServeHTTP(CustomFileServer{ResponseWriter: w, Writer: gz}, r)
+		h.ServeHTTP(GzipFilerServer{ResponseWriter: w, Writer: gz}, r)
 	})
 }
 
