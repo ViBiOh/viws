@@ -71,7 +71,7 @@ func gzipFileHandler(h http.Handler) http.Handler {
 }
 
 func main() {
-	http.Handle("/", gzipFileHandler(customFileServer(http.FileServer(http.Dir(directory)))))
+	http.Handle("/", customFileServer(gzipFileHandler(http.FileServer(http.Dir(directory)))))
 
 	log.Println("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
