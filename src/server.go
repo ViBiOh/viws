@@ -35,7 +35,7 @@ func customFileServer(h http.Handler) http.Handler {
 			return
 		}
 
-		h.ServeHTTP(CustomFileServer{w}, r)
+		h.ServeHTTP(CustomFileServer{ResponseWriter: w}, r)
 	})
 }
 
