@@ -11,12 +11,7 @@ const directory = "/www/"
 const tenDaysOfCaching = "864000"
 
 type CustomFileServer struct {
-	io.Writer
 	http.ResponseWriter
-}
-
-func (w CustomFileServer) Write(b []byte) (int, error) {
-	return w.Writer.Write(b)
 }
 
 func (w CustomFileServer) WriteHeader(code int) {
@@ -26,7 +21,6 @@ func (w CustomFileServer) WriteHeader(code int) {
 		w.Header().Add("X-Content-Type-Options", "nosniff")
 		w.Header().Add("X-XSS-Protection", "1; mode=block")
 		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
-		w.Header().Add("Vary", "Accept-Encoding")
 	}
 	
 	w.ResponseWriter.WriteHeader(code)
@@ -40,12 +34,35 @@ func customFileServer(h http.Handler) http.Handler {
 			http.NotFound(w, r)
 			return
 		}
-		
+
+		h.ServeHTTP(CustomFileServer{w}, r)
+	})
+}
+
+type GzipFilerServer struct {
+	io.Writer
+	http.ResponseWriter
+}
+
+func (w GzipFilerServer) Write(b []byte) (int, error) {
+	return w.Writer.Write(b)
+}
+
+func (w GzipFilerServer) WriteHeader(code int) {
+	if code == 200 {
+		w.Header().Add("Vary", "Accept-Encoding")
+		w.Header().Set("Content-Encoding", "gzip")
+	}
+	
+	w.ResponseWriter.WriteHeader(code)
+}
+
+func gzipFileHandler(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-			h.ServeHTTP(CustomFileServer{ResponseWriter: w}, r)
+			h.ServeHTTP(w, r)
 		}
 
-		w.Header().Set("Content-Encoding", "gzip")
 		gz := gzip.NewWriter(w)
 		defer gz.Close()
 
@@ -54,7 +71,7 @@ func customFileServer(h http.Handler) http.Handler {
 }
 
 func main() {
-	http.Handle("/", customFileServer(http.FileServer(http.Dir(directory))))
+	http.Handle("/", gzipFileHandler(customFileServer(http.FileServer(http.Dir(directory)))))
 
 	log.Println("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
