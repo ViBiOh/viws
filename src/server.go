@@ -26,8 +26,6 @@ func (w CustomFileServer) WriteHeader(code int) {
 		w.Header().Add("X-Content-Type-Options", "nosniff")
 		w.Header().Add("X-XSS-Protection", "1; mode=block")
 		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
-		w.Header().Add("Vary", "Accept-Encoding")
-		w.Header().Set("Content-Encoding", "gzip")
 	}
 	
 	w.ResponseWriter.WriteHeader(code)
@@ -48,6 +46,9 @@ func customFileServer(h http.Handler) http.Handler {
 
 		gz := gzip.NewWriter(w)
 		defer gz.Close()
+		
+		w.Header().Add("Vary", "Accept-Encoding")
+		w.Header().Set("Content-Encoding", "gzip")
 
 		h.ServeHTTP(CustomFileServer{ResponseWriter: w, Writer: gz}, r)
 	})
