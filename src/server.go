@@ -83,7 +83,7 @@ func customMiddleware(h http.Handler) http.Handler {
 }
 
 func main() {
-	http.Handle("/", gzipMiddleware(owaspMiddleware(customMiddleware(http.FileServer(http.Dir(directory))))))
+	http.Handle("/", owaspMiddleware(customMiddleware(gzipMiddleware(http.FileServer(http.Dir(directory))))))
 
 	log.Println("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
