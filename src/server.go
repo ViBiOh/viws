@@ -38,6 +38,7 @@ type GzipServer struct {
 
 func (w GzipServer) Write(b []byte) (int, error) {
 	w.Header().Set("Content-Length", strconv.Itoa(len(b)))
+	log.Println("Content-Length:" + w.Header.Get("Content-Length"))
 	return w.Writer.Write(b)
 }
 
@@ -73,6 +74,7 @@ func (w CustomFileServer) WriteHeader(code int) {
 		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
 	}
 
+	log.Println("Content-Length:" + w.Header.Get("Content-Length"))
 	w.ResponseWriter.WriteHeader(code)
 }
 
@@ -86,6 +88,7 @@ func customMiddleware(h http.Handler) http.Handler {
 		}
 
 		h.ServeHTTP(CustomFileServer{ResponseWriter: w}, r)
+		log.Println("Content-Length:" + w.Header.Get("Content-Length"))
 	})
 }
 
