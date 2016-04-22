@@ -78,13 +78,6 @@ func (w CustomFileServer) WriteHeader(code int) {
 
 func customMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Print(r.RemoteAddr + " " + r.Method + " " + r.URL.Path)
-
-		if len(r.URL.Path) > 1 && strings.HasSuffix(r.URL.Path, "/") {
-			http.NotFound(w, r)
-			return
-		}
-
 		h.ServeHTTP(CustomFileServer{ResponseWriter: w}, r)
 	})
 }
