@@ -5,6 +5,7 @@ import "log"
 import "compress/gzip"
 import "io"
 import "strings"
+import "strconv"
 
 const port = "1080"
 const directory = "/www/"
@@ -36,6 +37,7 @@ type GzipServer struct {
 }
 
 func (w GzipServer) Write(b []byte) (int, error) {
+	w.Header().Set("Content-Length", strconv.Itoa(len(b)))
 	return w.Writer.Write(b)
 }
 
