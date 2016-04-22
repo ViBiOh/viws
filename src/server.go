@@ -30,48 +30,65 @@ func owaspMiddleware(h http.Handler) http.Handler {
 	})
 }
 
-type CustomFileServer struct {
+type GzipServer struct {
 	io.Writer
 	http.ResponseWriter
 }
 
-func (w CustomFileServer) Write(b []byte) (int, error) {
+func (w GzipServer) Write(b []byte) (int, error) {
 	return w.Writer.Write(b)
+}
+
+func (w GzipServer) WriteHeader(code int) {
+	if code == 200 {
+		w.Header().Add("Vary", "Accept-Encoding")
+		w.Header().Set("Content-Encoding", "gzip")
+	}
+
+	w.ResponseWriter.WriteHeader(code)
+}
+
+func gzipMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			h.ServeHTTP(w, r)
+			return
+		}
+
+		gz := gzip.NewWriter(w)
+		defer gz.Close()
+
+		h.ServeHTTP(GzipServer{ResponseWriter: w, Writer: gz}, r)
+	})
+}
+
+type CustomFileServer struct {
+	http.ResponseWriter
 }
 
 func (w CustomFileServer) WriteHeader(code int) {
 	if code == 200 {
 		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
 	}
-	
+
 	w.ResponseWriter.WriteHeader(code)
 }
 
-func customFileServer(h http.Handler) http.Handler {
+func customMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Print(r.RemoteAddr + " " + r.Method + " " + r.URL.Path)
-		
+
 		if len(r.URL.Path) > 1 && strings.HasSuffix(r.URL.Path, "/") {
 			http.NotFound(w, r)
 			return
 		}
-		
-		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-			h.ServeHTTP(w, r)
-		}
 
-		gz := gzip.NewWriter(w)
-		defer gz.Close()
-		
-		w.Header().Add("Vary", "Accept-Encoding")
-		w.Header().Set("Content-Encoding", "gzip")
-
-		h.ServeHTTP(CustomFileServer{ResponseWriter: w, Writer: gz}, r)
+		h.ServeHTTP(CustomFileServer{ResponseWriter: w}, r)
 	})
 }
 
 func main() {
-	http.Handle("/", owaspMiddleware(customFileServer(http.FileServer(http.Dir(directory)))))
+	http.Handle("/", customMiddleware(owaspMiddleware(gzipMiddleware(http.FileServer(http.Dir(directory))))))
 
 	log.Println("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
