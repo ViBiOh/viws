@@ -5,7 +5,6 @@ import "log"
 import "compress/gzip"
 import "io"
 import "strings"
-import "strconv"
 
 const port = "1080"
 const directory = "/www/"
@@ -51,7 +50,7 @@ func customMiddleware(h http.Handler) http.Handler {
 }
 
 func main() {
-	http.Handle("/", owaspMiddleware(customMiddleware(gzipMiddleware(http.FileServer(http.Dir(directory))))))
+	http.Handle("/", customMiddleware(http.FileServer(http.Dir(directory))))
 
 	log.Println("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
