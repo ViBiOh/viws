@@ -2,7 +2,6 @@ package main
 
 import "net/http"
 import "log"
-import "compress/gzip"
 
 const port = "1080"
 const directory = "/www/"
