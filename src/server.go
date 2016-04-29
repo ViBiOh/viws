@@ -50,7 +50,7 @@ func (w GzipServer) WriteHeader(code int) {
 
 func gzipMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") || strings.HasSuffix(r.URL.Path, ".png") {
+		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") || strings.HasSuffix(strings.ToLower(r.URL.Path), ".png") {
 			h.ServeHTTP(w, r)
 			return
 		}
@@ -81,7 +81,7 @@ func customMiddleware(h http.Handler) http.Handler {
 }
 
 func main() {
-	http.Handle("/", customMiddleware(owaspMiddleware(gzipMiddleware(http.FileServer(http.Dir(directory))))))
+	http.Handle("/", customMiddleware(owaspMiddleware(http.FileServer(http.Dir(directory)))))
 
 	log.Println("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
