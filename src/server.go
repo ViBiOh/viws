@@ -43,7 +43,7 @@ func (w GzipServer) WriteHeader(code int) {
 	if code == 200 {
 		w.Header().Add("Vary", "Accept-Encoding")
 		w.Header().Set("Content-Encoding", "gzip")
-		w.Header().Set("Transfer-Encoding", "gzip")
+		w.Header().Set("Transfer-Encoding", "chunked")
 	}
 
 	w.ResponseWriter.WriteHeader(code)
