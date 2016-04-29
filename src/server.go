@@ -30,38 +30,6 @@ func owaspMiddleware(h http.Handler) http.Handler {
 	})
 }
 
-type GzipServer struct {
-	io.Writer
-	http.ResponseWriter
-}
-
-func (w GzipServer) Write(b []byte) (int, error) {
-	return w.Writer.Write(b)
-}
-
-func (w GzipServer) WriteHeader(code int) {
-	if code < 400 {
-		w.Header().Add("Vary", "Accept-Encoding")
-		w.Header().Set("Content-Encoding", "gzip")
-	}
-
-	w.ResponseWriter.WriteHeader(code)
-}
-
-func gzipMiddleware(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") || strings.HasSuffix(strings.ToLower(r.URL.Path), ".png") {
-			h.ServeHTTP(w, r)
-			return
-		}
-
-		gz := gzip.NewWriter(w)
-		defer gz.Close()
-
-		h.ServeHTTP(GzipServer{ResponseWriter: w, Writer: gz}, r)
-	})
-}
-
 type CustomFileServer struct {
 	http.ResponseWriter
 }
