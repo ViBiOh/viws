@@ -15,7 +15,7 @@ type OwaspHeaderServer struct {
 }
 
 func (w OwaspHeaderServer) WriteHeader(code int) {
-	if code == 200 {
+	if code < 400 {
 		w.Header().Add("Content-Security-Policy", "default-src 'self' 'unsafe-inline' http://*.vibioh.fr https://*.vibioh.fr https://apis.google.com https://fonts.googleapis.com https://fonts.gstatic.com")
 		w.Header().Add("X-Frame-Options", "deny")
 		w.Header().Add("X-Content-Type-Options", "nosniff")
@@ -40,10 +40,9 @@ func (w GzipServer) Write(b []byte) (int, error) {
 }
 
 func (w GzipServer) WriteHeader(code int) {
-	if code == 200 {
+	if code < 400 {
 		w.Header().Add("Vary", "Accept-Encoding")
 		w.Header().Set("Content-Encoding", "gzip")
-		w.Header().Set("Transfer-Encoding", "chunked")
 	}
 
 	w.ResponseWriter.WriteHeader(code)
