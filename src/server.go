@@ -3,8 +3,6 @@ package main
 import "net/http"
 import "log"
 import "compress/gzip"
-import "io"
-import "strings"
 
 const port = "1080"
 const directory = "/www/"
