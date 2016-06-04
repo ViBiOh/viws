@@ -45,8 +45,18 @@ func customMiddleware(h http.Handler) http.Handler {
 	})
 }
 
+type IndexMiddleware struct {
+	http.ResponseWriter
+	http.Handler
+}
+
+func (m IndexMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, directory)
+}
+
 func main() {
-	http.Handle("/", customMiddleware(owaspMiddleware(http.FileServer(http.Dir(directory)))))
+	http.Handle("/static/", customMiddleware(owaspMiddleware(http.FileServer(http.Dir(directory)))))
+	http.Handle("/", customMiddleware(owaspMiddleware(IndexMiddleware{})))
 
 	log.Println("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
