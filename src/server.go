@@ -5,7 +5,7 @@ import "log"
 import "flag"
 
 const port = "1080"
-const directory = "/Users/vibioh/code/angular-bp/dist/"
+const directory = "/www/"
 const tenDaysOfCaching = "864000"
 
 type OwaspHeaderServer struct {
