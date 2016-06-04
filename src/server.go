@@ -2,9 +2,10 @@ package main
 
 import "net/http"
 import "log"
+import "flag"
 
 const port = "1080"
-const directory = "/www/"
+const directory = "/Users/vibioh/code/angular-bp/dist/"
 const tenDaysOfCaching = "864000"
 
 type OwaspHeaderServer struct {
@@ -55,8 +56,16 @@ func (m IndexMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.Handle("/static/", customMiddleware(owaspMiddleware(http.FileServer(http.Dir(directory)))))
-	http.Handle("/", customMiddleware(owaspMiddleware(IndexMiddleware{})))
+	spa := flag.Bool("spa", false, "Indicate Single Page Application mode")
+	flag.Parse()
+
+	pathToServe := "/"
+	if (*spa) {
+		log.Println("Working in SPA mode")
+		pathToServe = "/static/"
+		http.Handle("/", customMiddleware(owaspMiddleware(IndexMiddleware{})))
+	}
+	http.Handle(pathToServe, customMiddleware(owaspMiddleware(http.FileServer(http.Dir(directory)))))
 
 	log.Println("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
