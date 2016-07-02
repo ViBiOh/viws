@@ -7,14 +7,17 @@ import "flag"
 const port = "1080"
 const directory = "/www/"
 const tenDaysOfCaching = "864000"
+const contentSecurityPolicy = "default-src 'self' 'unsafe-inline' "
 
 type OwaspHeaderServer struct {
 	http.ResponseWriter
 }
 
+var domain string
+
 func (w OwaspHeaderServer) WriteHeader(code int) {
 	if code < 400 {
-		w.Header().Add("Content-Security-Policy", "default-src 'self' 'unsafe-inline' http://*.vibioh.fr https://*.vibioh.fr https://apis.google.com https://fonts.googleapis.com https://fonts.gstatic.com")
+		w.Header().Add("Content-Security-Policy", contentSecurityPolicy+domain)
 		w.Header().Add("X-Frame-Options", "deny")
 		w.Header().Add("X-Content-Type-Options", "nosniff")
 		w.Header().Add("X-XSS-Protection", "1; mode=block")
@@ -57,10 +60,11 @@ func (m IndexMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	spa := flag.Bool("spa", false, "Indicate Single Page Application mode")
+	flag.StringVar(&domain, "domain", "", "Domains names for Content-Security-Policy")
 	flag.Parse()
 
 	pathToServe := "/"
-	if (*spa) {
+	if *spa {
 		log.Println("Working in SPA mode")
 		pathToServe = "/static/"
 		http.Handle("/", customMiddleware(owaspMiddleware(IndexMiddleware{})))
