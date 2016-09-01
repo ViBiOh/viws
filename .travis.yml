@@ -6,8 +6,8 @@ go:
 - 1.6
 install: make
 script:
-- make"
+- make
 - docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-- docker push vibioh/http
+- docker push ${DOCKER_USER}/http
 notifications:
   email: false
