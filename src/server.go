@@ -18,48 +18,48 @@ var notFoundPath string
 var domain string
 var spa bool
 
-type OwaspHeaderServer struct {
+type OwaspMiddleware struct {
 	http.ResponseWriter
 }
 
-func (w OwaspHeaderServer) WriteHeader(code int) {
-	if code < 400 || customNotFound {
+func (w *OwaspMiddleware) WriteHeader(status int) {
+	if status < http.StatusBadRequest || customNotFound {
 		w.Header().Add("Content-Security-Policy", contentSecurityPolicy+domain)
 		w.Header().Add("X-Frame-Options", "deny")
 		w.Header().Add("X-Content-Type-Options", "nosniff")
 		w.Header().Add("X-XSS-Protection", "1; mode=block")
 	}
-	w.ResponseWriter.WriteHeader(code)
+	w.ResponseWriter.WriteHeader(status)
 }
 
-func owaspMiddleware(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		h.ServeHTTP(OwaspHeaderServer{ResponseWriter: w}, r)
-	})
+type OwaspHandler struct {
+	h http.Handler
 }
 
-type CustomFileServer struct {
+func (handler OwaspHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	handler.h.ServeHTTP(&OwaspMiddleware{ResponseWriter: w}, r)
+}
+
+type CustomMiddleware struct {
 	http.ResponseWriter
 	isNotFound bool
 }
 
-func (w *CustomFileServer) WriteHeader(code int) {
-	if code == 200 || code == 301 {
+func (w *CustomMiddleware) WriteHeader(status int) {
+	if status == http.StatusOK || status == http.StatusMovedPermanently {
 		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
 	}
 
-	if code == 404 {
+	if status == http.StatusNotFound && customNotFound {
 		w.isNotFound = true
-		if customNotFound {
-			w.Header().Add("Content-type", "text/html; charset=utf-8")
-		}
+		w.Header().Add("Content-type", "text/html; charset=utf-8")
 	}
 
-	w.ResponseWriter.WriteHeader(code)
+	w.ResponseWriter.WriteHeader(status)
 }
 
-func (w *CustomFileServer) Write(p []byte) (int, error) {
-	if w.isNotFound && customNotFound {
+func (w *CustomMiddleware) Write(p []byte) (int, error) {
+	if w.isNotFound {
 		notFoundPage, err := ioutil.ReadFile(notFoundPath)
 		if err == nil {
 			return w.ResponseWriter.Write(notFoundPage)
@@ -68,12 +68,12 @@ func (w *CustomFileServer) Write(p []byte) (int, error) {
 	return w.ResponseWriter.Write(p)
 }
 
-type CustomFileServerHandler struct {
+type CustomHandler struct {
 	h http.Handler
 }
 
-func (handler CustomFileServerHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	handler.h.ServeHTTP(&CustomFileServer{ResponseWriter: w}, r)
+func (handler CustomHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	handler.h.ServeHTTP(&CustomMiddleware{ResponseWriter: w}, r)
 }
 
 type IndexMiddleware struct {
@@ -85,6 +85,15 @@ func (m IndexMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, directory)
 }
 
+func checkCustomNotFound() {
+	if _, err := os.Stat(notFoundPath); os.IsNotExist(err) {
+		log.Println(notFoundPath + " is not found. Flag ignored.")
+		customNotFound = false
+	} else {
+		log.Println("404 page is " + notFoundPath)
+	}
+}
+
 func main() {
 	flag.BoolVar(&spa, "spa", false, "Indicate Single Page Application mode")
 	flag.BoolVar(&customNotFound, "notFound", false, "Graceful 404 page at /404.html")
@@ -94,19 +103,14 @@ func main() {
 	pathToServe := "/"
 	if spa {
 		log.Println("Working in SPA mode")
-		http.Handle(pathToServe, CustomFileServerHandler{(owaspMiddleware(IndexMiddleware{}))})
+		http.Handle(pathToServe, CustomHandler{OwaspHandler{(IndexMiddleware{})}})
 		pathToServe = staticPath
 	}
-	notFoundPath = directory + pathToServe + notFoundName
-	http.Handle(pathToServe, CustomFileServerHandler{(owaspMiddleware(http.FileServer(http.Dir(directory))))})
+	http.Handle(pathToServe, CustomHandler{OwaspHandler{(http.FileServer(http.Dir(directory)))}})
 
 	if customNotFound {
-		if _, err := os.Stat(notFoundPath); os.IsNotExist(err) {
-			log.Println(notFoundPath + " is not found. Flag ignored")
-			customNotFound = false
-		} else {
-			log.Println("404 page is " + notFoundPath)
-		}
+		notFoundPath = directory + pathToServe + notFoundName
+		checkCustomNotFound()
 	}
 
 	log.Println("Starting server on port " + port)
