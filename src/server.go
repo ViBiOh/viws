@@ -7,7 +7,7 @@ import "flag"
 import "io/ioutil"
 
 const port = "1080"
-const directory = "/Users/vibioh/code/site-montdenis/dist/"
+const directory = "/www/"
 const staticPath = "/static/"
 const notFoundName = "404.html"
 const tenDaysOfCaching = "864000"
