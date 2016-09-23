@@ -9,11 +9,11 @@ const directory = "/www/"
 const tenDaysOfCaching = "864000"
 const contentSecurityPolicy = "default-src 'self' 'unsafe-inline' "
 
+var domain string
+
 type OwaspHeaderServer struct {
 	http.ResponseWriter
 }
-
-var domain string
 
 func (w OwaspHeaderServer) WriteHeader(code int) {
 	if code < 400 {
