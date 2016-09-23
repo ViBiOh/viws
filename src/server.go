@@ -36,7 +36,7 @@ type CustomFileServer struct {
 }
 
 func (w CustomFileServer) WriteHeader(code int) {
-	if code == 200 {
+	if code == 200 || code == 301 {
 		w.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
 	}
 
