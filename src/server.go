@@ -3,6 +3,7 @@ package main
 import "net/http"
 import "log"
 import "os"
+import "path"
 import "flag"
 import "io/ioutil"
 
@@ -109,7 +110,7 @@ func main() {
 	http.Handle(pathToServe, CustomHandler{OwaspHandler{(http.FileServer(http.Dir(directory)))}})
 
 	if customNotFound {
-		notFoundPath = directory + pathToServe + notFoundName
+		notFoundPath = path.Join(directory, pathToServe, notFoundName)
 		checkCustomNotFound()
 	}
 
