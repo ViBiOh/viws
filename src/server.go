@@ -7,16 +7,17 @@ import "path"
 import "flag"
 import "io/ioutil"
 
-const port = "1080"
-const directory = "/www/"
-const staticPath = "/static/"
-const notFoundName = "404.html"
 const tenDaysOfCaching = "864000"
 const contentSecurityPolicy = "default-src 'self' 'unsafe-inline' "
 
-var customNotFound bool
-var notFoundPath string
+var directory string
+var port string
 var domain string
+var static string
+var notFoundName string
+var notFoundPath string
+
+var customNotFound bool
 var spa bool
 
 type OwaspMiddleware struct {
@@ -99,13 +100,17 @@ func main() {
 	flag.BoolVar(&spa, "spa", false, "Indicate Single Page Application mode")
 	flag.BoolVar(&customNotFound, "notFound", false, "Graceful 404 page at /404.html")
 	flag.StringVar(&domain, "domain", "", "Domains names for Content-Security-Policy")
+	flag.StringVar(&directory, "directory", "/www/", "Directory to serve")
+	flag.StringVar(&static, "static", "/static/", "Static path served when SPA enabled")
+	flag.StringVar(&notFoundName, "notFoundName", "404.html", "Page served when notFound enabled")
+	flag.StringVar(&port, "port", "1080", "Listening port")
 	flag.Parse()
 
 	pathToServe := "/"
 	if spa {
 		log.Println("Working in SPA mode")
 		http.Handle(pathToServe, CustomHandler{OwaspHandler{(IndexMiddleware{})}})
-		pathToServe = staticPath
+		pathToServe = static
 	}
 	http.Handle(pathToServe, CustomHandler{OwaspHandler{(http.FileServer(http.Dir(directory)))}})
 
