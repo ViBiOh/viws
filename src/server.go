@@ -106,6 +106,9 @@ func main() {
 	flag.StringVar(&port, "port", "1080", "Listening port")
 	flag.Parse()
 
+	log.Println("Starting server on port " + port)
+	log.Println("Content-Security-Policy: ", contentSecurityPolicy+domain)
+
 	pathToServe := "/"
 	if spa {
 		log.Println("Working in SPA mode")
@@ -113,12 +116,12 @@ func main() {
 		pathToServe = static
 	}
 	http.Handle(pathToServe, CustomHandler{OwaspHandler{(http.FileServer(http.Dir(directory)))}})
+	log.Println("Serving file from " + path.Join(directory, pathToServe))
 
 	if customNotFound {
 		notFoundPath = path.Join(directory, pathToServe, notFoundName)
 		checkCustomNotFound()
 	}
 
-	log.Println("Starting server on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
