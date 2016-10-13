@@ -3,10 +3,9 @@ sudo: required
 services:
 - docker
 go:
-- 1.6
+- 1.7
 install: make
 script:
-- make
 - docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 - docker push ${DOCKER_USER}/http
 notifications:
