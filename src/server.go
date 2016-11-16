@@ -24,14 +24,14 @@ type OwaspMiddleware struct {
 	http.ResponseWriter
 }
 
-func (middleware *OwaspMiddleware) WriteHeader(status int) {
+func (m *OwaspMiddleware) WriteHeader(status int) {
 	if status < http.StatusBadRequest || customNotFound {
-		middleware.Header().Add("Content-Security-Policy", contentSecurityPolicy+domain)
-		middleware.Header().Add("X-Frame-Options", "deny")
-		middleware.Header().Add("X-Content-Type-Options", "nosniff")
-		middleware.Header().Add("X-XSS-Protection", "1; mode=block")
+		m.Header().Add("Content-Security-Policy", contentSecurityPolicy+domain)
+		m.Header().Add("X-Frame-Options", "deny")
+		m.Header().Add("X-Content-Type-Options", "nosniff")
+		m.Header().Add("X-XSS-Protection", "1; mode=block")
 	}
-	middleware.ResponseWriter.WriteHeader(status)
+	m.ResponseWriter.WriteHeader(status)
 }
 
 type OwaspHandler struct {
@@ -47,27 +47,27 @@ type CustomMiddleware struct {
 	isNotFound bool
 }
 
-func (middleware *CustomMiddleware) WriteHeader(status int) {
+func (m *CustomMiddleware) WriteHeader(status int) {
 	if status == http.StatusOK || status == http.StatusMovedPermanently {
-		middleware.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
+		m.Header().Add("Cache-Control", "max-age="+tenDaysOfCaching)
 	}
 
 	if status == http.StatusNotFound && customNotFound {
-		middleware.isNotFound = true
-		middleware.Header().Add("Content-type", "text/html; charset=utf-8")
+		m.isNotFound = true
+		m.Header().Add("Content-type", "text/html; charset=utf-8")
 	}
 
-	middleware.ResponseWriter.WriteHeader(status)
+	m.ResponseWriter.WriteHeader(status)
 }
 
-func (middleware *CustomMiddleware) Write(p []byte) (int, error) {
-	if middleware.isNotFound {
+func (m *CustomMiddleware) Write(p []byte) (int, error) {
+	if m.isNotFound {
 		notFoundPage, err := ioutil.ReadFile(notFoundPath)
 		if err == nil {
-			return middleware.ResponseWriter.Write(notFoundPage)
+			return m.ResponseWriter.Write(notFoundPage)
 		}
 	}
-	return middleware.ResponseWriter.Write(p)
+	return m.ResponseWriter.Write(p)
 }
 
 type CustomHandler struct {
@@ -83,7 +83,7 @@ type IndexMiddleware struct {
 	http.Handler
 }
 
-func (middleware IndexMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (m IndexMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, directory)
 }
 
