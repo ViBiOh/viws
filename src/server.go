@@ -65,8 +65,7 @@ func (m *CustomMiddleware) WriteHeader(status int) {
 
 func (m *CustomMiddleware) Write(p []byte) (int, error) {
 	if m.isNotFound {
-		notFoundPage, err := ioutil.ReadFile(notFoundPath)
-		if err == nil {
+		if notFoundPage, err := ioutil.ReadFile(notFoundPath); err == nil {
 			return m.ResponseWriter.Write(notFoundPage)
 		}
 	}
@@ -97,9 +96,8 @@ func (m *SpaMiddleware) WriteHeader(status int) {
 
 func (m *SpaMiddleware) Write(p []byte) (int, error) {
 	if m.isNotFound {
-		notFoundPage, err := ioutil.ReadFile(directory + indexFileName)
-		if err == nil {
-			return m.ResponseWriter.Write(notFoundPage)
+		if indexPage, err := ioutil.ReadFile(directory + indexFileName); err == nil {
+			return m.ResponseWriter.Write(indexPage)
 		}
 	}
 	return m.ResponseWriter.Write(p)
