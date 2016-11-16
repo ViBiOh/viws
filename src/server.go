@@ -1,11 +1,13 @@
 package main
 
-import "net/http"
-import "log"
-import "os"
-import "path"
-import "flag"
-import "io/ioutil"
+import (
+	"net/http"
+	"log"
+	"os"
+	"path"
+	"flag"
+	"io/ioutil"
+)
 
 const tenDaysOfCaching = "864000"
 const contentSecurityPolicy = "default-src 'self' 'unsafe-inline' "
@@ -102,7 +104,7 @@ func main() {
 	flag.StringVar(&domain, "domain", "", "Domains names for Content-Security-Policy")
 	flag.StringVar(&directory, "directory", "/www/", "Directory to serve")
 	flag.StringVar(&static, "static", "/static/", "Static path served when SPA enabled")
-	flag.StringVar(&notFoundName, "notFoundName", "404.html", "Page served when notFound enabled")
+	flag.StringVar(&notFoundName, "notFoundName", "404.html", "Page served when notFound enabled (only for static in SPA)")
 	flag.StringVar(&port, "port", "1080", "Listening port")
 	flag.Parse()
 
