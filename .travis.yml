@@ -7,6 +7,7 @@ go:
 install: make
 script:
 - docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-- docker push ${DOCKER_USER}/http
+- docker build -t ${DOCKER_USER}/http . &&
+  docker push ${DOCKER_USER}/http
 notifications:
   email: false
