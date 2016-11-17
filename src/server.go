@@ -11,6 +11,7 @@ import (
 
 const tenDaysOfCaching = `864000`
 const contentSecurityPolicy = `default-src 'self' 'unsafe-inline' `
+const pathToServe = `/`
 const indexFileName = `index.html`
 
 var directory string
@@ -132,15 +133,14 @@ func main() {
 
 	log.Println(`Starting server on port ` + port)
 	log.Println(`Content-Security-Policy: `, contentSecurityPolicy+domain)
+	log.Println(`Serving file from ` + path.Join(directory, pathToServe))
 
-	pathToServe := `/`
 	if spa {
 		log.Println(`Working in SPA mode`)
 		http.Handle(pathToServe, SpaHandler{OwaspHandler{(http.FileServer(http.Dir(directory)))}})
-		pathToServe = static
+	} else {
+		http.Handle(pathToServe, CustomHandler{OwaspHandler{(http.FileServer(http.Dir(directory)))}})
 	}
-	http.Handle(pathToServe, CustomHandler{OwaspHandler{(http.FileServer(http.Dir(directory)))}})
-	log.Println(`Serving file from ` + path.Join(directory, pathToServe))
 
 	if customNotFound {
 		notFoundPath = path.Join(directory, pathToServe, notFoundName)
