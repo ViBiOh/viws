@@ -35,6 +35,11 @@ func (m *OwaspMiddleware) WriteHeader(status int) {
 		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
 		m.Header().Add(`X-XSS-Protection`, `1; mode=block`)
 	}
+
+	if status == http.StatusOK || status == http.StatusMovedPermanently {
+		m.Header().Add(`Cache-Control`, `max-age=`+tenDaysOfCaching)
+	}
+
 	m.ResponseWriter.WriteHeader(status)
 }
 
@@ -52,10 +57,6 @@ type CustomMiddleware struct {
 }
 
 func (m *CustomMiddleware) WriteHeader(status int) {
-	if status == http.StatusOK || status == http.StatusMovedPermanently {
-		m.Header().Add(`Cache-Control`, `max-age=`+tenDaysOfCaching)
-	}
-
 	if status == http.StatusNotFound && customNotFound {
 		m.isNotFound = true
 		m.Header().Add(`Content-type`, `text/html; charset=utf-8`)
@@ -87,10 +88,6 @@ type SpaMiddleware struct {
 }
 
 func (m *SpaMiddleware) WriteHeader(status int) {
-	if status == http.StatusOK || status == http.StatusMovedPermanently {
-		m.Header().Add(`Cache-Control`, `max-age=`+tenDaysOfCaching)
-	}
-
 	if status == http.StatusNotFound {
 		m.isNotFound = true
 		m.Header().Add(`Content-type`, `text/html; charset=utf-8`)
