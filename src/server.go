@@ -87,6 +87,10 @@ type SpaMiddleware struct {
 }
 
 func (m *SpaMiddleware) WriteHeader(status int) {
+	if status == http.StatusOK || status == http.StatusMovedPermanently {
+		m.Header().Add(`Cache-Control`, `max-age=`+tenDaysOfCaching)
+	}
+
 	if status == http.StatusNotFound {
 		m.isNotFound = true
 		m.Header().Add(`Content-type`, `text/html; charset=utf-8`)
@@ -126,8 +130,7 @@ func main() {
 	flag.BoolVar(&customNotFound, `notFound`, false, `Graceful 404 page at /404.html`)
 	flag.StringVar(&domain, `domain`, ``, `Domains names for Content-Security-Policy`)
 	flag.StringVar(&directory, `directory`, `/www/`, `Directory to serve`)
-	flag.StringVar(&static, `static`, `/static/`, `Static path served when SPA enabled`)
-	flag.StringVar(&notFoundName, `notFoundName`, `404.html`, `Page served when notFound enabled (only for static in SPA)`)
+	flag.StringVar(&notFoundName, `notFoundName`, `404.html`, `Page served when notFound enabled`)
 	flag.StringVar(&port, `port`, `1080`, `Listening port`)
 	flag.Parse()
 
