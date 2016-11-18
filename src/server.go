@@ -12,16 +12,13 @@ const tenDaysOfCaching = `864000`
 const contentSecurityPolicy = `default-src 'self' 'unsafe-inline' `
 
 var domain string
-var spa bool
-var notFound bool
-var notFoundPath string
 
-func isFileExist(directory string, pathToTest string) (string, bool) {
+func isFileExist(directory string, pathToTest string) *string {
 	fullPath := path.Join(directory, pathToTest)
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-		return fullPath, false
+		return nil
 	}
-	return fullPath, true
+	return &fullPath
 }
 
 type OwaspMiddleware struct {
@@ -52,26 +49,29 @@ func (handler OwaspHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type CustomFileHandler struct {
-	root string
+	root         *string
+	spa          bool
+	notFound     bool
+	notFoundPath *string
 }
 
 func (handler CustomFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if filePath, valid := isFileExist(handler.root, r.URL.Path); valid {
-		http.ServeFile(w, r, filePath)
-	} else if notFound {
-		http.ServeFile(w, r, notFoundPath)
-	} else if spa {
-		http.ServeFile(w, r, handler.root)
+	if filePath := isFileExist(*handler.root, r.URL.Path); filePath != nil {
+		http.ServeFile(w, r, *filePath)
+	} else if handler.notFound {
+		http.ServeFile(w, r, *handler.notFoundPath)
+	} else if handler.spa {
+		http.ServeFile(w, r, *handler.root)
 	} else {
-		http.Error(w, `404 not found: `+r.URL.Path, 500)
+		http.Error(w, `404 page not found: `+r.URL.Path, 404)
 	}
 }
 
 func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
 	directory := flag.String(`directory`, `/www/`, `Directory to serve`)
-	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
-	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
+	spa := flag.Bool(`spa`, false, `Indicate Single Page Application mode`)
+	notFound := flag.Bool(`notFound`, false, `Graceful 404 page at /404.html`)
 	flag.StringVar(&domain, `domain`, ``, `Domains names for Content-Security-Policy`)
 	flag.Parse()
 
@@ -79,18 +79,22 @@ func main() {
 	log.Println(`Serving file from ` + *directory)
 	log.Println(`Content-Security-Policy: `, contentSecurityPolicy+domain)
 
-	if spa {
+	if *spa {
 		log.Println(`Working in SPA mode`)
 	}
 
-	if notFound {
-		if notFoundPath, valid := isFileExist(*directory, `404.html`); !valid {
-			log.Println(notFoundPath + ` is not found. Flag ignored.`)
-			notFound = false
+	var notFoundPath *string
+
+	if *notFound {
+		if notFoundPath = isFileExist(*directory, `/404.html`); notFoundPath == nil {
+			log.Println(*directory + `404.html is not found. Flag ignored.`)
+			*notFound = false
+		} else {
+			log.Println(`404 will be ` + *notFoundPath)
 		}
 	}
 
-	http.Handle(`/`, OwaspHandler{CustomFileHandler{*directory}})
+	http.Handle(`/`, OwaspHandler{CustomFileHandler{directory, *spa, *notFound, notFoundPath}})
 
 	log.Fatal(http.ListenAndServe(`:`+*port, nil))
 }
