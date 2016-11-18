@@ -99,7 +99,6 @@ func (m *SpaMiddleware) WriteHeader(status int) {
 func (m *SpaMiddleware) Write(p []byte) (int, error) {
 	if m.isNotFound {
 		if indexPage, err := ioutil.ReadFile(directory + indexFileName); err == nil {
-			m.ResponseWriter.WriteHeader(http.StatusOK)
 			return m.ResponseWriter.Write(indexPage)
 		}
 	}
