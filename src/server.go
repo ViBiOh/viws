@@ -10,14 +10,24 @@ import (
 
 const tenDaysOfCaching = `864000`
 const contentSecurityPolicy = `default-src 'self' 'unsafe-inline' `
+const indexName = `index.html`
 
 var domain string
 
 func isFileExist(directory string, pathToTest string) *string {
 	fullPath := path.Join(directory, pathToTest)
-	if info, err := os.Stat(fullPath); os.IsNotExist(err) || (info.IsDir() && pathToTest != `/`) {
+	info, err := os.Stat(fullPath)
+
+	if os.IsNotExist(err) {
 		return nil
 	}
+
+	if info.IsDir() {
+		if isFileExist(directory, pathToTest+indexName) == nil {
+			return nil
+		}
+	}
+
 	return &fullPath
 }
 
