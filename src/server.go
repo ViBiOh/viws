@@ -15,7 +15,7 @@ var domain string
 
 func isFileExist(directory string, pathToTest string) *string {
 	fullPath := path.Join(directory, pathToTest)
-	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
+	if info, err := os.Stat(fullPath); os.IsNotExist(err) || (info.IsDir() && pathToTest != `/`) {
 		return nil
 	}
 	return &fullPath
