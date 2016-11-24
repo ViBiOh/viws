@@ -16,7 +16,7 @@ const INDEX_FILENAME = `index.html`
 var domain string
 
 func isFileExist(parts ...string) *string {
-	fullPath := path.Join(parts)
+	fullPath := path.Join(parts...)
 	info, err := os.Stat(fullPath)
 
 	if os.IsNotExist(err) {
@@ -24,7 +24,7 @@ func isFileExist(parts ...string) *string {
 	}
 
 	if info.IsDir() {
-		if isFileExist(append(parts, INDEX_FILENAME)) == nil {
+		if isFileExist(append(parts, INDEX_FILENAME)...) == nil {
 			return nil
 		}
 	}
