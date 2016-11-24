@@ -87,7 +87,7 @@ func main() {
 	flag.Parse()
 
 	if isFileExist(*directory) == nil {
-		log.Println(`Directory ` + *directory + ` is unreachable.`)
+		log.Fatal(`Directory ` + *directory + ` is unreachable.`)
 	}
 
 	log.Println(`Starting server on port ` + *port)
