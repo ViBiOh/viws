@@ -86,6 +86,10 @@ func main() {
 	flag.StringVar(&domain, `domain`, ``, `Domains names for Content-Security-Policy`)
 	flag.Parse()
 
+	if isFileExist(*directory) == nil {
+		log.Fatal(`Directory ` + *directory + ` is unreachable. Aborting.`)
+	}
+
 	log.Println(`Starting server on port ` + *port)
 	log.Println(`Serving file from ` + *directory)
 	log.Println(`Content-Security-Policy: `, contentSecurityPolicy+domain)
