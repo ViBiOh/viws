@@ -10,12 +10,13 @@ import (
 
 const tenDaysOfCaching = `864000`
 const contentSecurityPolicy = `default-src 'self' 'unsafe-inline' `
-const indexName = `index.html`
+const NOT_FOUND_FILENAME = `404.html`
+const INDEX_FILENAME = `index.html`
 
 var domain string
 
-func isFileExist(directory string, pathToTest string) *string {
-	fullPath := path.Join(directory, pathToTest)
+func isFileExist(parts ...string) *string {
+	fullPath := path.Join(parts)
 	info, err := os.Stat(fullPath)
 
 	if os.IsNotExist(err) {
@@ -23,7 +24,7 @@ func isFileExist(directory string, pathToTest string) *string {
 	}
 
 	if info.IsDir() {
-		if isFileExist(directory, pathToTest+indexName) == nil {
+		if isFileExist(append(parts, INDEX_FILENAME)) == nil {
 			return nil
 		}
 	}
@@ -96,8 +97,8 @@ func main() {
 	var notFoundPath *string
 
 	if *notFound {
-		if notFoundPath = isFileExist(*directory, `/404.html`); notFoundPath == nil {
-			log.Println(*directory + `404.html is not found. Flag ignored.`)
+		if notFoundPath = isFileExist(*directory, `/`, NOT_FOUND_FILENAME, `.html`); notFoundPath == nil {
+			log.Println(*directory + NOT_FOUND_FILENAME + `.html is not found. Flag ignored.`)
 			*notFound = false
 		} else {
 			log.Println(`404 will be ` + *notFoundPath)
