@@ -19,7 +19,7 @@ func isFileExist(parts ...string) *string {
 	fullPath := path.Join(parts...)
 	info, err := os.Stat(fullPath)
 
-	if os.IsNotExist(err) {
+	if err != nil {
 		return nil
 	}
 
@@ -101,8 +101,8 @@ func main() {
 	var notFoundPath *string
 
 	if *notFound {
-		if notFoundPath = isFileExist(*directory, `/`, NOT_FOUND_FILENAME, `.html`); notFoundPath == nil {
-			log.Println(*directory + NOT_FOUND_FILENAME + `.html is not found. Flag ignored.`)
+		if notFoundPath = isFileExist(*directory, NOT_FOUND_FILENAME); notFoundPath == nil {
+			log.Println(*directory + NOT_FOUND_FILENAME + ` is unreachable. Flag ignored.`)
 			*notFound = false
 		} else {
 			log.Println(`404 will be ` + *notFoundPath)
