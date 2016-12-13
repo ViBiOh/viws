@@ -5,9 +5,11 @@ services:
 go:
 - 1.7
 install: make
-script:
-- docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
-- docker build -t ${DOCKER_USER}/http . &&
-  docker push ${DOCKER_USER}/http
+script: |
+  docker build -t ${DOCKER_USER}/http .
+after_success: |
+  if [ "${TRAVIS_BRANCH}" == "master" ]; then
+    docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} && docker push ${DOCKER_USER}/http
+  fi
 notifications:
   email: false
