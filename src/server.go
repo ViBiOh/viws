@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"runtime"
 )
 
 const tenDaysOfCaching = `864000`
@@ -79,6 +80,8 @@ func (handler CustomFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 }
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	port := flag.String(`port`, `1080`, `Listening port`)
 	directory := flag.String(`directory`, `/www/`, `Directory to serve`)
 	spa := flag.Bool(`spa`, false, `Indicate Single Page Application mode`)
