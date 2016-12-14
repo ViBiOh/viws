@@ -1,4 +1,4 @@
-default: lint vet test build
+default: lint vet tst build
 
 lint:
 	go get -u github.com/golang/lint/golint
@@ -7,7 +7,7 @@ lint:
 vet:
 	go vet ./...
 
-test:
+tst:
 	go test ./...
 
 build:
