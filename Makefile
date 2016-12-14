@@ -1,4 +1,7 @@
-default: server
+default: vet build
 
-server:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo src/server.go
+vet:
+	go vet ./...
+
+build:
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo server.go
