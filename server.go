@@ -52,11 +52,11 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 	m.ResponseWriter.WriteHeader(status)
 }
 
-type OwaspHandler struct {
+type owaspHandler struct {
 	h http.Handler
 }
 
-func (handler OwaspHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (handler owaspHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	handler.h.ServeHTTP(&owaspMiddleware{ResponseWriter: w}, r)
 }
 
