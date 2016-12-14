@@ -112,7 +112,7 @@ func main() {
 		}
 	}
 
-	http.Handle(`/`, OwaspHandler{customFileHandler{directory, *spa, *notFound, notFoundPath}})
+	http.Handle(`/`, owaspHandler{customFileHandler{directory, *spa, *notFound, notFoundPath}})
 
 	log.Fatal(http.ListenAndServe(`:`+*port, nil))
 }
