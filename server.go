@@ -64,7 +64,7 @@ type owaspHandler struct {
 }
 
 func (handler owaspHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	handler.h.ServeHTTP(&owaspMiddleware{w, r.URL.Path}, r.url.Path, spa)
+	handler.h.ServeHTTP(&owaspMiddleware{w, r.URL.Path, spa})
 }
 
 type customFileHandler struct {
