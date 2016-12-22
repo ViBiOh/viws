@@ -35,6 +35,7 @@ func isFileExist(parts ...string) *string {
 
 type owaspMiddleware struct {
 	http.ResponseWriter
+	path string
 }
 
 func (m *owaspMiddleware) WriteHeader(status int) {
@@ -46,7 +47,11 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 	}
 
 	if status == http.StatusOK || status == http.StatusMovedPermanently {
-		m.Header().Add(`Cache-Control`, `max-age=`+tenDaysOfCaching)
+		if m.path == `/` {
+			m.Header().Add(`Cache-Control`, `no-cache`)
+		} else {
+			m.Header().Add(`Cache-Control`, `max-age=`+tenDaysOfCaching)
+		}
 	}
 
 	m.ResponseWriter.WriteHeader(status)
@@ -57,7 +62,7 @@ type owaspHandler struct {
 }
 
 func (handler owaspHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	handler.h.ServeHTTP(&owaspMiddleware{ResponseWriter: w}, r)
+	handler.h.ServeHTTP(&owaspMiddleware{w, r.URL.Path}, r)
 }
 
 type customFileHandler struct {
