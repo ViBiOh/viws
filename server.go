@@ -66,10 +66,11 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 type owaspHandler struct {
 	h http.Handler
 	spa bool
+	hsts bool
 }
 
 func (handler owaspHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	handler.h.ServeHTTP(&owaspMiddleware{w, r.URL.Path, handler.spa}, r)
+	handler.h.ServeHTTP(&owaspMiddleware{w, r.URL.Path, handler.spa, handler.hsts}, r)
 }
 
 type customFileHandler struct {
