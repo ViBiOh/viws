@@ -37,6 +37,7 @@ type owaspMiddleware struct {
 	http.ResponseWriter
 	path string
 	spa bool
+	hsts bool
 }
 
 func (m *owaspMiddleware) WriteHeader(status int) {
@@ -45,6 +46,10 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 		m.Header().Add(`X-Frame-Options`, `deny`)
 		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
 		m.Header().Add(`X-XSS-Protection`, `1; mode=block`)
+	}
+	
+	if m.hsts {
+		m.Header().Add(`Strict-Transport-Security`, `max-age=`+tenDaysOfCaching)
 	}
 
 	if status == http.StatusOK || status == http.StatusMovedPermanently {
@@ -91,6 +96,7 @@ func main() {
 
 	port := flag.String(`port`, `1080`, `Listening port`)
 	directory := flag.String(`directory`, `/www/`, `Directory to serve`)
+	hsts := flag.Bool(`hsts`, true, `Indicate Strict Transport Security`)
 	spa := flag.Bool(`spa`, false, `Indicate Single Page Application mode`)
 	notFound := flag.Bool(`notFound`, false, `Graceful 404 page at /404.html`)
 	flag.StringVar(&domain, `domain`, ``, `Domains names for Content-Security-Policy`)
@@ -119,7 +125,7 @@ func main() {
 		}
 	}
 
-	http.Handle(`/`, owaspHandler{customFileHandler{directory, *spa, *notFound, notFoundPath}, *spa})
+	http.Handle(`/`, owaspHandler{customFileHandler{directory, *spa, *notFound, notFoundPath}, *spa, *hsts})
 
 	log.Fatal(http.ListenAndServe(`:`+*port, nil))
 }
