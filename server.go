@@ -81,7 +81,9 @@ type customFileHandler struct {
 }
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if filePath := isFileExist(*handler.root, r.URL.Path); filePath != nil {
+	if r.Method != http.MethodGet {
+		http.Error(w, `Method Not Allowed`, 405)
+	} else if filePath := isFileExist(*handler.root, r.URL.Path); filePath != nil {
 		http.ServeFile(w, r, *filePath)
 	} else if handler.notFound {
 		http.ServeFile(w, r, *handler.notFoundPath)
