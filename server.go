@@ -83,15 +83,16 @@ type customFileHandler struct {
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, `Method Not Allowed`, 405)
+		http.Error(w, `Method Not Allowed`, http.StatusMethodNotAllowed)
 	} else if filePath := isFileExist(*handler.root, r.URL.Path); filePath != nil {
 		http.ServeFile(w, r, *filePath)
 	} else if handler.notFound {
+		w.WriteHeader(http.StatusNotFound)
 		http.ServeFile(w, r, *handler.notFoundPath)
 	} else if handler.spa {
 		http.ServeFile(w, r, *handler.root)
 	} else {
-		http.Error(w, `404 page not found: `+r.URL.Path, 404)
+		http.Error(w, `404 page not found: `+r.URL.Path, http.StatusNotFound)
 	}
 }
 
