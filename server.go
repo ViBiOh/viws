@@ -46,6 +46,7 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 		m.Header().Add(`X-Frame-Options`, `deny`)
 		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
 		m.Header().Add(`X-XSS-Protection`, `1; mode=block`)
+		m.Header().Add(`X-Permitted-Cross-Domain-Policies`, `none`)
 	}
 	
 	if m.hsts {
