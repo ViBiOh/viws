@@ -84,7 +84,6 @@ func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	} else if filePath := isFileExist(*handler.root, r.URL.Path); filePath != nil {
 		http.ServeFile(w, r, *filePath)
 	} else if notFound {
-		w.WriteHeader(http.StatusNotFound)
 		http.ServeFile(w, r, *handler.notFoundPath)
 	} else if spa {
 		http.ServeFile(w, r, *handler.root)
