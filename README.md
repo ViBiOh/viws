@@ -36,7 +36,7 @@ Usage of ./server:
   -directory string
       Directory to serve (default "/www/")
   -domain string
-      Domains names for Content-Security-Policy appended to "default-src 'self' 'unsafe-inline'"
+      Domains names for Content-Security-Policy appended to "default-src 'self' data: ws: 'unsafe-inline'"
   -hsts
       Indicate Strict Transport Security (default true)
   -notFound

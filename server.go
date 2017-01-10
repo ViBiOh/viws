@@ -10,7 +10,7 @@ import (
 )
 
 const tenDaysOfCaching = `864000`
-const contentSecurityPolicy = `default-src 'self' 'unsafe-inline' `
+const contentSecurityPolicy = `default-src 'self' data: ws: 'unsafe-inline' `
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
