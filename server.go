@@ -10,6 +10,7 @@ import (
 )
 
 const tenDaysOfCaching = `864000`
+const twoMonthsOfCaching = `5184000`
 const contentSecurityPolicy = `default-src 'self' wss: 'unsafe-inline' `
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
@@ -51,7 +52,7 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 	}
 
 	if hsts {
-		m.Header().Add(`Strict-Transport-Security`, `max-age=`+tenDaysOfCaching)
+		m.Header().Add(`Strict-Transport-Security`, `max-age=`+twoMonthsOfCaching)
 	}
 
 	if status == http.StatusOK || status == http.StatusMovedPermanently {
