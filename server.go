@@ -11,7 +11,9 @@ import (
 
 const tenDaysOfCaching = `864000`
 const twoMonthsOfCaching = `5184000`
-const contentSecurityPolicy = `default-src 'self' wss: 'unsafe-inline' `
+const defaultContentSecurityPolicy = `default-src 'self' wss: `
+const inlineContentSecurityPolicy = `default-src 'self' 'unsafe-inline' `
+const separatorContentSecurityPolicy = `;`
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
@@ -44,7 +46,7 @@ type owaspMiddleware struct {
 
 func (m *owaspMiddleware) WriteHeader(status int) {
 	if status < http.StatusBadRequest {
-		m.Header().Add(`Content-Security-Policy`, contentSecurityPolicy+domain)
+		m.Header().Add(`Content-Security-Policy`, defaultContentSecurityPolicy+domain+separatorContentSecurityPolicy+inlineContentSecurityPolicy+domain+separatorContentSecurityPolicy)
 		m.Header().Add(`X-Frame-Options`, `deny`)
 		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
 		m.Header().Add(`X-XSS-Protection`, `1; mode=block`)
@@ -102,7 +104,7 @@ func main() {
 	flag.BoolVar(&hsts, `hsts`, true, `Indicate Strict Transport Security`)
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
 	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
-	flag.StringVar(&domain, `domain`, ``, `Domains names for Content-Security-Policy appended to "default-src 'self' 'unsafe-inline'"`)
+	flag.StringVar(&domain, `domain`, ``, `Domains names for Content-Security-Policy appended to "default-src 'self'"`)
 	flag.Parse()
 
 	if isFileExist(*directory) == nil {
