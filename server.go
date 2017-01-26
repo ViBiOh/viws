@@ -115,9 +115,9 @@ func main() {
 	
 	csp = defaultContentSecurityPolicy+domain+separatorContentSecurityPolicy+scriptContentSecurityPolicy+domain+separatorContentSecurityPolicy+styleContentSecurityPolicy+domain+separatorContentSecurityPolicy
 
-	log.Println(`Starting server on port ` + *port)
-	log.Println(`Serving file from ` + *directory)
-	log.Println(`Content-Security-Policy: `, csp)
+	log.Println(`Starting server on port`, *port)
+	log.Println(`Serving file from`, *directory)
+	log.Println(`Content-Security-Policy:`, csp)
 
 	if spa {
 		log.Println(`Working in SPA mode`)
@@ -130,7 +130,7 @@ func main() {
 			log.Println(*directory + notFoundFilename + ` is unreachable. Flag ignored.`)
 			notFound = false
 		} else {
-			log.Println(`404 will be ` + *notFoundPath)
+			log.Println(`404 will be`, *notFoundPath)
 		}
 	}
 
