@@ -18,6 +18,7 @@ const separatorContentSecurityPolicy = `;`
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
+var csp string
 var domain string
 var notFound bool
 var spa bool
@@ -47,7 +48,7 @@ type owaspMiddleware struct {
 
 func (m *owaspMiddleware) WriteHeader(status int) {
 	if status < http.StatusBadRequest {
-		m.Header().Add(`Content-Security-Policy`, defaultContentSecurityPolicy+domain+separatorContentSecurityPolicy+scriptContentSecurityPolicy+domain+separatorContentSecurityPolicy+styleContentSecurityPolicy+domain+separatorContentSecurityPolicy)
+		m.Header().Add(`Content-Security-Policy`, csp)
 		m.Header().Add(`X-Frame-Options`, `deny`)
 		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
 		m.Header().Add(`X-XSS-Protection`, `1; mode=block`)
@@ -111,10 +112,12 @@ func main() {
 	if isFileExist(*directory) == nil {
 		log.Fatal(`Directory ` + *directory + ` is unreachable.`)
 	}
+	
+	csp = defaultContentSecurityPolicy+domain+separatorContentSecurityPolicy+scriptContentSecurityPolicy+domain+separatorContentSecurityPolicy+styleContentSecurityPolicy+domain+separatorContentSecurityPolicy
 
 	log.Println(`Starting server on port ` + *port)
 	log.Println(`Serving file from ` + *directory)
-	log.Println(`Content-Security-Policy: `, contentSecurityPolicy+domain)
+	log.Println(`Content-Security-Policy: `, csp)
 
 	if spa {
 		log.Println(`Working in SPA mode`)
