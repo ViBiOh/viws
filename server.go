@@ -9,17 +9,10 @@ import (
 	"runtime"
 )
 
-const tenDaysOfCaching = `864000`
-const twoMonthsOfCaching = `5184000`
-const defaultContentSecurityPolicy = `default-src 'self' wss: `
-const scriptContentSecurityPolicy = `script-src 'self' 'unsafe-inline' `
-const styleContentSecurityPolicy = `style-src 'self' 'unsafe-inline' `
-const separatorContentSecurityPolicy = `;`
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
 var csp string
-var domain string
 var notFound bool
 var spa bool
 var hsts bool
@@ -56,14 +49,14 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 	}
 
 	if hsts {
-		m.Header().Add(`Strict-Transport-Security`, `max-age=`+twoMonthsOfCaching)
+		m.Header().Add(`Strict-Transport-Security`, `max-age=5184000`)
 	}
 
 	if status == http.StatusOK || status == http.StatusMovedPermanently {
 		if spa && m.path == `/` {
 			m.Header().Add(`Cache-Control`, `no-cache`)
 		} else {
-			m.Header().Add(`Cache-Control`, `max-age=`+tenDaysOfCaching)
+			m.Header().Add(`Cache-Control`, `max-age=864000`)
 		}
 	}
 
@@ -106,14 +99,12 @@ func main() {
 	flag.BoolVar(&hsts, `hsts`, true, `Indicate Strict Transport Security`)
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
 	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
-	flag.StringVar(&domain, `domain`, ``, `Domains names for Content-Security-Policy appended to "default-src 'self'"`)
+	flag.StringVar(&csp, `csp`, `default-src 'self'`, `Content-Security-Policy"`)
 	flag.Parse()
 
 	if isFileExist(*directory) == nil {
 		log.Fatal(`Directory ` + *directory + ` is unreachable.`)
 	}
-	
-	csp = defaultContentSecurityPolicy+domain+separatorContentSecurityPolicy+scriptContentSecurityPolicy+domain+separatorContentSecurityPolicy+styleContentSecurityPolicy+domain+separatorContentSecurityPolicy
 
 	log.Println(`Starting server on port`, *port)
 	log.Println(`Serving file from`, *directory)

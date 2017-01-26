@@ -35,8 +35,8 @@ By default, server is listening on the `1080` port and serve content for GET req
 Usage of ./server:
   -directory string
       Directory to serve (default "/www/")
-  -domain string
-      Domains names for Content-Security-Policy appended to "default-src 'self' data: ws: 'unsafe-inline'"
+  -csp string
+      Content-Security-Policy (default "default-src 'self'")
   -hsts
       Indicate Strict Transport Security (default true)
   -notFound
