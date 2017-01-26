@@ -12,7 +12,8 @@ import (
 const tenDaysOfCaching = `864000`
 const twoMonthsOfCaching = `5184000`
 const defaultContentSecurityPolicy = `default-src 'self' wss: `
-const inlineContentSecurityPolicy = `default-src 'self' 'unsafe-inline' `
+const scriptContentSecurityPolicy = `script-src 'self' 'unsafe-inline' `
+const styleContentSecurityPolicy = `style-src 'self' 'unsafe-inline' `
 const separatorContentSecurityPolicy = `;`
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
@@ -46,7 +47,7 @@ type owaspMiddleware struct {
 
 func (m *owaspMiddleware) WriteHeader(status int) {
 	if status < http.StatusBadRequest {
-		m.Header().Add(`Content-Security-Policy`, defaultContentSecurityPolicy+domain+separatorContentSecurityPolicy+inlineContentSecurityPolicy+domain+separatorContentSecurityPolicy)
+		m.Header().Add(`Content-Security-Policy`, defaultContentSecurityPolicy+domain+separatorContentSecurityPolicy+scriptContentSecurityPolicy+domain+separatorContentSecurityPolicy+styleContentSecurityPolicy+domain+separatorContentSecurityPolicy)
 		m.Header().Add(`X-Frame-Options`, `deny`)
 		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
 		m.Header().Add(`X-XSS-Protection`, `1; mode=block`)
