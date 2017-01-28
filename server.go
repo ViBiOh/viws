@@ -1,7 +1,9 @@
 package main
 
 import (
+	"compress/gzip"
 	"flag"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -32,6 +34,36 @@ func isFileExist(parts ...string) *string {
 	}
 
 	return &fullPath
+}
+
+type gzipMiddleware struct {
+	io.Writer
+	http.ResponseWriter
+}
+
+func (m *gzipMiddleware) WriteHeader(status int) {
+	m.ResponseWriter.Header().Del(`Content-Length`)
+	m.Header().Add(`Content-Encoding`, `gzip`)
+	m.Header().Add(`Vary`, `Accept-Encoding`)
+
+	m.ResponseWriter.WriteHeader(status)
+}
+
+func (m *gzipMiddleware) Write(content []byte) (int, error) {
+	m.Writer.Write(content)
+
+	return -1, nil
+}
+
+type gzipHandler struct {
+	h http.Handler
+}
+
+func (handler gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	gz, _ := gzip.NewWriterLevel(w, gzip.BestCompression)
+	defer gz.Close()
+
+	handler.h.ServeHTTP(&gzipMiddleware{gz, w}, r)
 }
 
 type owaspMiddleware struct {
@@ -125,7 +157,7 @@ func main() {
 		}
 	}
 
-	http.Handle(`/`, owaspHandler{customFileHandler{directory, notFoundPath}})
+	http.Handle(`/`, gzipHandler{owaspHandler{customFileHandler{directory, notFoundPath}}})
 
 	log.Fatal(http.ListenAndServe(`:`+*port, nil))
 }
