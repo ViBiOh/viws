@@ -2,7 +2,7 @@ language: go
 sudo: required
 services:
 - docker
-go: 1.7
+go: 1.8
 install: make
 script: |
   docker build -t ${DOCKER_USER}/http .
