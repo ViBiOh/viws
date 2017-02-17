@@ -42,6 +42,7 @@ type owaspMiddleware struct {
 func (m *owaspMiddleware) WriteHeader(status int) {
 	if status < http.StatusBadRequest {
 		m.Header().Add(`Content-Security-Policy`, csp)
+		m.Header().Add(`Referrer-Policy`, `strict-origin-when-cross-origin`)
 		m.Header().Add(`X-Frame-Options`, `deny`)
 		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
 		m.Header().Add(`X-XSS-Protection`, `1; mode=block`)
