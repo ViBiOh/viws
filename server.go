@@ -10,12 +10,16 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"regexp"
 	"runtime"
 	"strings"
 )
 
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
+
+var pngFile = regexp.MustCompile(`.png$`)
+var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
 
 var csp string
 var notFound bool
@@ -56,10 +60,6 @@ func (m *gzipMiddleware) Write(b []byte) (int, error) {
 	return m.gzw.Write(b)
 }
 
-func (m *gzipMiddleware) Close() error {
-	return m.gzw.Close()
-}
-
 func (m *gzipMiddleware) Flush() {
 	m.gzw.Flush()
 
@@ -80,23 +80,21 @@ type gzipHandler struct {
 }
 
 func (handler gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if acceptEncoding(r, `gzip`) {
-		gzipResponseWriter := &gzipMiddleware{w, gzip.NewWriter(w)}
-		defer gzipResponseWriter.Close()
+	if acceptEncodingGzip(r) && !pngFile.MatchString(r.URL.Path) {
+		gzipWriter := gzip.NewWriter(w)
+		defer gzipWriter.Close()
 
-		handler.h.ServeHTTP(gzipResponseWriter, r)
+		handler.h.ServeHTTP(&gzipMiddleware{w, gzipWriter}, r)
 	} else {
 		handler.h.ServeHTTP(w, r)
 	}
 }
 
-func acceptEncoding(r *http.Request, encoding string) bool {
+func acceptEncodingGzip(r *http.Request) bool {
 	header := r.Header.Get(`Accept-Encoding`)
 
 	for _, headerEncoding := range strings.Split(header, `,`) {
-		parts := strings.Split(headerEncoding, `;`)
-
-		if (parts[0] == encoding || parts[0] == `*`) && len(parts) == 1 || (len(parts) > 1 && parts[1] != `q=0`) {
+		if acceptGzip.MatchString(headerEncoding) {
 			return true
 		}
 	}
