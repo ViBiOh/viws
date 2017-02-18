@@ -1,12 +1,17 @@
 package main
 
 import (
+	"bufio"
+	"compress/gzip"
 	"flag"
+	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"path"
 	"runtime"
+	"strings"
 )
 
 const notFoundFilename = `404.html`
@@ -32,6 +37,71 @@ func isFileExist(parts ...string) *string {
 	}
 
 	return &fullPath
+}
+
+type gzipMiddleware struct {
+	http.ResponseWriter
+	gzw *gzip.Writer
+}
+
+func (m *gzipMiddleware) WriteHeader(status int) {
+	m.ResponseWriter.Header().Add(`Vary`, `Accept-Encoding`)
+	m.ResponseWriter.Header().Set(`Content-Encoding`, `gzip`)
+	m.ResponseWriter.Header().Del(`Content-Length`)
+
+	m.ResponseWriter.WriteHeader(status)
+}
+
+func (m *gzipMiddleware) Write(b []byte) (int, error) {
+	return m.gzw.Write(b)
+}
+
+func (m *gzipMiddleware) Close() error {
+	return m.gzw.Close()
+}
+
+func (m *gzipMiddleware) Flush() {
+	m.gzw.Flush()
+
+	if flusher, ok := m.ResponseWriter.(http.Flusher); ok {
+		flusher.Flush()
+	}
+}
+
+func (m *gzipMiddleware) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	if hijacker, ok := m.ResponseWriter.(http.Hijacker); ok {
+		return hijacker.Hijack()
+	}
+	return nil, nil, fmt.Errorf(`http.Hijacker not available`)
+}
+
+type gzipHandler struct {
+	h http.Handler
+}
+
+func (handler gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if acceptEncoding(r, `gzip`) {
+		gzipResponseWriter := &gzipMiddleware{w, gzip.NewWriter(w)}
+		defer gzipResponseWriter.Close()
+
+		handler.h.ServeHTTP(gzipResponseWriter, r)
+	} else {
+		handler.h.ServeHTTP(w, r)
+	}
+}
+
+func acceptEncoding(r *http.Request, encoding string) bool {
+	header := r.Header.Get(`Accept-Encoding`)
+
+	for _, headerEncoding := range strings.Split(header, `,`) {
+		parts := strings.Split(headerEncoding, `;`)
+
+		if (parts[0] == encoding || parts[0] == `*`) && len(parts) == 1 || (len(parts) > 1 && parts[1] != `q=0`) {
+			return true
+		}
+	}
+
+	return false
 }
 
 type owaspMiddleware struct {
@@ -126,7 +196,7 @@ func main() {
 		}
 	}
 
-	http.Handle(`/`, owaspHandler{customFileHandler{directory, notFoundPath}})
+	http.Handle(`/`, gzipHandler{owaspHandler{customFileHandler{directory, notFoundPath}}})
 
 	log.Fatal(http.ListenAndServe(`:`+*port, nil))
 }
