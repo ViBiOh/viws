@@ -29,7 +29,7 @@ COPY dist/ /www/
 
 ## Usage
 
-By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory. It assumes that HTTPS is done somewhere between browser and server (e.g. CloudFlare) so it sets HSTS flag.
+By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory. It assumes that HTTPS is done somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag.
 
 ```
 Usage of ./server:
@@ -49,7 +49,7 @@ Usage of ./server:
 
 ## Single Page Application
 
-This mode is useful when you have a router in your javascript framework (Angular/React). When a request target no found file, it returns the index.
+This mode is useful when you have a router in your javascript framework (e.g. Angular/React). When a request target a not found file, it returns the index instead of 404.
 
 e.g.
 ```
