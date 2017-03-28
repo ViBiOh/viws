@@ -3,6 +3,7 @@
 A superlight HTTP fileserver with customizable behavior.
 
 [![Build Status](https://travis-ci.org/ViBiOh/go-http.svg?branch=master)](https://travis-ci.org/ViBiOh/go-http)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ViBiOh/go-http)](https://goreportcard.com/report/github.com/ViBiOh/go-http)
 
 ## Compilation
 
