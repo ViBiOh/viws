@@ -1,25 +1,2 @@
-# MacOs Files
-.DS_Store
-.Spotlight-V100
-.Trashes
-._*
-
-# Windows Files
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Eclipse Files
-.project
-.metadata
-.classpath
-.settings/
-.loadpath
-
-# IntelliJ Files
-.idea/
-*.iml
-*.iws
-
 # Application specific
 server
