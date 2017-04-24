@@ -53,7 +53,9 @@ func (m *gzipMiddleware) WriteHeader(status int) {
 	m.ResponseWriter.Header().Set(`Content-Encoding`, `gzip`)
 	m.ResponseWriter.Header().Del(`Content-Length`)
 
-	m.ResponseWriter.WriteHeader(status)
+	if !(http.StatusNotFound == status && notFound) {
+		m.ResponseWriter.WriteHeader(status)
+	}
 }
 
 func (m *gzipMiddleware) Write(b []byte) (int, error) {
