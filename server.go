@@ -124,7 +124,7 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 	}
 
 	if status == http.StatusOK || status == http.StatusMovedPermanently {
-		if spa && m.path == `/` {
+		if m.path == `/` {
 			m.Header().Add(`Cache-Control`, `no-cache`)
 		} else {
 			m.Header().Add(`Cache-Control`, `max-age=864000`)
