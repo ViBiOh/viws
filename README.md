@@ -1,9 +1,9 @@
-# go-http
+# viws
 
 A superlight HTTP fileserver with customizable behavior.
 
-[![Build Status](https://travis-ci.org/ViBiOh/go-http.svg?branch=master)](https://travis-ci.org/ViBiOh/go-http)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ViBiOh/go-http)](https://goreportcard.com/report/github.com/ViBiOh/go-http)
+[![Build Status](https://travis-ci.org/ViBiOh/viws.svg?branch=master)](https://travis-ci.org/ViBiOh/viws)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ViBiOh/viws)](https://goreportcard.com/report/github.com/ViBiOh/viws)
 
 ## Compilation
 

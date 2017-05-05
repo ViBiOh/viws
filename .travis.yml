@@ -5,10 +5,10 @@ services:
 go: 1.8
 install: make
 script: |
-  docker build -t ${DOCKER_USER}/http .
+  docker build -t ${DOCKER_USER}/viws .
 after_success: |
   if [ "${TRAVIS_BRANCH}" == "master" ]; then
-    docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} && docker push ${DOCKER_USER}/http
+    docker login -u ${DOCKER_USER} -p ${DOCKER_PASS} && docker push ${DOCKER_USER}/viws
   fi
 notifications:
   email: false
