@@ -170,7 +170,7 @@ func main() {
 	flag.BoolVar(&hsts, `hsts`, true, `Indicate Strict Transport Security`)
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
 	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
-	flag.StringVar(&csp, `csp`, `default-src 'self'`, `Content-Security-Policy"`)
+	flag.StringVar(&csp, `csp`, `default-src 'self'`, `Content-Security-Policy`)
 	flag.Parse()
 
 	if isFileExist(*directory) == nil {
