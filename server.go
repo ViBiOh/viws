@@ -148,7 +148,7 @@ type customFileHandler struct {
 }
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions && r.URl.Path == `/status` {
+	if r.Method == http.MethodOptions && r.URL.Path == `/status` {
 		w.Write([]byte(`OK`))
 	} else if r.Method != http.MethodGet {
 		http.Error(w, `Method Not Allowed`, http.StatusMethodNotAllowed)
