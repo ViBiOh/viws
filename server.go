@@ -18,6 +18,7 @@ import (
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
+var requestStatus = regexp.MustCompile(`^/status$`)
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
 
@@ -148,7 +149,7 @@ type customFileHandler struct {
 }
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions && r.URL.Path == `/status` {
+	if r.Method == http.MethodOptions && requestStatus.Match(r.URL.Path) {
 		w.Write([]byte(`OK`))
 	} else if r.Method != http.MethodGet {
 		http.Error(w, `Method Not Allowed`, http.StatusMethodNotAllowed)
