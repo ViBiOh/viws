@@ -18,7 +18,6 @@ import (
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
-var requestStatus = regexp.MustCompile(`^/status$`)
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
 
@@ -149,10 +148,8 @@ type customFileHandler struct {
 }
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions && requestStatus.Match([]byte(r.URL.Path)) {
-		w.Write([]byte(`OK`))
-	} else if r.Method != http.MethodGet {
-		http.Error(w, `Method Not Allowed`, http.StatusMethodNotAllowed)
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	} else if filePath := isFileExist(*handler.root, r.URL.Path); filePath != nil {
 		http.ServeFile(w, r, *filePath)
 	} else if notFound {
@@ -162,6 +159,14 @@ func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		http.ServeFile(w, r, *handler.root)
 	} else {
 		http.Error(w, `404 page not found: `+r.URL.Path, http.StatusNotFound)
+	}
+}
+
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 }
 
@@ -199,6 +204,7 @@ func main() {
 		}
 	}
 
+	http.HandleFunc(`/health`, healthHandler)
 	http.Handle(`/`, gzipHandler{owaspHandler{customFileHandler{directory, notFoundPath}}})
 
 	log.Fatal(http.ListenAndServe(`:`+*port, nil))
