@@ -22,7 +22,6 @@ var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
 
 var csp string
-var reportUri string
 var notFound bool
 var spa bool
 var hsts bool
@@ -114,11 +113,6 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 	if status < http.StatusBadRequest {
 		m.Header().Add(`Content-Security-Policy`, csp)
 		m.Header().Add(`Referrer-Policy`, `strict-origin-when-cross-origin`)
-		if (reportUri != ``) {
-			m.Header().Add(`Expect-CT`, `max-age=0; report-uri="`+reportUri+`"`)
-		} else {
-			m.Header().Add(`Expect-CT`, `max-age=0`)
-		}
 		m.Header().Add(`X-Frame-Options`, `deny`)
 		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
 		m.Header().Add(`X-XSS-Protection`, `1; mode=block`)
@@ -185,7 +179,6 @@ func main() {
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
 	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
 	flag.StringVar(&csp, `csp`, `default-src 'self'`, `Content-Security-Policy`)
-	flag.StringVar(&reportUri, `report-uri`, ``, `Report URI (e.g. for Expect-CT)`)
 	flag.Parse()
 
 	if isFileExist(*directory) == nil {
