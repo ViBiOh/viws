@@ -5,47 +5,30 @@ A superlight HTTP fileserver with customizable behavior.
 [![Build Status](https://travis-ci.org/ViBiOh/viws.svg?branch=master)](https://travis-ci.org/ViBiOh/viws)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ViBiOh/viws)](https://goreportcard.com/report/github.com/ViBiOh/viws)
 
-## Compilation
-
-You need Go in order to compile the project.
+## Installation
 
 ```
-make
-```
-
-## Running
-
-## Docker
-
-`docker run -d -p 1080:1080 -v /var/www/html/:/www/ vibioh/http`
-
-We recommend using a Dockerfile to ship your files inside it.
-
-e.g.
-```
-FROM vibioh/http
-
-COPY dist/ /www/
+go get -u github.com/ViBiOh/viws
 ```
 
 ## Usage
 
-By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory. It assumes that HTTPS is done somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag.
+By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag.
 
 ```
-Usage of ./server:
+Usage of viws:
   -csp string
-      Content-Security-Policy" (default "default-src 'self'")
+    	Content-Security-Policy (default "default-src 'self'")
   -directory string
-      Directory to serve (default "/www/")
+    	Directory to serve (default "/www/")
   -hsts
-      Indicate Strict Transport Security (default true)
+    	Indicate Strict Transport Security (default true)
   -notFound
-      Graceful 404 page at /404.html
+    	Graceful 404 page at /404.html
   -port string
-      Listening port (default "1080")
+    	Listening port (default "1080")
   -spa
-      Indicate Single Page Application mode
+    	Indicate Single Page Application mode
 ```
 
 ## Single Page Application
@@ -59,3 +42,25 @@ curl myWebsite.com/users/vibioh/
 ```
 
 Be careful, `-notFound` and `-spa` are incompatible flags. If you set both, the `-notFound` has priority over the `-spa`.
+
+
+## Docker
+
+`docker run -d -p 1080:1080 -v /var/www/html/:/www/ vibioh/viws`
+
+We recommend using a Dockerfile to ship your files inside it.
+
+e.g.
+```
+FROM vibioh/viws
+
+COPY dist/ /www/
+```
+
+## Compilation
+
+You need Go in order to compile the project.
+
+```
+make
+```
