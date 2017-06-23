@@ -31,7 +31,7 @@ func isFileExist(parts ...string) *string {
 	info, err := os.Stat(fullPath)
 
 	if err != nil {
-		log.Printf(`Stat error %s: %v`, fullPath, err)
+		log.Print(err)
 		return nil
 	}
 
