@@ -5,4 +5,4 @@ ENTRYPOINT [ "/server" ]
 HEALTHCHECK CMD /health
 
 COPY server /
-COPY health /
+COPY health_check /health
