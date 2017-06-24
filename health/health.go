@@ -25,5 +25,5 @@ func main() {
 		log.Fatalf(`HTTP/%d`, response.StatusCode)
 	}
 
-	log.Print(`Health check succeed`)
+	log.Print(`Health succeed`)
 }
