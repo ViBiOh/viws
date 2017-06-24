@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -12,22 +11,19 @@ func main() {
 
 	request, err := http.NewRequest(`GET`, `http://localhost:1080/health`, nil)
 	if err != nil {
-		log.Print(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	response, err := httpClient.Do(request)
 	if err != nil {
-		log.Print(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		log.Printf(`HTTP/%d`, response.StatusCode)
-		os.Exit(1)
+		log.Fatalf(`HTTP/%d`, response.StatusCode)
 	}
 
-	os.Exit(0)
+	log.Print(`Health check succeed`)
 }
