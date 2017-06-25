@@ -12,4 +12,3 @@ tst:
 
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo server.go
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o health_check health/health.go
