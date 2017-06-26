@@ -3,19 +3,16 @@ package main
 import (
 	"bufio"
 	"compress/gzip"
-	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
-	"os/signal"
 	"path"
 	"regexp"
 	"runtime"
 	"strings"
-	"syscall"
 )
 
 const notFoundFilename = `404.html`
