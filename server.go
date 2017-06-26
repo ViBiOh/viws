@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"compress/gzip"
-	"context"
 	"flag"
 	"fmt"
 	"log"
