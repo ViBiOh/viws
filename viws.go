@@ -23,6 +23,7 @@ const indexFilename = `index.html`
 
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
+var handler = gzipHandler{owaspHandler{customFileHandler{}}}
 
 var directory string
 var csp string
@@ -175,10 +176,10 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viwsHandler(w http.ResponseWriter, r *http.Request) {
-	if (r.URL.Path == `/health`) {
+	if r.URL.Path == `/health` {
 		healthHandler(w, r)
 	} else {
-		gzipHandler{owaspHandler{customFileHandler{}}}.ServeHTTP(w, r)
+		handler.ServeHTTP(w, r)
 	}
 }
 
@@ -233,7 +234,7 @@ func main() {
 	}
 
 	server := &http.Server{
-		Addr:   `:`+*port,
+		Addr:    `:` + *port,
 		Handler: http.HandlerFunc(viwsHandler),
 	}
 
