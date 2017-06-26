@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"compress/gzip"
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -173,12 +174,20 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleGracefulClose() {
+func handleGracefulClose(server *http.Server) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM)
 	go func() {
 		<-signals
-		log.Print(`SIGTERM received`)
+		log.Print(`SIGTERM received: Gracefully closing server`)
+
+		if server != nil {
+			if err := server.Shutdown(context.Background()); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		os.Exit(0)
 	}()
 }
 
@@ -219,7 +228,7 @@ func main() {
 	http.HandleFunc(`/health`, healthHandler)
 	http.Handle(`/`, gzipHandler{owaspHandler{customFileHandler{directory, notFoundPath}}})
 
-	handleGracefulClose()
+	handleGracefulClose(nil)
 
 	log.Fatal(http.ListenAndServe(`:`+*port, nil))
 }
