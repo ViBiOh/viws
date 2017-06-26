@@ -3,16 +3,19 @@ package main
 import (
 	"bufio"
 	"compress/gzip"
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"path"
 	"regexp"
 	"runtime"
 	"strings"
+	"syscall"
 )
 
 const notFoundFilename = `404.html`
@@ -171,6 +174,15 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func handleGracefulClose() {
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, syscall.SIGTERM)
+	go func() {
+		<-signals
+		log.Print(`SIGTERM received`)
+	}()
+}
+
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -207,6 +219,8 @@ func main() {
 
 	http.HandleFunc(`/health`, healthHandler)
 	http.Handle(`/`, gzipHandler{owaspHandler{customFileHandler{directory, notFoundPath}}})
+
+	handleGracefulClose()
 
 	log.Fatal(http.ListenAndServe(`:`+*port, nil))
 }
