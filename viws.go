@@ -24,8 +24,10 @@ const indexFilename = `index.html`
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
 
+var directory string
 var csp string
 var notFound bool
+var notFoundPath *string
 var spa bool
 var hsts bool
 
@@ -147,20 +149,18 @@ func (handler owaspHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type customFileHandler struct {
-	root         *string
-	notFoundPath *string
 }
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
-	} else if filePath := isFileExist(*handler.root, r.URL.Path); filePath != nil {
+	} else if filePath := isFileExist(directory, r.URL.Path); filePath != nil {
 		http.ServeFile(w, r, *filePath)
 	} else if notFound {
 		w.WriteHeader(http.StatusNotFound)
-		http.ServeFile(w, r, *handler.notFoundPath)
+		http.ServeFile(w, r, *notFoundPath)
 	} else if spa {
-		http.ServeFile(w, r, *handler.root)
+		http.ServeFile(w, r, directory)
 	} else {
 		http.Error(w, `404 page not found: `+r.URL.Path, http.StatusNotFound)
 	}
@@ -174,14 +174,23 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func viwsHandler(w http.ResponseWriter, r *http.Request) {
+	if (r.URL.Path == `/health`) {
+		healthHandler(w, r)
+	} else {
+		gzipHandler{owaspHandler{customFileHandler{}}}.ServeHTTP(w, r)
+	}
+}
+
 func handleGracefulClose(server *http.Server) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM)
 	go func() {
 		<-signals
-		log.Print(`SIGTERM received: Gracefully closing server`)
+		log.Print(`SIGTERM received`)
 
 		if server != nil {
+			log.Print(`Shutting down http server`)
 			if err := server.Shutdown(context.Background()); err != nil {
 				log.Fatal(err)
 			}
@@ -195,40 +204,39 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	port := flag.String(`port`, `1080`, `Listening port`)
-	directory := flag.String(`directory`, `/www/`, `Directory to serve`)
+	flag.StringVar(&directory, `directory`, `/www/`, `Directory to serve`)
 	flag.BoolVar(&hsts, `hsts`, true, `Indicate Strict Transport Security`)
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
 	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
 	flag.StringVar(&csp, `csp`, `default-src 'self'`, `Content-Security-Policy`)
 	flag.Parse()
 
-	if isFileExist(*directory) == nil {
-		log.Fatal(`Directory ` + *directory + ` is unreachable.`)
+	if isFileExist(directory) == nil {
+		log.Fatal(`Directory ` + directory + ` is unreachable.`)
 	}
 
 	log.Println(`Starting server on port`, *port)
-	log.Println(`Serving file from`, *directory)
+	log.Println(`Serving file from`, directory)
 	log.Println(`Content-Security-Policy:`, csp)
 
 	if spa {
 		log.Println(`Working in SPA mode`)
 	}
 
-	var notFoundPath *string
-
 	if notFound {
-		if notFoundPath = isFileExist(*directory, notFoundFilename); notFoundPath == nil {
-			log.Println(*directory + notFoundFilename + ` is unreachable. Flag ignored.`)
+		if notFoundPath = isFileExist(directory, notFoundFilename); notFoundPath == nil {
+			log.Println(directory + notFoundFilename + ` is unreachable. Flag ignored.`)
 			notFound = false
 		} else {
 			log.Println(`404 will be`, *notFoundPath)
 		}
 	}
 
-	http.HandleFunc(`/health`, healthHandler)
-	http.Handle(`/`, gzipHandler{owaspHandler{customFileHandler{directory, notFoundPath}}})
+	server := &http.Server{
+		Addr:   `:`+*port,
+		Handler: http.HandlerFunc(viwsHandler),
+	}
 
-	handleGracefulClose(nil)
-
-	log.Fatal(http.ListenAndServe(`:`+*port, nil))
+	handleGracefulClose(server)
+	log.Fatal(server.ListenAndServe())
 }
