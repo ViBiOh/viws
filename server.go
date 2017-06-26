@@ -210,16 +210,6 @@ func main() {
 
 	http.HandleFunc(`/health`, healthHandler)
 	http.Handle(`/`, gzipHandler{owaspHandler{customFileHandler{directory, notFoundPath}}})
-	
-	signals := make(chan os.Signal, 1)		
-	signal.Notify(signals, syscall.SIGTERM)		
-
-	go func() {
-		<-signals
-		if err := http.Shutdown(context.Background()); err != nil {
-			log.Fatal(err)
-		}
-	}()
 
 	log.Fatal(http.ListenAndServe(`:`+*port, nil))
 }
