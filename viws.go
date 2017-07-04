@@ -23,7 +23,7 @@ const indexFilename = `index.html`
 
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
-var handler = gzipHandler{owaspHandler{customFileHandler{}}}
+var requestsHandler = gzipHandler{owaspHandler{customFileHandler{}}}
 
 var directory string
 var csp string
@@ -179,26 +179,25 @@ func viwsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
 	} else {
-		handler.ServeHTTP(w, r)
+		requestsHandler.ServeHTTP(w, r)
 	}
 }
 
 func handleGracefulClose(server *http.Server) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGTERM)
-	go func() {
-		<-signals
-		log.Print(`SIGTERM received`)
 
-		if server != nil {
-			log.Print(`Shutting down http server`)
-			if err := server.Shutdown(context.Background()); err != nil {
-				log.Fatal(err)
-			}
+	<-signals
+	log.Print(`SIGTERM received`)
+
+	if server != nil {
+		log.Print(`Shutting down http server`)
+		if err := server.Shutdown(context.Background()); err != nil {
+			log.Fatal(err)
 		}
+	}
 
-		os.Exit(0)
-	}()
+	os.Exit(0)
 }
 
 func main() {
@@ -238,6 +237,6 @@ func main() {
 		Handler: http.HandlerFunc(viwsHandler),
 	}
 
-	handleGracefulClose(server)
+	go handleGracefulClose(server)
 	log.Fatal(server.ListenAndServe())
 }
