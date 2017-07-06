@@ -23,7 +23,6 @@ const indexFilename = `index.html`
 
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
-var rootDomainMatcher = regexp.MustCompile(`^([^\.]+\.[^\.]+)$`)
 var requestsHandler = gzipHandler{owaspHandler{customFileHandler{}}}
 
 var directory string
@@ -31,7 +30,6 @@ var csp string
 var notFound bool
 var notFoundPath *string
 var spa bool
-var redirect bool
 var hsts bool
 
 func isFileExist(parts ...string) *string {
@@ -178,13 +176,8 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viwsHandler(w http.ResponseWriter, r *http.Request) {
-	log.Print(`Host: ` + r.Host)
-	log.Print(`URI: ` + r.RequestURI)
-	log.Print(`RemoteAddr: ` + r.RemoteAddr)
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
-	} else if (redirect && rootDomainMatcher.MatchString(r.URL.Host)) {
-		http.Redirect(w, r, `www.` + rootDomainMatcher.FindStringSubmatch(r.URL.Host)[1], http.StatusMovedPermanently)
 	} else {
 		requestsHandler.ServeHTTP(w, r)
 	}
@@ -216,32 +209,27 @@ func main() {
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
 	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
 	flag.StringVar(&csp, `csp`, `default-src 'self'`, `Content-Security-Policy`)
-	flag.BoolVar(&redirect, `redirect`, false, `Redirect root host request to 'www'`)
 	flag.Parse()
 
 	if isFileExist(directory) == nil {
-		log.Fatal(`Directory ` + directory + ` is unreachable.`)
+		log.Fatalf(`Directory %s is unreachable`, directory)
 	}
 
-	log.Println(`Starting server on port`, *port)
-	log.Println(`Serving file from`, directory)
-	log.Println(`Content-Security-Policy:`, csp)
+	log.Printf(`Starting server on port %s`, *port)
+	log.Printf(`Serving file from %s`, directory)
+	log.Printf(`Content-Security-Policy: %s`, csp)
 
 	if spa {
-		log.Println(`Working in SPA mode`)
+		log.Print(`Working in SPA mode`)
 	}
 
 	if notFound {
 		if notFoundPath = isFileExist(directory, notFoundFilename); notFoundPath == nil {
-			log.Println(directory + notFoundFilename + ` is unreachable. Flag ignored.`)
+			log.Printf(`%s%s is unreachable. Not found flag ignored.`, directory, notFoundFilename)
 			notFound = false
 		} else {
-			log.Println(`404 will be`, *notFoundPath)
+			log.Printf(`404 will be %s`, *notFoundPath)
 		}
-	}
-	
-	if redirect {
-		log.Print(`Redirecting root domain request to 'www'`)
 	}
 
 	server := &http.Server{
