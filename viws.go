@@ -20,7 +20,7 @@ import (
 
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
-const redirectPrefix = `www.`
+const redirectPrefix = `//www.`
 const hostHeader = `X-Forwarded-Host`
 
 var pngFile = regexp.MustCompile(`.png$`)
