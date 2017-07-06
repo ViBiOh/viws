@@ -1,7 +1,10 @@
-default: deps lint tst build
+default: deps fmt lint tst build
 
 deps:
 	go get -u github.com/golang/lint/golint
+
+fmt:
+	gofmt -s -w viws.go
 
 lint:
 	golint ./...

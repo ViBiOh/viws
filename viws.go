@@ -176,6 +176,9 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viwsHandler(w http.ResponseWriter, r *http.Request) {
+	for key, value := range r.Header {
+		log.Printf(`%s = %s`, key, value)
+	}
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
 	} else {
