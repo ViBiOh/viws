@@ -20,7 +20,7 @@ import (
 
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
-const redirectPrefix = `//www.`
+const redirectPrefix = `://www.`
 const hostHeader = `X-Forwarded-Host`
 const protocolHeader = `X-Forwarded-Proto`
 
@@ -181,9 +181,6 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viwsHandler(w http.ResponseWriter, r *http.Request) {
-	for key, value := range r.Header {
-		log.Printf(`%s = %s`, key, value)
-	}
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
 	} else if redirect && rootDomainMatcher.MatchString(r.Header[hostHeader][0]) {
