@@ -180,7 +180,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 func viwsHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print(`Host: ` + r.Host)
 	log.Print(`URI: ` + r.RequestURI)
-	log.Print(`RemoteAddr: ` + RemoteAddr)
+	log.Print(`RemoteAddr: ` + r.RemoteAddr)
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
 	} else if (redirect && rootDomainMatcher.MatchString(r.URL.Host)) {
