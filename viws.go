@@ -22,7 +22,7 @@ const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 const redirectPrefix = `//www.`
 const hostHeader = `X-Forwarded-Host`
-const protocolHeader = `X-Forwarded-Protocol`
+const protocolHeader = `X-Forwarded-Proto`
 
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
