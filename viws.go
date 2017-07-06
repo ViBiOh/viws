@@ -22,6 +22,7 @@ const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 const redirectPrefix = `//www.`
 const hostHeader = `X-Forwarded-Host`
+const protocolHeader = `X-Forwarded-Protocol`
 
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
@@ -183,7 +184,7 @@ func viwsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
 	} else if redirect && rootDomainMatcher.MatchString(r.Header[hostHeader][0]) {
-		http.Redirect(w, r, redirectPrefix+rootDomainMatcher.FindStringSubmatch(r.Header[hostHeader][0])[0], http.StatusPermanentRedirect)
+		http.Redirect(w, r, r.Header[protocolHeader][0]+redirectPrefix+rootDomainMatcher.FindStringSubmatch(r.Header[hostHeader][0])[0], http.StatusPermanentRedirect)
 	} else {
 		requestsHandler.ServeHTTP(w, r)
 	}
