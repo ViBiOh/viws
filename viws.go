@@ -178,6 +178,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viwsHandler(w http.ResponseWriter, r *http.Request) {
+	log.Print(r.URL.Host)
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
 	} else if (redirect && rootDomainMatcher.MatchString(r.URL.Host)) {
@@ -235,6 +236,10 @@ func main() {
 		} else {
 			log.Println(`404 will be`, *notFoundPath)
 		}
+	}
+	
+	if redirect {
+		log.Print(`Redirecting root domain request to 'www'`)
 	}
 
 	server := &http.Server{
