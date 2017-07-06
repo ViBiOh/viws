@@ -20,9 +20,12 @@ import (
 
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
+const redirectPrefix = `www.`
+const hostHeader = `X-Forwarded-Host`
 
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
+var rootDomainMatcher = regexp.MustCompile(`^[^\.]+\.[^\.]+$`)
 var requestsHandler = gzipHandler{owaspHandler{customFileHandler{}}}
 
 var directory string
@@ -30,6 +33,7 @@ var csp string
 var notFound bool
 var notFoundPath *string
 var spa bool
+var redirect bool
 var hsts bool
 
 func isFileExist(parts ...string) *string {
@@ -176,11 +180,10 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viwsHandler(w http.ResponseWriter, r *http.Request) {
-	for key, value := range r.Header {
-		log.Printf(`%s = %s`, key, value)
-	}
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
+	} else if redirect && rootDomainMatcher.MatchString(r.Header[hostHeader][0]) {
+		http.Redirect(w, r, redirectPrefix+rootDomainMatcher.FindStringSubmatch(r.Header[hostHeader][0])[0], http.StatusPermanentRedirect)
 	} else {
 		requestsHandler.ServeHTTP(w, r)
 	}
@@ -212,6 +215,7 @@ func main() {
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
 	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
 	flag.StringVar(&csp, `csp`, `default-src 'self'`, `Content-Security-Policy`)
+	flag.BoolVar(&redirect, `redirect`, false, `Redirect root request (based on X-Forwarded-Host Header) to 'www'`)
 	flag.Parse()
 
 	if isFileExist(directory) == nil {
