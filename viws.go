@@ -193,11 +193,9 @@ func handleGracefulClose(server *http.Server) {
 	if server != nil {
 		log.Print(`Shutting down http server`)
 		if err := server.Shutdown(context.Background()); err != nil {
-			log.Fatal(err)
+			log.Print(err)
 		}
 	}
-
-	os.Exit(0)
 }
 
 func main() {
