@@ -235,6 +235,6 @@ func main() {
 		Handler: http.HandlerFunc(viwsHandler),
 	}
 
-	go handleGracefulClose(server)
-	log.Fatal(server.ListenAndServe())
+	go server.ListenAndServe()
+	handleGracefulClose(server)
 }
