@@ -1,8 +1,8 @@
-FROM vibioh/alcotest
+FROM scratch
 
 HEALTHCHECK --retries=10 CMD http://localhost:1080/health
 
 EXPOSE 1080
-ENTRYPOINT [ "/viws" ]
+ENTRYPOINT [ "/bin/sh" ]
 
-COPY viws /
+COPY viws /bin/sh

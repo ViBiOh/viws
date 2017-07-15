@@ -16,6 +16,8 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+
+	"github.com/ViBiOh/alcotest/alcotest"
 )
 
 const notFoundFilename = `404.html`
@@ -199,8 +201,7 @@ func handleGracefulClose(server *http.Server) {
 }
 
 func main() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
+	url := flag.String(`c`, ``, `URL to healthcheck (check and exit)`)
 	port := flag.String(`port`, `1080`, `Listening port`)
 	flag.StringVar(&directory, `directory`, `/www/`, `Directory to serve`)
 	flag.BoolVar(&hsts, `hsts`, true, `Indicate Strict Transport Security`)
@@ -208,6 +209,13 @@ func main() {
 	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
 	flag.StringVar(&csp, `csp`, `default-src 'self'`, `Content-Security-Policy`)
 	flag.Parse()
+
+	if *url != `` {
+		alcotest.Do(url)
+		return
+	}
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if isFileExist(directory) == nil {
 		log.Fatalf(`Directory %s is unreachable`, directory)
