@@ -6,8 +6,8 @@ deps:
 	go get -u github.com/ViBiOh/alcotest/alcotest
 
 fmt:
-	goimports -w viws.go
-	gofmt -s -w viws.go
+	goimports -w **/*.go *.go
+	gofmt -s -w **/*.go *.go
 
 lint:
 	golint ./...
