@@ -159,10 +159,13 @@ type customFileHandler struct {
 }
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
 	if r.URL.Path == `/` {
 		if pusher, ok := w.(http.Pusher); ok {
-			log.Print(`Server push available!`)
-
 			if len(envKeys) > 0 {
 				if err := pusher.Push(`/env`, nil); err != nil {
 					log.Printf(`Failed to push /env: %v`, err)
@@ -179,9 +182,7 @@ func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		}
 	}
 
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	} else if filePath := isFileExist(directory, r.URL.Path); filePath != nil {
+	if filePath := isFileExist(directory, r.URL.Path); filePath != nil {
 		http.ServeFile(w, r, *filePath)
 	} else if notFound {
 		w.WriteHeader(http.StatusNotFound)
