@@ -27,10 +27,14 @@ Usage of viws:
       Environments key variables to expose, comma separated
   -hsts
       Indicate Strict Transport Security (default true)
+  -https
+      Serve TLS content from "cert.pem" and "key.pem"
   -notFound
       Graceful 404 page at /404.html
   -port string
       Listening port (default "1080")
+  -push string
+      Paths for HTTP/2 Server Push, comma separated
   -spa
       Indicate Single Page Application mode
 ```

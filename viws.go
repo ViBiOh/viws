@@ -164,19 +164,11 @@ func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if r.URL.Path == `/` {
+	if r.URL.Path == `/` && len(pushPaths) > 0 {
 		if pusher, ok := w.(http.Pusher); ok {
-			if len(envKeys) > 0 {
-				if err := pusher.Push(`/env`, nil); err != nil {
-					log.Printf(`Failed to push /env: %v`, err)
-				}
-			}
-
-			if len(pushPaths) > 0 {
-				for _, path := range pushPaths {
-					if err := pusher.Push(path, nil); err != nil {
-						log.Printf(`Failed to push %s: %v`, path, err)
-					}
+			for _, path := range pushPaths {
+				if err := pusher.Push(path, nil); err != nil {
+					log.Printf(`Failed to push %s: %v`, path, err)
 				}
 			}
 		}
@@ -254,7 +246,8 @@ func main() {
 	url := flag.String(`c`, ``, `URL to healthcheck (check and exit)`)
 	port := flag.String(`port`, `1080`, `Listening port`)
 	keys := flag.String(`env`, ``, `Environments key variables to expose, comma separated`)
-	push := flag.String(`push`, ``, `Paths to server push, comma separated`)
+	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
+	https := flag.Bool(`https`, false, `Serve TLS content from "cert.pem" and "key.pem"`)
 	flag.StringVar(&directory, `directory`, `/www/`, `Directory to serve`)
 	flag.BoolVar(&hsts, `hsts`, true, `Indicate Strict Transport Security`)
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
@@ -287,6 +280,10 @@ func main() {
 
 	if *push != `` {
 		pushPaths = strings.Split(*push, `,`)
+
+		if !*https {
+			log.Print(`HTTP/2 Server push works only when TLS in enabled`)
+		}
 	}
 
 	if notFound {
@@ -303,6 +300,10 @@ func main() {
 		Handler: http.HandlerFunc(viwsHandler),
 	}
 
-	go server.ListenAndServe()
+	if *https {
+		go server.ListenAndServeTLS(`cert.pem`, `key.pem`)
+	} else {
+		go server.ListenAndServe()
+	}
 	handleGracefulClose(server)
 }
