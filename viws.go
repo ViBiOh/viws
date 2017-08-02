@@ -161,6 +161,8 @@ type customFileHandler struct {
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == `/` {
 		if pusher, ok := w.(http.Pusher); ok {
+			log.Print(`Server push available!`)
+
 			if len(envKeys) > 0 {
 				if err := pusher.Push(`/env`, nil); err != nil {
 					log.Printf(`Failed to push /env: %v`, err)
