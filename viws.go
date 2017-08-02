@@ -173,7 +173,6 @@ func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 
 	if r.URL.Path == `/` && len(envKeys) > 0 {
 		if pusher, ok := w.(http.Pusher); ok {
-			log.Printf(`Trying to push some content...`)
 			if err := pusher.Push("/env", nil); err != nil {
 				log.Printf("Failed to push /env: %v", err)
 			}
