@@ -170,6 +170,14 @@ func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	} else {
 		http.Error(w, `404 page not found: `+r.URL.Path, http.StatusNotFound)
 	}
+
+	if r.URL.Path == `/` && len(envKeys) > 0 {
+		if pusher, ok := w.(http.Pusher); ok {
+			if err := pusher.Push("/env", nil); err != nil {
+				log.Printf("Failed to push /env: %v", err)
+			}
+		}
+	}
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
