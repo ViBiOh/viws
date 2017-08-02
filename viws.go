@@ -36,6 +36,7 @@ var notFoundPath *string
 var spa bool
 var hsts bool
 var envKeys []string
+var pushPaths []string
 
 func isFileExist(parts ...string) *string {
 	fullPath := path.Join(parts...)
@@ -158,10 +159,20 @@ type customFileHandler struct {
 }
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == `/` && len(envKeys) > 0 {
+	if r.URL.Path == `/` {
 		if pusher, ok := w.(http.Pusher); ok {
-			if err := pusher.Push("/env", nil); err != nil {
-				log.Printf("Failed to push /env: %v", err)
+			if len(envKeys) > 0 {
+				if err := pusher.Push(`/env`, nil); err != nil {
+					log.Printf(`Failed to push /env: %v`, err)
+				}
+			}
+
+			if len(pushPaths) > 0 {
+				for _, path := range pushPaths {
+					if err := pusher.Push(path, nil); err != nil {
+						log.Printf(`Failed to push %s: %v`, path, err)
+					}
+				}
 			}
 		}
 	}
@@ -240,6 +251,7 @@ func main() {
 	url := flag.String(`c`, ``, `URL to healthcheck (check and exit)`)
 	port := flag.String(`port`, `1080`, `Listening port`)
 	keys := flag.String(`env`, ``, `Environments key variables to expose, comma separated`)
+	push := flag.String(`push`, ``, `Paths to server push, comma separated`)
 	flag.StringVar(&directory, `directory`, `/www/`, `Directory to serve`)
 	flag.BoolVar(&hsts, `hsts`, true, `Indicate Strict Transport Security`)
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
@@ -268,6 +280,10 @@ func main() {
 
 	if *keys != `` {
 		envKeys = strings.Split(*keys, `,`)
+	}
+
+	if *push != `` {
+		pushPaths = strings.Split(*push, `,`)
 	}
 
 	if notFound {
