@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"compress/gzip"
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -34,6 +35,7 @@ var notFound bool
 var notFoundPath *string
 var spa bool
 var hsts bool
+var envKeys []string
 
 func isFileExist(parts ...string) *string {
 	fullPath := path.Join(parts...)
@@ -178,9 +180,30 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func envHandler(w http.ResponseWriter, r *http.Request) {
+	env := make(map[string]string)
+
+	for _, key := range envKeys {
+		if value := os.Getenv(key); value != `` {
+			env[key] = value
+		}
+	}
+
+	if objJSON, err := json.Marshal(env); err == nil {
+		w.Header().Set(`Content-Type`, `application/json`)
+		w.Header().Set(`Cache-Control`, `no-cache`)
+		w.Header().Set(`Access-Control-Allow-Origin`, `*`)
+		w.Write(objJSON)
+	} else {
+		http.Error(w, `Error while marshalling JSON response`, http.StatusInternalServerError)
+	}
+}
+
 func viwsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
+	} else if r.URL.Path == `/env` {
+		envHandler(w, r)
 	} else {
 		requestsHandler.ServeHTTP(w, r)
 	}
@@ -208,6 +231,7 @@ func handleGracefulClose(server *http.Server) {
 func main() {
 	url := flag.String(`c`, ``, `URL to healthcheck (check and exit)`)
 	port := flag.String(`port`, `1080`, `Listening port`)
+	keys := flag.String(`env`, ``, `Environments key variables to expose, comma separated`)
 	flag.StringVar(&directory, `directory`, `/www/`, `Directory to serve`)
 	flag.BoolVar(&hsts, `hsts`, true, `Indicate Strict Transport Security`)
 	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
@@ -232,6 +256,10 @@ func main() {
 
 	if spa {
 		log.Print(`Working in SPA mode`)
+	}
+
+	if *keys != `` {
+		envKeys = strings.Split(*keys, `,`)
 	}
 
 	if notFound {

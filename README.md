@@ -17,18 +17,20 @@ By default, server is listening on the `1080` port and serve content for GET req
 
 ```
 Usage of viws:
+  -c string
+      URL to healthcheck (check and exit)
   -csp string
       Content-Security-Policy (default "default-src 'self'")
   -directory string
       Directory to serve (default "/www/")
+  -env string
+      Environments key variables to expose, comma separated
   -hsts
       Indicate Strict Transport Security (default true)
   -notFound
       Graceful 404 page at /404.html
   -port string
       Listening port (default "1080")
-  -redirect
-      Redirect root request (based on X-Forwarded-Host Header) to 'www'
   -spa
       Indicate Single Page Application mode
 ```
