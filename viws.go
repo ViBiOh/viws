@@ -252,9 +252,9 @@ func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
 	keys := flag.String(`env`, ``, `Environments key variables to expose, comma separated`)
 	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
-	https := flag.Bool(`https`, false, `Serve TLS content`)
-	cert := flag.String(`cert`, `cert.pem`, `Certificate filename for HTTPS`)
-	key := flag.String(`key`, `key.pem`, `Key filename for HTTPS`)
+	tls := flag.Bool(`tls`, false, `Serve TLS content`)
+	cert := flag.String(`cert`, `cert.pem`, `Certificate filename for TLS`)
+	key := flag.String(`key`, `key.pem`, `Key filename for TLS`)
 	flag.Parse()
 
 	if *url != `` {
@@ -283,7 +283,7 @@ func main() {
 	if *push != `` {
 		pushPaths = strings.Split(*push, `,`)
 
-		if !*https {
+		if !*tls {
 			log.Print(`HTTP/2 Server push works only when TLS in enabled`)
 		}
 	}
@@ -302,7 +302,7 @@ func main() {
 		Handler: http.HandlerFunc(viwsHandler),
 	}
 
-	if *https {
+	if *tls {
 		go server.ListenAndServeTLS(*cert, *key)
 	} else {
 		go server.ListenAndServe()
