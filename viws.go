@@ -27,7 +27,7 @@ const indexFilename = `index.html`
 
 var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
-var requestsHandler = gzipHandler{owaspHandler{customFileHandler{}}}
+var requestsHandler = serverPushHandler{gzipHandler{owaspHandler{customFileHandler{}}}}
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
@@ -59,6 +59,29 @@ func isFileExist(parts ...string) *string {
 	}
 
 	return &fullPath
+}
+
+type serverPushHandler struct {
+	h http.Handler
+}
+
+func (handler serverPushHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	if r.URL.Path == `/` && len(pushPaths) > 0 {
+		if pusher, ok := w.(http.Pusher); ok {
+			for _, path := range pushPaths {
+				if err := pusher.Push(path, nil); err != nil {
+					log.Printf(`Failed to push %s: %v`, path, err)
+				}
+			}
+		}
+	}
+
+	handler.h.ServeHTTP(w, r)
 }
 
 type gzipMiddleware struct {
@@ -164,21 +187,6 @@ type customFileHandler struct {
 }
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
-	if r.URL.Path == `/` && len(pushPaths) > 0 {
-		if pusher, ok := w.(http.Pusher); ok {
-			for _, path := range pushPaths {
-				if err := pusher.Push(path, nil); err != nil {
-					log.Printf(`Failed to push %s: %v`, path, err)
-				}
-			}
-		}
-	}
-
 	if filePath := isFileExist(*directory, r.URL.Path); filePath != nil {
 		http.ServeFile(w, r, *filePath)
 	} else if *notFound {
