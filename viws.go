@@ -29,14 +29,19 @@ var pngFile = regexp.MustCompile(`.png$`)
 var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
 var requestsHandler = gzipHandler{owaspHandler{customFileHandler{}}}
 
-var directory string
-var csp string
-var notFound bool
-var notFoundPath *string
-var spa bool
-var hsts bool
-var envKeys []string
-var pushPaths []string
+var (
+	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
+	csp       = flag.String(`csp`, `default-src 'self'`, `Content-Security-Policy`)
+	notFound  = flag.Bool(`notFound`, false, `Graceful 404 page at /404.html`)
+	spa       = flag.Bool(`spa`, false, `Indicate Single Page Application mode`)
+	hsts      = flag.Bool(`hsts`, true, `Indicate Strict Transport Security`)
+)
+
+var (
+	notFoundPath *string
+	envKeys      []string
+	pushPaths    []string
+)
 
 func isFileExist(parts ...string) *string {
 	fullPath := path.Join(parts...)
@@ -66,7 +71,7 @@ func (m *gzipMiddleware) WriteHeader(status int) {
 	m.ResponseWriter.Header().Set(`Content-Encoding`, `gzip`)
 	m.ResponseWriter.Header().Del(`Content-Length`)
 
-	if !(http.StatusNotFound == status && notFound) {
+	if !(http.StatusNotFound == status && *notFound) {
 		m.ResponseWriter.WriteHeader(status)
 	}
 }
@@ -124,7 +129,7 @@ type owaspMiddleware struct {
 
 func (m *owaspMiddleware) WriteHeader(status int) {
 	if status < http.StatusBadRequest {
-		m.Header().Add(`Content-Security-Policy`, csp)
+		m.Header().Add(`Content-Security-Policy`, *csp)
 		m.Header().Add(`Referrer-Policy`, `strict-origin-when-cross-origin`)
 		m.Header().Add(`X-Frame-Options`, `deny`)
 		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
@@ -132,7 +137,7 @@ func (m *owaspMiddleware) WriteHeader(status int) {
 		m.Header().Add(`X-Permitted-Cross-Domain-Policies`, `none`)
 	}
 
-	if hsts {
+	if *hsts {
 		m.Header().Add(`Strict-Transport-Security`, `max-age=5184000`)
 	}
 
@@ -174,13 +179,13 @@ func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		}
 	}
 
-	if filePath := isFileExist(directory, r.URL.Path); filePath != nil {
+	if filePath := isFileExist(*directory, r.URL.Path); filePath != nil {
 		http.ServeFile(w, r, *filePath)
-	} else if notFound {
+	} else if *notFound {
 		w.WriteHeader(http.StatusNotFound)
 		http.ServeFile(w, r, *notFoundPath)
-	} else if spa {
-		http.ServeFile(w, r, directory)
+	} else if *spa {
+		http.ServeFile(w, r, *directory)
 	} else {
 		http.Error(w, `404 page not found: `+r.URL.Path, http.StatusNotFound)
 	}
@@ -247,12 +252,9 @@ func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
 	keys := flag.String(`env`, ``, `Environments key variables to expose, comma separated`)
 	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
-	https := flag.Bool(`https`, false, `Serve TLS content from "cert.pem" and "key.pem"`)
-	flag.StringVar(&directory, `directory`, `/www/`, `Directory to serve`)
-	flag.BoolVar(&hsts, `hsts`, true, `Indicate Strict Transport Security`)
-	flag.BoolVar(&spa, `spa`, false, `Indicate Single Page Application mode`)
-	flag.BoolVar(&notFound, `notFound`, false, `Graceful 404 page at /404.html`)
-	flag.StringVar(&csp, `csp`, `default-src 'self'`, `Content-Security-Policy`)
+	https := flag.Bool(`https`, false, `Serve TLS content`)
+	cert := flag.String(`cert`, `cert.pem`, `Certificate filename for HTTPS`)
+	key := flag.String(`key`, `key.pem`, `Key filename for HTTPS`)
 	flag.Parse()
 
 	if *url != `` {
@@ -262,15 +264,15 @@ func main() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	if isFileExist(directory) == nil {
-		log.Fatalf(`Directory %s is unreachable`, directory)
+	if isFileExist(*directory) == nil {
+		log.Fatalf(`Directory %s is unreachable`, *directory)
 	}
 
 	log.Printf(`Starting server on port %s`, *port)
-	log.Printf(`Serving file from %s`, directory)
-	log.Printf(`Content-Security-Policy: %s`, csp)
+	log.Printf(`Serving file from %s`, *directory)
+	log.Printf(`Content-Security-Policy: %s`, *csp)
 
-	if spa {
+	if *spa {
 		log.Print(`Working in SPA mode`)
 	}
 
@@ -286,10 +288,10 @@ func main() {
 		}
 	}
 
-	if notFound {
-		if notFoundPath = isFileExist(directory, notFoundFilename); notFoundPath == nil {
-			log.Printf(`%s%s is unreachable. Not found flag ignored.`, directory, notFoundFilename)
-			notFound = false
+	if *notFound {
+		if notFoundPath = isFileExist(*directory, notFoundFilename); notFoundPath == nil {
+			log.Printf(`%s%s is unreachable. Not found flag ignored.`, *directory, notFoundFilename)
+			*notFound = false
 		} else {
 			log.Printf(`404 will be %s`, *notFoundPath)
 		}
@@ -301,7 +303,7 @@ func main() {
 	}
 
 	if *https {
-		go server.ListenAndServeTLS(`cert.pem`, `key.pem`)
+		go server.ListenAndServeTLS(*cert, *key)
 	} else {
 		go server.ListenAndServe()
 	}
