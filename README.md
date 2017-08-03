@@ -18,25 +18,29 @@ By default, server is listening on the `1080` port and serve content for GET req
 ```
 Usage of viws:
   -c string
-      URL to healthcheck (check and exit)
+    	URL to healthcheck (check and exit)
+  -cert string
+    	Certificate filename for TLS (default "cert.pem")
   -csp string
-      Content-Security-Policy (default "default-src 'self'")
+    	Content-Security-Policy (default "default-src 'self'")
   -directory string
-      Directory to serve (default "/www/")
+    	Directory to serve (default "/www/")
   -env string
-      Environments key variables to expose, comma separated
+    	Environments key variables to expose, comma separated
   -hsts
-      Indicate Strict Transport Security (default true)
-  -https
-      Serve TLS content from "cert.pem" and "key.pem"
+    	Indicate Strict Transport Security (default true)
+  -key string
+    	Key filename for TLS (default "key.pem")
   -notFound
-      Graceful 404 page at /404.html
+    	Graceful 404 page at /404.html
   -port string
-      Listening port (default "1080")
+    	Listening port (default "1080")
   -push string
-      Paths for HTTP/2 Server Push, comma separated
+    	Paths for HTTP/2 Server Push, comma separated
   -spa
-      Indicate Single Page Application mode
+    	Indicate Single Page Application mode
+  -tls
+    	Serve TLS content
 ```
 
 ## Single Page Application
