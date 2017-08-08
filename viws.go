@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"compress/gzip"
-	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -11,15 +10,13 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"os/signal"
 	"path"
 	"regexp"
 	"runtime"
 	"strings"
-	"syscall"
-	"time"
 
 	"github.com/ViBiOh/alcotest/alcotest"
+	"github.com/ViBiOh/httputils"
 )
 
 const notFoundFilename = `404.html`
@@ -235,25 +232,6 @@ func viwsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func handleGracefulClose(server *http.Server) {
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, syscall.SIGTERM)
-
-	<-signals
-	log.Print(`SIGTERM received`)
-
-	if server != nil {
-		log.Print(`Shutting down http server`)
-
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-
-		if err := server.Shutdown(ctx); err != nil {
-			log.Print(err)
-		}
-	}
-}
-
 func main() {
 	url := flag.String(`c`, ``, `URL to healthcheck (check and exit)`)
 	port := flag.String(`port`, `1080`, `Listening port`)
@@ -314,5 +292,5 @@ func main() {
 	} else {
 		go server.ListenAndServe()
 	}
-	handleGracefulClose(server)
+	httputils.ServerGracefulClose(server, nil)
 }
