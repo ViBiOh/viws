@@ -48,7 +48,6 @@ func isFileExist(parts ...string) *string {
 	info, err := os.Stat(fullPath)
 
 	if err != nil {
-		log.Print(err)
 		return nil
 	}
 
