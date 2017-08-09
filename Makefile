@@ -4,6 +4,8 @@ deps:
 	go get -u golang.org/x/tools/cmd/goimports
 	go get -u github.com/golang/lint/golint
 	go get -u github.com/ViBiOh/httputils
+	go get -u github.com/ViBiOh/httputils/gzip
+	go get -u github.com/ViBiOh/httputils/owasp
 	go get -u github.com/ViBiOh/alcotest/alcotest
 
 fmt:
@@ -15,7 +17,7 @@ lint:
 	go vet ./...
 
 tst:
-	go test ./...
+	script/coverage
 
 build:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo viws.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws viws.go

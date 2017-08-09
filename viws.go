@@ -1,37 +1,30 @@
 package main
 
 import (
-	"bufio"
-	"compress/gzip"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"path"
-	"regexp"
 	"runtime"
 	"strings"
 
 	"github.com/ViBiOh/alcotest/alcotest"
 	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/gzip"
+	"github.com/ViBiOh/httputils/owasp"
 )
 
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
-var pngFile = regexp.MustCompile(`.png$`)
-var acceptGzip = regexp.MustCompile(`^(?:gzip|\*)(?:;q=(?:1.*?|0\.[1-9][0-9]*))?$`)
-var requestsHandler = serverPushHandler{gzipHandler{owaspHandler{customFileHandler{}}}}
+var requestsHandler = serverPushHandler{gzip.Handler{H: owasp.Handler{H: customFileHandler{}}}}
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
-	csp       = flag.String(`csp`, `default-src 'self'`, `Content-Security-Policy`)
 	notFound  = flag.Bool(`notFound`, false, `Graceful 404 page at /404.html`)
 	spa       = flag.Bool(`spa`, false, `Indicate Single Page Application mode`)
-	hsts      = flag.Bool(`hsts`, true, `Indicate Strict Transport Security`)
 )
 
 var (
@@ -78,105 +71,6 @@ func (handler serverPushHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	}
 
 	handler.h.ServeHTTP(w, r)
-}
-
-type gzipMiddleware struct {
-	http.ResponseWriter
-	gzw *gzip.Writer
-}
-
-func (m *gzipMiddleware) WriteHeader(status int) {
-	m.ResponseWriter.Header().Add(`Vary`, `Accept-Encoding`)
-	m.ResponseWriter.Header().Set(`Content-Encoding`, `gzip`)
-	m.ResponseWriter.Header().Del(`Content-Length`)
-
-	if !(http.StatusNotFound == status && *notFound) {
-		m.ResponseWriter.WriteHeader(status)
-	}
-}
-
-func (m *gzipMiddleware) Write(b []byte) (int, error) {
-	return m.gzw.Write(b)
-}
-
-func (m *gzipMiddleware) Flush() {
-	m.gzw.Flush()
-
-	if flusher, ok := m.ResponseWriter.(http.Flusher); ok {
-		flusher.Flush()
-	}
-}
-
-func (m *gzipMiddleware) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	if hijacker, ok := m.ResponseWriter.(http.Hijacker); ok {
-		return hijacker.Hijack()
-	}
-	return nil, nil, fmt.Errorf(`http.Hijacker not available`)
-}
-
-type gzipHandler struct {
-	h http.Handler
-}
-
-func (handler gzipHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if acceptEncodingGzip(r) && !pngFile.MatchString(r.URL.Path) {
-		gzipWriter := gzip.NewWriter(w)
-		defer gzipWriter.Close()
-
-		handler.h.ServeHTTP(&gzipMiddleware{w, gzipWriter}, r)
-	} else {
-		handler.h.ServeHTTP(w, r)
-	}
-}
-
-func acceptEncodingGzip(r *http.Request) bool {
-	header := r.Header.Get(`Accept-Encoding`)
-
-	for _, headerEncoding := range strings.Split(header, `,`) {
-		if acceptGzip.MatchString(headerEncoding) {
-			return true
-		}
-	}
-
-	return false
-}
-
-type owaspMiddleware struct {
-	http.ResponseWriter
-	path string
-}
-
-func (m *owaspMiddleware) WriteHeader(status int) {
-	if status < http.StatusBadRequest {
-		m.Header().Add(`Content-Security-Policy`, *csp)
-		m.Header().Add(`Referrer-Policy`, `strict-origin-when-cross-origin`)
-		m.Header().Add(`X-Frame-Options`, `deny`)
-		m.Header().Add(`X-Content-Type-Options`, `nosniff`)
-		m.Header().Add(`X-XSS-Protection`, `1; mode=block`)
-		m.Header().Add(`X-Permitted-Cross-Domain-Policies`, `none`)
-	}
-
-	if *hsts {
-		m.Header().Add(`Strict-Transport-Security`, `max-age=5184000`)
-	}
-
-	if status == http.StatusOK || status == http.StatusMovedPermanently {
-		if m.path == `/` {
-			m.Header().Add(`Cache-Control`, `no-cache`)
-		} else {
-			m.Header().Add(`Cache-Control`, `max-age=864000`)
-		}
-	}
-
-	m.ResponseWriter.WriteHeader(status)
-}
-
-type owaspHandler struct {
-	h http.Handler
-}
-
-func (handler owaspHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	handler.h.ServeHTTP(&owaspMiddleware{w, r.URL.Path}, r)
 }
 
 type customFileHandler struct {
@@ -255,7 +149,6 @@ func main() {
 
 	log.Printf(`Starting server on port %s`, *port)
 	log.Printf(`Serving file from %s`, *directory)
-	log.Printf(`Content-Security-Policy: %s`, *csp)
 
 	if *spa {
 		log.Print(`Working in SPA mode`)
