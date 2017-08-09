@@ -21,7 +21,7 @@ const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
 var requestsHandler = serverPushHandler{gzip.Handler{H: owasp.Handler{H: customFileHandler{}}}}
-var envHandler = gzip.Handler{H: owasp.Handler{H: cors.Handler{H: env.Handler{}}}}
+var envHandler = owasp.Handler{H: cors.Handler{H: env.Handler{}}}
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
