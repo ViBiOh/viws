@@ -20,8 +20,8 @@ import (
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
-var requestsHandler = serverPushHandler{gzip.Handler{H: owasp.Handler{H: customFileHandler{}}}}
-var envHandler = owasp.Handler{H: cors.Handler{H: env.Handler{}}}
+var requestsHandler = serverPushHandler{gzip.Handler{Handler: owasp.Handler{Handler: customFileHandler{}}}}
+var envHandler = owasp.Handler{Handler: cors.Handler{Handler: env.Handler{}}}
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
@@ -52,7 +52,7 @@ func isFileExist(parts ...string) *string {
 }
 
 type serverPushHandler struct {
-	h http.Handler
+	http.Handler
 }
 
 func (handler serverPushHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +71,7 @@ func (handler serverPushHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		}
 	}
 
-	handler.h.ServeHTTP(w, r)
+	handler.Handler.ServeHTTP(w, r)
 }
 
 type customFileHandler struct {
