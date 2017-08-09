@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"log"
 	"net/http"
@@ -12,14 +11,17 @@ import (
 
 	"github.com/ViBiOh/alcotest/alcotest"
 	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/cors"
 	"github.com/ViBiOh/httputils/gzip"
 	"github.com/ViBiOh/httputils/owasp"
+	"github.com/ViBiOh/viws/env"
 )
 
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
 var requestsHandler = serverPushHandler{gzip.Handler{H: owasp.Handler{H: customFileHandler{}}}}
+var envHandler = gzip.Handler{H: owasp.Handler{H: cors.Handler{H: env.Handler{}}}}
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
@@ -29,7 +31,6 @@ var (
 
 var (
 	notFoundPath *string
-	envKeys      []string
 	pushPaths    []string
 )
 
@@ -97,30 +98,11 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func envHandler(w http.ResponseWriter, r *http.Request) {
-	env := make(map[string]string)
-
-	for _, key := range envKeys {
-		if value := os.Getenv(key); value != `` {
-			env[key] = value
-		}
-	}
-
-	if objJSON, err := json.Marshal(env); err == nil {
-		w.Header().Set(`Content-Type`, `application/json`)
-		w.Header().Set(`Cache-Control`, `no-cache`)
-		w.Header().Set(`Access-Control-Allow-Origin`, `*`)
-		w.Write(objJSON)
-	} else {
-		http.Error(w, `Error while marshalling JSON response`, http.StatusInternalServerError)
-	}
-}
-
 func viwsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == `/health` {
 		healthHandler(w, r)
 	} else if r.URL.Path == `/env` {
-		envHandler(w, r)
+		envHandler.ServeHTTP(w, r)
 	} else {
 		requestsHandler.ServeHTTP(w, r)
 	}
@@ -129,7 +111,6 @@ func viwsHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	url := flag.String(`c`, ``, `URL to healthcheck (check and exit)`)
 	port := flag.String(`port`, `1080`, `Listening port`)
-	keys := flag.String(`env`, ``, `Environments key variables to expose, comma separated`)
 	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
 	cert := flag.String(`cert`, `cert.pem`, `Certificate filename for TLS`)
@@ -143,6 +124,10 @@ func main() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	if err := env.Init(); err != nil {
+		log.Fatalf(`Error while initializing env: %v`, err)
+	}
+
 	if isFileExist(*directory) == nil {
 		log.Fatalf(`Directory %s is unreachable`, *directory)
 	}
@@ -152,10 +137,6 @@ func main() {
 
 	if *spa {
 		log.Print(`Working in SPA mode`)
-	}
-
-	if *keys != `` {
-		envKeys = strings.Split(*keys, `,`)
 	}
 
 	if *push != `` {

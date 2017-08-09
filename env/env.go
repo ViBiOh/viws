@@ -1,0 +1,39 @@
+package env
+
+import (
+	"flag"
+	"github.com/ViBiOh/httputils"
+	"net/http"
+	"os"
+	"strings"
+)
+
+var (
+	keys    = flag.String(`env`, ``, `Environments key variables to expose, comma separated`)
+	envKeys []string
+)
+
+// Init package
+func Init() error {
+	if *keys != `` {
+		envKeys = strings.Split(*keys, `,`)
+	}
+
+	return nil
+}
+
+// Handler for net/http package returning environment variables in JSON
+type Handler struct {
+}
+
+func (hander Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	env := make(map[string]string)
+
+	for _, key := range envKeys {
+		if value := os.Getenv(key); value != `` {
+			env[key] = value
+		}
+	}
+
+	httputils.ResponseJSON(w, env)
+}
