@@ -14,6 +14,7 @@ import (
 	"github.com/ViBiOh/httputils/cors"
 	"github.com/ViBiOh/httputils/gzip"
 	"github.com/ViBiOh/httputils/owasp"
+	"github.com/ViBiOh/httputils/prometheus"
 	"github.com/ViBiOh/viws/env"
 )
 
@@ -158,7 +159,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + *port,
-		Handler: http.HandlerFunc(viwsHandler),
+		Handler: prometheus.NewPrometheusHandler(`http`, http.HandlerFunc(viwsHandler)),
 	}
 
 	if *tls {
