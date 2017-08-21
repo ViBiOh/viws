@@ -163,9 +163,9 @@ func main() {
 	}
 
 	if *tls {
-		go server.ListenAndServeTLS(*cert, *key)
+		go log.Print(server.ListenAndServeTLS(*cert, *key))
 	} else {
-		go server.ListenAndServe()
+		go log.Print(server.ListenAndServe())
 	}
 	httputils.ServerGracefulClose(server, nil)
 }
