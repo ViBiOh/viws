@@ -165,17 +165,17 @@ func main() {
 
 	if *tls {
 		if *certFile != `` {
-			go log.Panicf(server.ListenAndServeTLS(*certFile, *keyFile))
+			go log.Panic(server.ListenAndServeTLS(*certFile, *keyFile))
 		} else {
 			certPEMBlock, keyPEMBlock, err := cert.GenerateCert(`ViBiOh`, []string{`localhost`})
 			if err != nil {
 				log.Panicf(`Error while generating certificate: %v`, err)
 			}
 
-			go log.Panicf(cert.ListenAndServeTLS(server, certPEMBlock, keyPEMBlock))
+			go log.Panic(cert.ListenAndServeTLS(server, certPEMBlock, keyPEMBlock))
 		}
 	} else {
-		go log.Panicf(server.ListenAndServe())
+		go log.Panic(server.ListenAndServe())
 	}
 
 	httputils.ServerGracefulClose(server, nil)
