@@ -47,9 +47,11 @@ Usage of viws:
       Indicate Single Page Application mode
   -tls
       Serve TLS content
-  -tlsCert string
+  -tlscert string
       TLS PEM Certificate file
-  -tlsKey string
+  -tlshosts string
+      TLS Self-signed certificate hosts, comma separated (default "localhost")
+  -tlskey string
       TLS PEM Key file
 ```
 

@@ -115,8 +115,6 @@ func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
 	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
-	certFile := flag.String(`tlsCert`, ``, `TLS PEM Certificate file`)
-	keyFile := flag.String(`tlsKey`, ``, `TLS PEM Key file`)
 	flag.Parse()
 
 	if *url != `` {
@@ -164,16 +162,7 @@ func main() {
 	}
 
 	if *tls {
-		if *certFile != `` {
-			go log.Panic(server.ListenAndServeTLS(*certFile, *keyFile))
-		} else {
-			certPEMBlock, keyPEMBlock, err := cert.GenerateCert(`ViBiOh`, []string{`localhost`})
-			if err != nil {
-				log.Panicf(`Error while generating certificate: %v`, err)
-			}
-
-			go log.Panic(cert.ListenAndServeTLS(server, certPEMBlock, keyPEMBlock))
-		}
+		go log.Panic(cert.ListenAndServeTLS(server))
 	} else {
 		go log.Panic(server.ListenAndServe())
 	}
