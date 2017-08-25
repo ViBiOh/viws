@@ -11,6 +11,7 @@ import (
 
 	"github.com/ViBiOh/alcotest/alcotest"
 	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/cert"
 	"github.com/ViBiOh/httputils/cors"
 	"github.com/ViBiOh/httputils/gzip"
 	"github.com/ViBiOh/httputils/owasp"
@@ -114,8 +115,8 @@ func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
 	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
-	cert := flag.String(`cert`, `cert.pem`, `Certificate filename for TLS`)
-	key := flag.String(`key`, `key.pem`, `Key filename for TLS`)
+	certFile := flag.String(`tlsCert`, ``, `TLS PEM Certificate file`)
+	keyFile := flag.String(`tlsKey`, ``, `TLS PEM Key file`)
 	flag.Parse()
 
 	if *url != `` {
@@ -163,9 +164,19 @@ func main() {
 	}
 
 	if *tls {
-		go log.Print(server.ListenAndServeTLS(*cert, *key))
+		if *certFile != `` {
+			go log.Panicf(server.ListenAndServeTLS(*certFile, *keyFile))
+		} else {
+			certPEMBlock, keyPEMBlock, err := cert.GenerateCert(`ViBiOh`, []string{`localhost`})
+			if err != nil {
+				log.Panicf(`Error while generating certificate: %v`, err)
+			}
+
+			go log.Panicf(cert.ListenAndServeTLS(server, certPEMBlock, keyPEMBlock))
+		}
 	} else {
-		go log.Print(server.ListenAndServe())
+		go log.Panicf(server.ListenAndServe())
 	}
+
 	httputils.ServerGracefulClose(server, nil)
 }

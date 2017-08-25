@@ -13,34 +13,44 @@ go get -u github.com/ViBiOh/viws
 
 ## Usage
 
-By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag.
+By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, self-signed, ...) so it sets HSTS flag by default, security matters.
 
 ```
 Usage of viws:
   -c string
-    	URL to healthcheck (check and exit)
-  -cert string
-    	Certificate filename for TLS (default "cert.pem")
+      URL to healthcheck (check and exit)
+  -corsHeaders string
+      Access-Control-Allow-Headers (default "Content-Type")
+  -corsMethods string
+      Access-Control-Allow-Methods (default "GET")
+  -corsOrigin string
+      Access-Control-Allow-Origin (default "*")
   -csp string
-    	Content-Security-Policy (default "default-src 'self'")
+      Content-Security-Policy (default "default-src 'self'")
   -directory string
-    	Directory to serve (default "/www/")
+      Directory to serve (default "/www/")
   -env string
-    	Environments key variables to expose, comma separated
+      Environments key variables to expose, comma separated
   -hsts
-    	Indicate Strict Transport Security (default true)
-  -key string
-    	Key filename for TLS (default "key.pem")
+      Indicate Strict Transport Security (default true)
   -notFound
-    	Graceful 404 page at /404.html
+      Graceful 404 page at /404.html
   -port string
-    	Listening port (default "1080")
+      Listening port (default "1080")
+  -prometheusMetricsPath string
+      Prometheus - Metrics endpoint path (default "/metrics")
+  -prometheusMetricsRemoteHost string
+      Prometheus - Regex of allowed hosts to call metrics endpoint (default ".*")
   -push string
-    	Paths for HTTP/2 Server Push, comma separated
+      Paths for HTTP/2 Server Push, comma separated
   -spa
-    	Indicate Single Page Application mode
+      Indicate Single Page Application mode
   -tls
-    	Serve TLS content
+      Serve TLS content
+  -tlsCert string
+      TLS PEM Certificate file
+  -tlsKey string
+      TLS PEM Key file
 ```
 
 ## Single Page Application
