@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"log"
 	"net/http"
 	"os"
 	"path"
-	"runtime"
 	"strings"
 
 	"github.com/ViBiOh/alcotest/alcotest"
@@ -24,6 +24,32 @@ const indexFilename = `index.html`
 
 var requestsHandler = serverPushHandler{gzip.Handler{Handler: owasp.Handler{Handler: customFileHandler{}}}}
 var envHandler = owasp.Handler{Handler: cors.Handler{Handler: env.Handler{}}}
+
+type fakeResponseWriter struct {
+	status  int
+	header  http.Header
+	content *bytes.Buffer
+}
+
+func (w *fakeResponseWriter) Header() http.Header {
+	if w.header == nil {
+		w.header = http.Header{}
+	}
+
+	return w.header
+}
+
+func (w *fakeResponseWriter) Write(content []byte) (int, error) {
+	if w.content == nil {
+		w.content = bytes.NewBuffer([]byte{})
+	}
+
+	return w.content.Write(content)
+}
+
+func (w *fakeResponseWriter) WriteHeader(status int) {
+	w.status = status
+}
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
@@ -80,15 +106,24 @@ type customFileHandler struct {
 }
 
 func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if filePath := isFileExist(*directory, r.URL.Path); filePath != nil {
-		http.ServeFile(w, r, *filePath)
-	} else if *notFound {
-		w.WriteHeader(http.StatusNotFound)
-		http.ServeFile(w, r, *notFoundPath)
-	} else if *spa {
-		http.ServeFile(w, r, *directory)
+	fakeWriter := fakeResponseWriter{}
+	http.ServeFile(&fakeWriter, r, *directory+r.URL.Path)
+
+	if fakeWriter.status == http.StatusNotFound && (*notFound || *spa) {
+		if *notFound {
+			w.WriteHeader(http.StatusNotFound)
+			http.ServeFile(w, r, *notFoundPath)
+		} else if *spa {
+			http.ServeFile(w, r, *directory)
+		}
 	} else {
-		http.Error(w, `404 page not found: `+r.URL.Path, http.StatusNotFound)
+		for k, v := range fakeWriter.header {
+			w.Header()[k] = v
+		}
+		w.WriteHeader(fakeWriter.status)
+		if fakeWriter.content != nil {
+			w.Write(fakeWriter.content.Bytes())
+		}
 	}
 }
 
@@ -121,8 +156,6 @@ func main() {
 		alcotest.Do(url)
 		return
 	}
-
-	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if err := env.Init(); err != nil {
 		log.Fatalf(`Error while initializing env: %v`, err)
@@ -162,9 +195,10 @@ func main() {
 	}
 
 	if *tls {
-		go log.Panic(cert.ListenAndServeTLS(server))
+		log.Printf(`Listening with TLS enabled`)
+		go log.Print(cert.ListenAndServeTLS(server))
 	} else {
-		go log.Panic(server.ListenAndServe())
+		go log.Print(server.ListenAndServe())
 	}
 
 	httputils.ServerGracefulClose(server, nil)
