@@ -41,7 +41,7 @@ func (w *fakeResponseWriter) Header() http.Header {
 
 func (w *fakeResponseWriter) Write(content []byte) (int, error) {
 	if w.content == nil {
-		w.content = bytes.NewBuffer([]byte{})
+		w.content = bytes.NewBuffer(make([]byte, 0, 1024))
 	}
 
 	return w.content.Write(content)
@@ -111,19 +111,21 @@ func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 
 	if fakeWriter.status == http.StatusNotFound && (*notFound || *spa) {
 		if *notFound {
-			w.WriteHeader(http.StatusNotFound)
-			http.ServeFile(w, r, *notFoundPath)
+			fakeWriter = fakeResponseWriter{}
+			http.ServeFile(&fakeWriter, r, *notFoundPath)
+			fakeWriter.status = http.StatusNotFound
 		} else if *spa {
-			http.ServeFile(w, r, *directory)
+			fakeWriter = fakeResponseWriter{}
+			http.ServeFile(&fakeWriter, r, *directory)
 		}
-	} else {
-		for k, v := range fakeWriter.header {
-			w.Header()[k] = v
-		}
-		w.WriteHeader(fakeWriter.status)
-		if fakeWriter.content != nil {
-			w.Write(fakeWriter.content.Bytes())
-		}
+	}
+
+	for k, v := range fakeWriter.header {
+		w.Header()[k] = v
+	}
+	w.WriteHeader(fakeWriter.status)
+	if fakeWriter.content != nil {
+		w.Write(fakeWriter.content.Bytes())
 	}
 }
 
