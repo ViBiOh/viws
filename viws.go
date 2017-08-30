@@ -196,12 +196,16 @@ func main() {
 		Handler: prometheus.NewPrometheusHandler(`http`, http.HandlerFunc(viwsHandler)),
 	}
 
-	if *tls {
-		log.Printf(`Listening with TLS enabled`)
-		go log.Print(cert.ListenAndServeTLS(server))
-	} else {
-		go log.Print(server.ListenAndServe())
-	}
+	var serveError = make(chan error)
+	go func() {
+		defer close(serveError)
+		if *tls {
+			log.Print(`Listening with TLS enabled`)
+			serveError <- cert.ListenAndServeTLS(server)
+		} else {
+			serveError <- server.ListenAndServe()
+		}
+	}()
 
-	httputils.ServerGracefulClose(server, nil)
+	httputils.ServerGracefulClose(server, serveError, nil)
 }
