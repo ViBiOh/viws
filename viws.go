@@ -16,6 +16,7 @@ import (
 	"github.com/ViBiOh/httputils/gzip"
 	"github.com/ViBiOh/httputils/owasp"
 	"github.com/ViBiOh/httputils/prometheus"
+	"github.com/ViBiOh/httputils/rate"
 	"github.com/ViBiOh/viws/env"
 )
 
@@ -193,7 +194,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + *port,
-		Handler: prometheus.NewPrometheusHandler(`http`, http.HandlerFunc(viwsHandler)),
+		Handler: prometheus.NewPrometheusHandler(`http`, rate.Handler{Handler: http.HandlerFunc(viwsHandler)}),
 	}
 
 	var serveError = make(chan error)
