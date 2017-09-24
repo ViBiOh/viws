@@ -21,5 +21,8 @@ lint:
 tst:
 	script/coverage
 
+bench:
+	go test ./... -bench . -benchmem -run Benchmark.*
+
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws viws.go
