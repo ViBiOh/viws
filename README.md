@@ -43,6 +43,8 @@ Usage of viws:
     	Prometheus - Metrics endpoint path (default "/metrics")
   -push string
     	Paths for HTTP/2 Server Push, comma separated
+  -rateCount int
+    	Rate IP limit (default 5000)
   -spa
     	Indicate Single Page Application mode
   -tls
