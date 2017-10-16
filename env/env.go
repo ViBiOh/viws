@@ -2,10 +2,11 @@ package env
 
 import (
 	"flag"
-	"github.com/ViBiOh/httputils"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/ViBiOh/httputils"
 )
 
 var (
@@ -35,5 +36,5 @@ func (hander Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	httputils.ResponseJSON(w, env)
+	httputils.ResponseJSON(w, http.StatusOK, env)
 }
