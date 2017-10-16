@@ -9,11 +9,11 @@ import (
 	"path"
 	"strings"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/alcotest/alcotest"
 	"github.com/ViBiOh/httputils"
 	"github.com/ViBiOh/httputils/cert"
 	"github.com/ViBiOh/httputils/cors"
-	"github.com/ViBiOh/httputils/gzip"
 	"github.com/ViBiOh/httputils/owasp"
 	"github.com/ViBiOh/httputils/prometheus"
 	"github.com/ViBiOh/httputils/rate"
@@ -23,8 +23,8 @@ import (
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
-var requestsHandler = serverPushHandler{gzip.Handler{Handler: owasp.Handler{Handler: customFileHandler{}}}}
-var envHandler = owasp.Handler{Handler: cors.Handler{Handler: env.Handler{}}}
+var requestsHandler = serverPushHandler{gziphandler.GzipHandler(owasp.Handler{Handler: customFileHandler{}})}
+var envHandler = gziphandler.GzipHandler(owasp.Handler{Handler: cors.Handler{Handler: env.Handler{}}})
 
 type fakeResponseWriter struct {
 	status  int
