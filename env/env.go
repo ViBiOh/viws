@@ -24,17 +24,16 @@ func Init() error {
 }
 
 // Handler for net/http package returning environment variables in JSON
-type Handler struct {
-}
+func Handler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		env := make(map[string]string)
 
-func (hander Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	env := make(map[string]string)
-
-	for _, key := range envKeys {
-		if value := os.Getenv(key); value != `` {
-			env[key] = value
+		for _, key := range envKeys {
+			if value := os.Getenv(key); value != `` {
+				env[key] = value
+			}
 		}
-	}
 
-	httputils.ResponseJSON(w, http.StatusOK, env)
+		httputils.ResponseJSON(w, http.StatusOK, env)
+	})
 }

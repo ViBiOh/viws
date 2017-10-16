@@ -23,8 +23,8 @@ import (
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
-var requestsHandler = serverPushHandler{gziphandler.GzipHandler(owasp.Handler{Handler: customFileHandler{}})}
-var envHandler = gziphandler.GzipHandler(owasp.Handler{Handler: cors.Handler{Handler: env.Handler{}}})
+var requestsHandler = gziphandler.GzipHandler(serverPushHandler(owasp.Handler(fileHandler())))
+var envHandler = gziphandler.GzipHandler(owasp.Handler(cors.Handler(env.Handler())))
 
 type fakeResponseWriter struct {
 	status  int
@@ -80,54 +80,52 @@ func isFileExist(parts ...string) *string {
 	return &fullPath
 }
 
-type serverPushHandler struct {
-	http.Handler
-}
+func serverPushHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
 
-func (handler serverPushHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
-	if r.URL.Path == `/` && len(pushPaths) > 0 {
-		if pusher, ok := w.(http.Pusher); ok {
-			for _, path := range pushPaths {
-				if err := pusher.Push(path, nil); err != nil {
-					log.Printf(`Failed to push %s: %v`, path, err)
+		if r.URL.Path == `/` && len(pushPaths) > 0 {
+			if pusher, ok := w.(http.Pusher); ok {
+				for _, path := range pushPaths {
+					if err := pusher.Push(path, nil); err != nil {
+						log.Printf(`Failed to push %s: %v`, path, err)
+					}
 				}
 			}
 		}
-	}
 
-	handler.Handler.ServeHTTP(w, r)
+		next.ServeHTTP(w, r)
+	})
 }
 
-type customFileHandler struct {
-}
+func fileHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fakeWriter := fakeResponseWriter{}
+		http.ServeFile(&fakeWriter, r, *directory+r.URL.Path)
 
-func (handler customFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fakeWriter := fakeResponseWriter{}
-	http.ServeFile(&fakeWriter, r, *directory+r.URL.Path)
-
-	if fakeWriter.status == http.StatusNotFound && (*notFound || *spa) {
-		if *notFound {
-			fakeWriter = fakeResponseWriter{}
-			http.ServeFile(&fakeWriter, r, *notFoundPath)
-			fakeWriter.status = http.StatusNotFound
-		} else if *spa {
-			fakeWriter = fakeResponseWriter{}
-			http.ServeFile(&fakeWriter, r, *directory)
+		if fakeWriter.status == http.StatusNotFound && (*notFound || *spa) {
+			if *notFound {
+				fakeWriter = fakeResponseWriter{}
+				http.ServeFile(&fakeWriter, r, *notFoundPath)
+				fakeWriter.status = http.StatusNotFound
+			} else if *spa {
+				fakeWriter = fakeResponseWriter{}
+				http.ServeFile(&fakeWriter, r, *directory)
+			}
 		}
-	}
 
-	for k, v := range fakeWriter.header {
-		w.Header()[k] = v
-	}
-	w.WriteHeader(fakeWriter.status)
-	if fakeWriter.content != nil {
-		w.Write(fakeWriter.content.Bytes())
-	}
+		for k, v := range fakeWriter.header {
+			w.Header()[k] = v
+		}
+
+		w.WriteHeader(fakeWriter.status)
+		if fakeWriter.content != nil {
+			w.Write(fakeWriter.content.Bytes())
+		}
+	})
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
@@ -138,14 +136,16 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func viwsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == `/health` {
-		healthHandler(w, r)
-	} else if r.URL.Path == `/env` {
-		envHandler.ServeHTTP(w, r)
-	} else {
-		requestsHandler.ServeHTTP(w, r)
-	}
+func viwsHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == `/health` {
+			healthHandler(w, r)
+		} else if r.URL.Path == `/env` {
+			envHandler.ServeHTTP(w, r)
+		} else {
+			requestsHandler.ServeHTTP(w, r)
+		}
+	})
 }
 
 func main() {
@@ -194,7 +194,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + *port,
-		Handler: prometheus.NewPrometheusHandler(`http`, rate.Handler{Handler: http.HandlerFunc(viwsHandler)}),
+		Handler: prometheus.Handler(`http`, rate.Handler(viwsHandler())),
 	}
 
 	var serveError = make(chan error)
