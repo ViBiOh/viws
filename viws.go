@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"log"
 	"net/http"
@@ -18,39 +17,14 @@ import (
 	"github.com/ViBiOh/httputils/prometheus"
 	"github.com/ViBiOh/httputils/rate"
 	"github.com/ViBiOh/viws/env"
+	"github.com/ViBiOh/viws/writer"
 )
 
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
-var requestsHandler = gziphandler.GzipHandler(serverPushHandler(owasp.Handler(fileHandler())))
-var envHandler = gziphandler.GzipHandler(owasp.Handler(cors.Handler(env.Handler())))
-
-type fakeResponseWriter struct {
-	status  int
-	header  http.Header
-	content *bytes.Buffer
-}
-
-func (w *fakeResponseWriter) Header() http.Header {
-	if w.header == nil {
-		w.header = http.Header{}
-	}
-
-	return w.header
-}
-
-func (w *fakeResponseWriter) Write(content []byte) (int, error) {
-	if w.content == nil {
-		w.content = bytes.NewBuffer(make([]byte, 0, 1024))
-	}
-
-	return w.content.Write(content)
-}
-
-func (w *fakeResponseWriter) WriteHeader(status int) {
-	w.status = status
-}
+var requestsHandler = serverPushHandler(owasp.Handler(fileHandler()))
+var envHandler = owasp.Handler(cors.Handler(env.Handler()))
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
@@ -103,27 +77,27 @@ func serverPushHandler(next http.Handler) http.Handler {
 
 func fileHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fakeWriter := fakeResponseWriter{}
+		fakeWriter := writer.FakeResponseWriter{}
 		http.ServeFile(&fakeWriter, r, *directory+r.URL.Path)
 
-		if fakeWriter.status == http.StatusNotFound && (*notFound || *spa) {
+		if fakeWriter.Status() == http.StatusNotFound && (*notFound || *spa) {
 			if *notFound {
-				fakeWriter = fakeResponseWriter{}
+				fakeWriter = writer.FakeResponseWriter{}
 				http.ServeFile(&fakeWriter, r, *notFoundPath)
-				fakeWriter.status = http.StatusNotFound
+				fakeWriter.SetStatus(http.StatusNotFound)
 			} else if *spa {
-				fakeWriter = fakeResponseWriter{}
+				fakeWriter = writer.FakeResponseWriter{}
 				http.ServeFile(&fakeWriter, r, *directory)
 			}
 		}
 
-		for k, v := range fakeWriter.header {
+		for k, v := range fakeWriter.Header() {
 			w.Header()[k] = v
 		}
 
-		w.WriteHeader(fakeWriter.status)
-		if fakeWriter.content != nil {
-			w.Write(fakeWriter.content.Bytes())
+		w.WriteHeader(fakeWriter.Status())
+		if fakeWriter.Content() != nil {
+			w.Write(fakeWriter.Content().Bytes())
 		}
 	})
 }
@@ -137,7 +111,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viwsHandler() http.Handler {
-	return prometheus.Handler(`http`, rate.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return prometheus.Handler(`http`, rate.Handler(gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == `/health` {
 			healthHandler(w, r)
 		} else if r.URL.Path == `/env` {
@@ -145,7 +119,7 @@ func viwsHandler() http.Handler {
 		} else {
 			requestsHandler.ServeHTTP(w, r)
 		}
-	})))
+	}))))
 }
 
 func main() {
@@ -185,7 +159,7 @@ func main() {
 
 	if *notFound {
 		if *spa {
-			log.Print(`⚠ -notFound and -spa are both set. SPA is ignored ⚠`)
+			log.Print(`⚠ -notFound and -spa are both set. SPA flag is ignored ⚠`)
 		}
 
 		if notFoundPath = isFileExist(*directory, notFoundFilename); notFoundPath == nil {
