@@ -137,7 +137,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func viwsHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return prometheus.Handler(`http`, rate.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == `/health` {
 			healthHandler(w, r)
 		} else if r.URL.Path == `/env` {
@@ -145,7 +145,7 @@ func viwsHandler() http.Handler {
 		} else {
 			requestsHandler.ServeHTTP(w, r)
 		}
-	})
+	})))
 }
 
 func main() {
@@ -179,11 +179,15 @@ func main() {
 		pushPaths = strings.Split(*push, `,`)
 
 		if !*tls {
-			log.Print(`HTTP/2 Server push works only when TLS in enabled`)
+			log.Print(`⚠ HTTP/2 Server Push works only when TLS in enabled ⚠`)
 		}
 	}
 
 	if *notFound {
+		if *spa {
+			log.Print(`⚠ -notFound and -spa are both set. SPA is ignored ⚠`)
+		}
+
 		if notFoundPath = isFileExist(*directory, notFoundFilename); notFoundPath == nil {
 			log.Printf(`%s%s is unreachable. Not found flag ignored.`, *directory, notFoundFilename)
 			*notFound = false
@@ -194,7 +198,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    `:` + *port,
-		Handler: prometheus.Handler(`http`, rate.Handler(viwsHandler())),
+		Handler: viwsHandler(),
 	}
 
 	var serveError = make(chan error)
