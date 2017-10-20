@@ -1,3 +1,4 @@
 # Go binary
 bin/
 coverage.txt
+cacert.pem
