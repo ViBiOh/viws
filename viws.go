@@ -24,7 +24,7 @@ const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
 var requestsHandler = serverPushHandler(owasp.Handler(fileHandler()))
-var envHandler = owasp.Handler(cors.Handler(env.Handler()))
+var envHandler = owasp.Handler(cors.Handler(cors.Flags(``), env.Handler()))
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)

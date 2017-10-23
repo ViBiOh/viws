@@ -34,6 +34,6 @@ func Handler() http.Handler {
 			}
 		}
 
-		httputils.ResponseJSON(w, http.StatusOK, env)
+		httputils.ResponseJSON(w, http.StatusOK, env, httputils.IsPretty(r.URL.RawQuery))
 	})
 }
