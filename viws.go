@@ -24,7 +24,7 @@ const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
 var requestsHandler = serverPushHandler(owasp.Handler(fileHandler()))
-var envHandler = owasp.Handler(cors.Handler(cors.Flags(``), env.Handler()))
+var envHandler http.Handler
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
@@ -127,6 +127,7 @@ func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
 	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
+	corsConfig := cors.Flags(``)
 	flag.Parse()
 
 	if *url != `` {
@@ -170,6 +171,7 @@ func main() {
 		}
 	}
 
+	envHandler = owasp.Handler(cors.Handler(corsConfig, env.Handler()))
 	server := &http.Server{
 		Addr:    `:` + *port,
 		Handler: viwsHandler(),
