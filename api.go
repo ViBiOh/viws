@@ -23,8 +23,9 @@ import (
 const notFoundFilename = `404.html`
 const indexFilename = `index.html`
 
-var requestsHandler = serverPushHandler(owasp.Handler(fileHandler()))
+var requestsHandler http.Handler
 var envHandler http.Handler
+var apiHandler http.Handler
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
@@ -110,8 +111,8 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func viwsHandler() http.Handler {
-	return prometheus.Handler(`http`, rate.Handler(gziphandler.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func handler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == `/health` {
 			healthHandler(w, r)
 		} else if r.URL.Path == `/env` {
@@ -119,7 +120,7 @@ func viwsHandler() http.Handler {
 		} else {
 			requestsHandler.ServeHTTP(w, r)
 		}
-	}))))
+	})
 }
 
 func main() {
@@ -127,7 +128,10 @@ func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
 	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
-	corsConfig := cors.Flags(``)
+	prometheusConfig := prometheus.Flags(`prometheus`)
+	rateConfig := rate.Flags(`rate`)
+	owaspConfig := owasp.Flags(``)
+	corsConfig := cors.Flags(`cors`)
 	flag.Parse()
 
 	if *url != `` {
@@ -171,10 +175,13 @@ func main() {
 		}
 	}
 
-	envHandler = owasp.Handler(cors.Handler(corsConfig, env.Handler()))
+	requestsHandler = serverPushHandler(owasp.Handler(owaspConfig, fileHandler()))
+	envHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, env.Handler()))
+	apiHandler = prometheus.Handler(prometheusConfig, rate.Handler(rateConfig, gziphandler.GzipHandler(handler())))
+
 	server := &http.Server{
 		Addr:    `:` + *port,
-		Handler: viwsHandler(),
+		Handler: apiHandler,
 	}
 
 	var serveError = make(chan error)
