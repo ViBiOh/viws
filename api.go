@@ -16,8 +16,8 @@ import (
 	"github.com/ViBiOh/httputils/owasp"
 	"github.com/ViBiOh/httputils/prometheus"
 	"github.com/ViBiOh/httputils/rate"
+	"github.com/ViBiOh/httputils/writer"
 	"github.com/ViBiOh/viws/env"
-	"github.com/ViBiOh/viws/writer"
 )
 
 const notFoundFilename = `404.html`
@@ -78,16 +78,16 @@ func serverPushHandler(next http.Handler) http.Handler {
 
 func fileHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fakeWriter := writer.FakeResponseWriter{}
+		fakeWriter := writer.ResponseWriter{}
 		http.ServeFile(&fakeWriter, r, *directory+r.URL.Path)
 
 		if fakeWriter.Status() == http.StatusNotFound && (*notFound || *spa) {
 			if *notFound {
-				fakeWriter = writer.FakeResponseWriter{}
+				fakeWriter = writer.ResponseWriter{}
 				http.ServeFile(&fakeWriter, r, *notFoundPath)
 				fakeWriter.SetStatus(http.StatusNotFound)
 			} else if *spa {
-				fakeWriter = writer.FakeResponseWriter{}
+				fakeWriter = writer.ResponseWriter{}
 				http.ServeFile(&fakeWriter, r, *directory)
 			}
 		}
