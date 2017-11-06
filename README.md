@@ -20,37 +20,37 @@ Usage of viws:
   -c string
     	URL to healthcheck (check and exit)
   -corsCredentials
-    	Access-Control-Allow-Credentials
+    	[cors] Access-Control-Allow-Credentials
   -corsExpose string
-    	Access-Control-Expose-Headers
+    	[cors] Access-Control-Expose-Headers
   -corsHeaders string
-    	Access-Control-Allow-Headers (default "Content-Type")
+    	[cors] Access-Control-Allow-Headers (default "Content-Type")
   -corsMethods string
-    	Access-Control-Allow-Methods (default "GET")
+    	[cors] Access-Control-Allow-Methods (default "GET")
   -corsOrigin string
-    	Access-Control-Allow-Origin (default "*")
+    	[cors] Access-Control-Allow-Origin (default "*")
   -csp string
-    	Content-Security-Policy (default "default-src 'self'")
+    	[owasp] Content-Security-Policy (default "default-src 'self'")
   -directory string
     	Directory to serve (default "/www/")
   -env string
     	Environments key variables to expose, comma separated
   -hsts
-    	Indicate Strict Transport Security (default true)
+    	[owasp] Indicate Strict Transport Security (default true)
   -notFound
     	Graceful 404 page at /404.html
   -port string
     	Listening port (default "1080")
   -prometheusMetricsHost string
-    	Prometheus allowed hostname to call metrics endpoint (default "localhost")
+    	[prometheus] Allowed hostname to call metrics endpoint (default "localhost")
   -prometheusMetricsPath string
-    	Prometheus metrics endpoint path (default "/metrics")
+    	[prometheus] Metrics endpoint path (default "/metrics")
   -prometheusPrefix string
-    	Prometheus prefix (default "http")
+    	[prometheus] Prefix (default "http")
   -push string
     	Paths for HTTP/2 Server Push, comma separated
   -rateCount int
-    	Rate IP limit (default 5000)
+    	[rate] IP limit (default 5000)
   -spa
     	Indicate Single Page Application mode
   -tls
