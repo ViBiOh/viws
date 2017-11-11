@@ -18,7 +18,7 @@ By default, server is listening on the `1080` port and serve content for GET req
 ```
 Usage of viws:
   -c string
-    	URL to healthcheck (check and exit)
+    	[health] URL to check
   -corsCredentials
     	[cors] Access-Control-Allow-Credentials
   -corsExpose string

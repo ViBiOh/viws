@@ -124,10 +124,10 @@ func handler() http.Handler {
 }
 
 func main() {
-	url := flag.String(`c`, ``, `URL to healthcheck (check and exit)`)
 	port := flag.String(`port`, `1080`, `Listening port`)
 	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
+	alcotestConfig := alcotest.Flags(``)
 	certConfig := cert.Flags(`tls`)
 	prometheusConfig := prometheus.Flags(`prometheus`)
 	rateConfig := rate.Flags(`rate`)
@@ -135,10 +135,7 @@ func main() {
 	corsConfig := cors.Flags(`cors`)
 	flag.Parse()
 
-	if *url != `` {
-		alcotest.Do(url)
-		return
-	}
+	alcotest.DoAndExit(alcotestConfig)
 
 	if err := env.Init(); err != nil {
 		log.Fatalf(`Error while initializing env: %v`, err)
