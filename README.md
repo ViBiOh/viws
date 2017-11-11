@@ -49,18 +49,18 @@ Usage of viws:
     	[prometheus] Prefix (default "http")
   -push string
     	Paths for HTTP/2 Server Push, comma separated
-  -rateCount int
+  -rateCount uint
     	[rate] IP limit (default 5000)
   -spa
     	Indicate Single Page Application mode
   -tls
     	Serve TLS content
-  -tlscert string
-    	TLS PEM Certificate file
-  -tlshosts string
-    	TLS Self-signed certificate hosts, comma separated (default "localhost")
-  -tlskey string
-    	TLS PEM Key file
+  -tlsCert string
+    	[tls] PEM Certificate file
+  -tlsHosts string
+    	[tls] Self-signed certificate hosts, comma separated (default "localhost")
+  -tlsKey string
+    	[tls] PEM Key file
 ```
 
 ## Single Page Application
