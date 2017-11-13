@@ -9,7 +9,6 @@ deps:
 	go get -u github.com/ViBiOh/httputils/owasp
 	go get -u github.com/ViBiOh/httputils/prometheus
 	go get -u github.com/ViBiOh/httputils/rate
-	go get -u github.com/ViBiOh/httputils/writer
 	go get -u golang.org/x/tools/cmd/goimports
 
 format:

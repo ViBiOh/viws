@@ -16,7 +16,6 @@ import (
 	"github.com/ViBiOh/httputils/owasp"
 	"github.com/ViBiOh/httputils/prometheus"
 	"github.com/ViBiOh/httputils/rate"
-	"github.com/ViBiOh/httputils/writer"
 	"github.com/ViBiOh/viws/env"
 )
 
@@ -78,27 +77,17 @@ func serverPushHandler(next http.Handler) http.Handler {
 
 func fileHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fakeWriter := writer.ResponseWriter{}
-		http.ServeFile(&fakeWriter, r, *directory+r.URL.Path)
-
-		if fakeWriter.Status() == http.StatusNotFound && (*notFound || *spa) {
+		if filename := isFileExist(*directory, r.URL.Path); filename != nil {
+			http.ServeFile(w, r, *filename)
+		} else if *notFound || *spa {
 			if *notFound {
-				fakeWriter = writer.ResponseWriter{}
-				http.ServeFile(&fakeWriter, r, *notFoundPath)
-				fakeWriter.SetStatus(http.StatusNotFound)
+				w.WriteHeader(http.StatusNotFound)
+				http.ServeFile(w, r, *notFoundPath)
 			} else if *spa {
-				fakeWriter = writer.ResponseWriter{}
-				http.ServeFile(&fakeWriter, r, *directory)
+				http.ServeFile(w, r, *directory)
 			}
-		}
-
-		for k, v := range fakeWriter.Header() {
-			w.Header()[k] = v
-		}
-
-		w.WriteHeader(fakeWriter.Status())
-		if fakeWriter.Content() != nil {
-			w.Write(fakeWriter.Content().Bytes())
+		} else {
+			httputils.NotFound(w)
 		}
 	})
 }
