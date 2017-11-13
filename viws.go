@@ -84,6 +84,7 @@ func fileHandler() http.Handler {
 				w.WriteHeader(http.StatusNotFound)
 				http.ServeFile(w, r, *notFoundPath)
 			} else if *spa {
+				w.Header().Add(`Cache-Control`, `no-cache`)
 				http.ServeFile(w, r, *directory)
 			}
 		} else {
