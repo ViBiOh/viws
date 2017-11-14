@@ -78,6 +78,7 @@ func serverPushHandler(next http.Handler) http.Handler {
 func fileHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if filename := isFileExist(*directory, r.URL.Path); filename != nil {
+			log.Println(*filename)
 			http.ServeFile(w, r, *filename)
 		} else if *notFound {
 			w.WriteHeader(http.StatusNotFound)
