@@ -41,6 +41,8 @@ func isFileExist(parts ...string) *string {
 	fullPath := path.Join(parts...)
 	info, err := os.Stat(fullPath)
 
+	log.Printf(`parts=%s, fullPath=%s, err=%v, info=%+v`, parts, fullPath, err, info)
+
 	if err != nil {
 		return nil
 	}
@@ -77,20 +79,15 @@ func serverPushHandler(next http.Handler) http.Handler {
 
 func fileHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf(`directory=%s, path=%s`, *directory, r.URL.Path)
 		if filename := isFileExist(*directory, r.URL.Path); filename != nil {
-			log.Printf(`serving file %s`, *filename)
 			http.ServeFile(w, r, *filename)
 		} else if *notFound {
-			log.Printf(`not found file %s`, *notFoundPath)
 			w.WriteHeader(http.StatusNotFound)
 			http.ServeFile(w, r, *notFoundPath)
 		} else if *spa {
-			log.Printf(`serving spa %s`, *directory)
 			w.Header().Add(`Cache-Control`, `no-cache`)
 			http.ServeFile(w, r, *directory)
 		} else {
-			log.Println(`not found`)
 			httputils.NotFound(w)
 		}
 	})
