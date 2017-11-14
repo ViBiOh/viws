@@ -79,14 +79,12 @@ func fileHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if filename := isFileExist(*directory, r.URL.Path); filename != nil {
 			http.ServeFile(w, r, *filename)
-		} else if *notFound || *spa {
-			if *notFound {
-				w.WriteHeader(http.StatusNotFound)
-				http.ServeFile(w, r, *notFoundPath)
-			} else if *spa {
-				w.Header().Add(`Cache-Control`, `no-cache`)
-				http.ServeFile(w, r, *directory)
-			}
+		} else if *notFound {
+			w.WriteHeader(http.StatusNotFound)
+			http.ServeFile(w, r, *notFoundPath)
+		} else if *spa {
+			w.Header().Add(`Cache-Control`, `no-cache`)
+			http.ServeFile(w, r, *directory)
 		} else {
 			httputils.NotFound(w)
 		}
