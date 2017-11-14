@@ -41,8 +41,6 @@ func isFileExist(parts ...string) *string {
 	fullPath := path.Join(parts...)
 	info, err := os.Stat(fullPath)
 
-	log.Printf(`parts=%s, fullPath=%s, err=%v, info=%+v`, parts, fullPath, err, info)
-
 	if err != nil {
 		return nil
 	}
