@@ -130,7 +130,7 @@ func main() {
 	}
 
 	if isFileExist(*directory) == nil {
-		log.Fatalf(`Directory %s is unreachable`, *directory)
+		log.Fatalf(`Directory %s is unreachable or does not contains %s`, *directory, indexFilename)
 	}
 
 	log.Printf(`Starting server on port %s`, *port)

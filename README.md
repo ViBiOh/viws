@@ -94,5 +94,5 @@ COPY dist/ /www/
 You need Go 1.9 in order to compile the project.
 
 ```
-make
+make go
 ```
