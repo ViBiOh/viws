@@ -8,6 +8,7 @@ after_success: |
 
   if [ "${TRAVIS_BRANCH}" == "master" ]; then
     make docker-push
+    curl -s -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/viws
   fi
 notifications:
   email: false
