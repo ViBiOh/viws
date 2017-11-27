@@ -7,22 +7,17 @@ dev: format lint tst bench build
 docker: docker-deps docker-build
 
 deps:
+	go get -u github.com/golang/dep/cmd/dep
 	go get -u github.com/golang/lint/golint
-	go get -u github.com/NYTimes/gziphandler
-	go get -u github.com/ViBiOh/alcotest/alcotest
-	go get -u github.com/ViBiOh/httputils
-	go get -u github.com/ViBiOh/httputils/cert
-	go get -u github.com/ViBiOh/httputils/owasp
-	go get -u github.com/ViBiOh/httputils/prometheus
-	go get -u github.com/ViBiOh/httputils/rate
 	go get -u golang.org/x/tools/cmd/goimports
+	dep ensure
 
 format:
 	goimports -w *.go
 	gofmt -s -w *.go
 
 lint:
-	golint ./...
+	golint `go list ./... | grep -v vendor`
 	go vet ./...
 
 tst:
