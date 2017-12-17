@@ -2,22 +2,22 @@
 
 
 [[projects]]
-  branch = "master"
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
   revision = "d6f46609c7629af3a02d791a4666866eed3cbd3e"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
   name = "github.com/ViBiOh/alcotest"
   packages = ["alcotest","httpclient"]
-  revision = "965d61a6d8aa63dee66d231573c41f35d1a4fc55"
+  revision = "7187d04caa2bfd06fc89ca52092c0ff924ff39bc"
 
 [[projects]]
   branch = "master"
   name = "github.com/ViBiOh/httputils"
   packages = [".","cert","cors","owasp","prometheus","rate","tools"]
-  revision = "a6b4cec81a40786b75c67462cb80e4587cfb5aa1"
+  revision = "0753b3789e0b7bee726ad7bc84568d44f87f2978"
 
 [[projects]]
   branch = "master"
@@ -41,7 +41,7 @@
   branch = "master"
   name = "github.com/prometheus/client_golang"
   packages = ["prometheus","prometheus/promhttp"]
-  revision = "1cdba8fdde81f444626530cce66e138d2f68ae1c"
+  revision = "661e31bf844dfca9aeba15f27ea8aa0d485ad212"
 
 [[projects]]
   branch = "master"
@@ -59,7 +59,7 @@
   branch = "master"
   name = "github.com/prometheus/procfs"
   packages = [".","xfs"]
-  revision = "a6e9df898b1336106c743392c48ee0b71f5c4efa"
+  revision = "f98634e408857669d61064b283c4cde240622865"
 
 [solve-meta]
   analyzer-name = "dep"
