@@ -4,8 +4,6 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"os"
-	"path"
 	"strings"
 
 	"github.com/NYTimes/gziphandler"
@@ -17,10 +15,11 @@ import (
 	"github.com/ViBiOh/httputils/prometheus"
 	"github.com/ViBiOh/httputils/rate"
 	"github.com/ViBiOh/viws/env"
+	"github.com/ViBiOh/viws/utils"
+	"github.com/ViBiOh/viws/viws"
 )
 
 const notFoundFilename = `404.html`
-const indexFilename = `index.html`
 
 var requestsHandler http.Handler
 var envHandler http.Handler
@@ -31,65 +30,6 @@ var (
 	notFound  = flag.Bool(`notFound`, false, `Graceful 404 page at /404.html`)
 	spa       = flag.Bool(`spa`, false, `Indicate Single Page Application mode`)
 )
-
-var (
-	notFoundPath *string
-	pushPaths    []string
-)
-
-func isFileExist(parts ...string) *string {
-	fullPath := path.Join(parts...)
-	info, err := os.Stat(fullPath)
-
-	if err != nil {
-		return nil
-	}
-
-	if info.IsDir() {
-		if isFileExist(append(parts, indexFilename)...) == nil {
-			return nil
-		}
-	}
-
-	return &fullPath
-}
-
-func serverPushHandler(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			return
-		}
-
-		if r.URL.Path == `/` && len(pushPaths) > 0 {
-			if pusher, ok := w.(http.Pusher); ok {
-				for _, path := range pushPaths {
-					if err := pusher.Push(path, nil); err != nil {
-						log.Printf(`Failed to push %s: %v`, path, err)
-					}
-				}
-			}
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-func fileHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if filename := isFileExist(*directory, r.URL.Path); filename != nil {
-			http.ServeFile(w, r, *filename)
-		} else if *notFound {
-			w.WriteHeader(http.StatusNotFound)
-			http.ServeFile(w, r, *notFoundPath)
-		} else if *spa {
-			w.Header().Add(`Cache-Control`, `no-cache`)
-			http.ServeFile(w, r, *directory)
-		} else {
-			httputils.NotFound(w)
-		}
-	})
-}
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
@@ -129,8 +69,8 @@ func main() {
 		log.Fatalf(`Error while initializing env: %v`, err)
 	}
 
-	if isFileExist(*directory) == nil {
-		log.Fatalf(`Directory %s is unreachable or does not contains %s`, *directory, indexFilename)
+	if utils.IsFileExist(*directory) == nil {
+		log.Fatalf(`Directory %s is unreachable or does not contains index`, *directory)
 	}
 
 	log.Printf(`Starting server on port %s`, *port)
@@ -141,19 +81,18 @@ func main() {
 	}
 
 	if *push != `` {
-		pushPaths = strings.Split(*push, `,`)
-
 		if !*tls {
 			log.Print(`⚠ HTTP/2 Server Push works only when TLS in enabled ⚠`)
 		}
 	}
 
+	var notFoundPath *string
 	if *notFound {
 		if *spa {
 			log.Print(`⚠ -notFound and -spa are both set. SPA flag is ignored ⚠`)
 		}
 
-		if notFoundPath = isFileExist(*directory, notFoundFilename); notFoundPath == nil {
+		if notFoundPath = utils.IsFileExist(*directory, notFoundFilename); notFoundPath == nil {
 			log.Printf(`%s%s is unreachable. Not found flag ignored.`, *directory, notFoundFilename)
 			*notFound = false
 		} else {
@@ -161,7 +100,7 @@ func main() {
 		}
 	}
 
-	requestsHandler = serverPushHandler(owasp.Handler(owaspConfig, fileHandler()))
+	requestsHandler = viws.ServerPushHandler(owasp.Handler(owaspConfig, viws.FileHandler(*directory, *spa, *notFound, *notFoundPath)), strings.Split(*push, `,`))
 	envHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, env.Handler()))
 	apiHandler = prometheus.Handler(prometheusConfig, rate.Handler(rateConfig, gziphandler.GzipHandler(handler())))
 
