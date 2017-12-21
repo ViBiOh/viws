@@ -100,7 +100,7 @@ func main() {
 		}
 	}
 
-	requestsHandler = viws.ServerPushHandler(owasp.Handler(owaspConfig, viws.FileHandler(*directory, *spa, *notFound, *notFoundPath)), strings.Split(*push, `,`))
+	requestsHandler = viws.ServerPushHandler(owasp.Handler(owaspConfig, viws.FileHandler(*directory, *spa, notFoundPath)), strings.Split(*push, `,`))
 	envHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, env.Handler()))
 	apiHandler = prometheus.Handler(prometheusConfig, rate.Handler(rateConfig, gziphandler.GzipHandler(handler())))
 

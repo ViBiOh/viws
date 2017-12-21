@@ -31,13 +31,13 @@ func ServerPushHandler(next http.Handler, pushPaths []string) http.Handler {
 }
 
 // FileHandler serve file given configuration
-func FileHandler(directory string, spa bool, notFound bool, notFoundPath string) http.Handler {
+func FileHandler(directory string, spa bool, notFoundPath *string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if filename := utils.IsFileExist(directory, r.URL.Path); filename != nil {
 			http.ServeFile(w, r, *filename)
-		} else if notFound {
+		} else if notFoundPath != nil {
 			w.WriteHeader(http.StatusNotFound)
-			http.ServeFile(w, r, notFoundPath)
+			http.ServeFile(w, r, *notFoundPath)
 		} else if spa {
 			w.Header().Add(`Cache-Control`, `no-cache`)
 			http.ServeFile(w, r, directory)
