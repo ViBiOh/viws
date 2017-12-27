@@ -7,24 +7,20 @@ import (
 	"strings"
 
 	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/tools"
 )
 
-var (
-	keys    = flag.String(`env`, ``, `Environments key variables to expose, comma separated`)
-	envKeys []string
-)
-
-// Init package
-func Init() error {
-	if *keys != `` {
-		envKeys = strings.Split(*keys, `,`)
+// Flags add flags for given prefix
+func Flags(prefix string) map[string]*string {
+	return map[string]*string{
+		`env`: flag.String(tools.ToCamel(prefix+`Env`), ``, `[env] Environments key variables to expose, comma separated`),
 	}
-
-	return nil
 }
 
 // Handler for net/http package returning environment variables in JSON
-func Handler() http.Handler {
+func Handler(config map[string]*string) http.Handler {
+	envKeys := strings.Split(*config[`env`], `,`)
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		env := make(map[string]string)
 

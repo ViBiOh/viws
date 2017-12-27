@@ -1,12 +1,24 @@
 package viws
 
 import (
+	"flag"
 	"log"
 	"net/http"
 
 	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/tools"
 	"github.com/ViBiOh/viws/utils"
 )
+
+// Flags add flags for given prefix
+func Flags(prefix string) map[string]interface{} {
+	return map[string]interface{}{
+		`directory`: flag.String(tools.ToCamel(prefix+`Directory`), `/www/`, `[viws] Directory to serve`),
+		`notFound`:  flag.Bool(tools.ToCamel(prefix+`NotFound`), false, `[viws] Graceful 404 page at /404.html`),
+		`spa`:       flag.Bool(tools.ToCamel(prefix+`Spa`), false, `[viws] Indicate Single Page Application mode`),
+		`push`:      flag.String(tools.ToCamel(prefix+`Push`), ``, `[viws] Paths for HTTP/2 Server Push on index, comma separated`),
+	}
+}
 
 // ServerPushHandler add server push when serving index
 func ServerPushHandler(next http.Handler, pushPaths []string) http.Handler {

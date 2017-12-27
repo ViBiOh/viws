@@ -34,7 +34,7 @@ Usage of viws:
   -directory string
       Directory to serve (default "/www/")
   -env string
-      Environments key variables to expose, comma separated
+      [env] Environments key variables to expose, comma separated
   -frameOptions string
       [owasp] X-Frame-Options (default "deny")
   -hsts

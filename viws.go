@@ -21,9 +21,11 @@ import (
 
 const notFoundFilename = `404.html`
 
-var requestsHandler http.Handler
-var envHandler http.Handler
-var apiHandler http.Handler
+var (
+	requestsHandler http.Handler
+	envHandler      http.Handler
+	apiHandler      http.Handler
+)
 
 var (
 	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
@@ -55,6 +57,7 @@ func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
 	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
+	envConfig := env.Flags(``)
 	alcotestConfig := alcotest.Flags(``)
 	certConfig := cert.Flags(`tls`)
 	prometheusConfig := prometheus.Flags(`prometheus`)
@@ -64,10 +67,6 @@ func main() {
 	flag.Parse()
 
 	alcotest.DoAndExit(alcotestConfig)
-
-	if err := env.Init(); err != nil {
-		log.Fatalf(`Error while initializing env: %v`, err)
-	}
 
 	if utils.IsFileExist(*directory) == nil {
 		log.Fatalf(`Directory %s is unreachable or does not contains index`, *directory)
@@ -101,7 +100,7 @@ func main() {
 	}
 
 	requestsHandler = viws.ServerPushHandler(owasp.Handler(owaspConfig, viws.FileHandler(*directory, *spa, notFoundPath)), strings.Split(*push, `,`))
-	envHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, env.Handler()))
+	envHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, env.Handler(envConfig)))
 	apiHandler = prometheus.Handler(prometheusConfig, rate.Handler(rateConfig, gziphandler.GzipHandler(handler())))
 
 	server := &http.Server{
