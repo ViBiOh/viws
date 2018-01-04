@@ -79,7 +79,9 @@ func main() {
 		log.Print(`Working in SPA mode`)
 	}
 
+	var pushPaths []string
 	if *push != `` {
+		pushPaths = strings.Split(*push, `,`)
 		if !*tls {
 			log.Print(`⚠ HTTP/2 Server Push works only when TLS in enabled ⚠`)
 		}
@@ -99,7 +101,7 @@ func main() {
 		}
 	}
 
-	requestsHandler = viws.ServerPushHandler(owasp.Handler(owaspConfig, viws.FileHandler(*directory, *spa, notFoundPath)), strings.Split(*push, `,`))
+	requestsHandler = viws.ServerPushHandler(owasp.Handler(owaspConfig, viws.FileHandler(*directory, *spa, notFoundPath)), pushPaths)
 	envHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, env.Handler(envConfig)))
 	apiHandler = prometheus.Handler(prometheusConfig, rate.Handler(rateConfig, gziphandler.GzipHandler(handler())))
 
