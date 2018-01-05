@@ -38,7 +38,7 @@ func NewApp(config map[string]interface{}, tls bool) (*App, error) {
 	var notFoundPath *string
 	if notFound {
 		if spa {
-			return nil, errors.New(`Incompatible options provided : -notFound and -spa`)
+			return nil, errors.New(`Incompatible options provided: -notFound and -spa`)
 		}
 
 		if notFoundPath = utils.IsFileExist(directory, notFoundFilename); notFoundPath == nil {
