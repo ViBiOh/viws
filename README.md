@@ -32,7 +32,7 @@ Usage of viws:
   -csp string
       [owasp] Content-Security-Policy (default "default-src 'self'")
   -directory string
-      Directory to serve (default "/www/")
+      [viws] Directory to serve (default "/www/")
   -env string
       [env] Environments key variables to expose, comma separated
   -frameOptions string
@@ -40,7 +40,7 @@ Usage of viws:
   -hsts
       [owasp] Indicate Strict Transport Security (default true)
   -notFound
-      Graceful 404 page at /404.html
+      [viws] Graceful 404 page at /404.html
   -port string
       Listening port (default "1080")
   -prometheusMetricsHost string
@@ -50,11 +50,11 @@ Usage of viws:
   -prometheusPrefix string
       [prometheus] Prefix (default "http")
   -push string
-      Paths for HTTP/2 Server Push, comma separated
+      [viws] Paths for HTTP/2 Server Push on index, comma separated
   -rateCount uint
       [rate] IP limit (default 5000)
   -spa
-      Indicate Single Page Application mode
+      [viws] Indicate Single Page Application mode
   -tls
       Serve TLS content
   -tlsCert string
@@ -75,7 +75,7 @@ curl myWebsite.com/users/vibioh/
 => /index.html
 ```
 
-Be careful, `-notFound` and `-spa` are incompatible flags. If you set both, the `-notFound` has priority over the `-spa`.
+Be careful, `-notFound` and `-spa` are incompatible flags. If you set both, you'll get an error.
 
 
 ## Docker

@@ -1,14 +1,73 @@
 package viws
 
 import (
+	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/ViBiOh/httputils"
 	"github.com/ViBiOh/httputils/tools"
 	"github.com/ViBiOh/viws/utils"
 )
+
+const notFoundFilename = `404.html`
+
+// App stores informations and secret of API
+type App struct {
+	spa          bool
+	directory    string
+	pushPaths    []string
+	notFoundPath *string
+}
+
+// NewApp creates new App from Flags' config
+func NewApp(config map[string]interface{}, tls bool) (*App, error) {
+	spa := *(config[`spa`].(*bool))
+	notFound := *(config[`notFound`].(*bool))
+	directory := *(config[`directory`].(*string))
+	push := *(config[`push`].(*string))
+
+	if utils.IsFileExist(directory) == nil {
+		return nil, fmt.Errorf(`Directory %s is unreachable or does not contains index`, directory)
+	}
+	log.Printf(`[viws] Serving file from %s`, directory)
+
+	var notFoundPath *string
+	if notFound {
+		if spa {
+			return nil, errors.New(`Incompatible options provided : -notFound and -spa`)
+		}
+
+		if notFoundPath = utils.IsFileExist(directory, notFoundFilename); notFoundPath == nil {
+			return nil, fmt.Errorf(`Not found page %s%s is unreachable`, directory, notFoundFilename)
+		}
+
+		log.Printf(`[viws] 404 will be %s`, *notFoundPath)
+	}
+
+	var pushPaths []string
+	if push != `` {
+		if !tls {
+			return nil, errors.New(`HTTP/2 Server Push works only when TLS in enabled`)
+		}
+
+		pushPaths = strings.Split(push, `,`)
+	}
+
+	if spa {
+		log.Print(`[viws] Working in SPA mode`)
+	}
+
+	return &App{
+		spa:          spa,
+		directory:    directory,
+		pushPaths:    pushPaths,
+		notFoundPath: notFoundPath,
+	}, nil
+}
 
 // Flags add flags for given prefix
 func Flags(prefix string) map[string]interface{} {
@@ -21,16 +80,15 @@ func Flags(prefix string) map[string]interface{} {
 }
 
 // ServerPushHandler add server push when serving index
-func ServerPushHandler(next http.Handler, pushPaths []string) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			return
-		}
+func (a *App) ServerPushHandler(next http.Handler) http.Handler {
+	if len(a.pushPaths) == 0 {
+		return next
+	}
 
-		if r.URL.Path == `/` && len(pushPaths) > 0 {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == `/` {
 			if pusher, ok := w.(http.Pusher); ok {
-				for _, path := range pushPaths {
+				for _, path := range a.pushPaths {
 					if err := pusher.Push(path, nil); err != nil {
 						log.Printf(`Failed to push %s: %v`, path, err)
 					}
@@ -43,16 +101,16 @@ func ServerPushHandler(next http.Handler, pushPaths []string) http.Handler {
 }
 
 // FileHandler serve file given configuration
-func FileHandler(directory string, spa bool, notFoundPath *string) http.Handler {
+func (a *App) FileHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if filename := utils.IsFileExist(directory, r.URL.Path); filename != nil {
+		if filename := utils.IsFileExist(a.directory, r.URL.Path); filename != nil {
 			http.ServeFile(w, r, *filename)
-		} else if notFoundPath != nil {
+		} else if a.notFoundPath != nil {
 			w.WriteHeader(http.StatusNotFound)
-			http.ServeFile(w, r, *notFoundPath)
-		} else if spa {
+			http.ServeFile(w, r, *a.notFoundPath)
+		} else if a.spa {
 			w.Header().Add(`Cache-Control`, `no-cache`)
-			http.ServeFile(w, r, directory)
+			http.ServeFile(w, r, a.directory)
 		} else {
 			httputils.NotFound(w)
 		}

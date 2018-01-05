@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/alcotest/alcotest"
@@ -15,22 +14,13 @@ import (
 	"github.com/ViBiOh/httputils/prometheus"
 	"github.com/ViBiOh/httputils/rate"
 	"github.com/ViBiOh/viws/env"
-	"github.com/ViBiOh/viws/utils"
 	"github.com/ViBiOh/viws/viws"
 )
-
-const notFoundFilename = `404.html`
 
 var (
 	requestsHandler http.Handler
 	envHandler      http.Handler
 	apiHandler      http.Handler
-)
-
-var (
-	directory = flag.String(`directory`, `/www/`, `Directory to serve`)
-	notFound  = flag.Bool(`notFound`, false, `Graceful 404 page at /404.html`)
-	spa       = flag.Bool(`spa`, false, `Indicate Single Page Application mode`)
 )
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,6 +33,11 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
 		if r.URL.Path == `/health` {
 			healthHandler(w, r)
 		} else if r.URL.Path == `/env` {
@@ -55,56 +50,31 @@ func handler() http.Handler {
 
 func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
-	push := flag.String(`push`, ``, `Paths for HTTP/2 Server Push, comma separated`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
-	envConfig := env.Flags(``)
 	alcotestConfig := alcotest.Flags(``)
 	certConfig := cert.Flags(`tls`)
 	prometheusConfig := prometheus.Flags(`prometheus`)
 	rateConfig := rate.Flags(`rate`)
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
+
+	viwsConfig := viws.Flags(``)
+	envConfig := env.Flags(``)
+
 	flag.Parse()
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	if utils.IsFileExist(*directory) == nil {
-		log.Fatalf(`Directory %s is unreachable or does not contains index`, *directory)
+	viwsApp, err := viws.NewApp(viwsConfig, *tls)
+	if err != nil {
+		log.Fatalf(`Error while instanciating viws: %v`, err)
 	}
 
-	log.Printf(`Starting server on port %s`, *port)
-	log.Printf(`Serving file from %s`, *directory)
-
-	if *spa {
-		log.Print(`Working in SPA mode`)
-	}
-
-	var pushPaths []string
-	if *push != `` {
-		pushPaths = strings.Split(*push, `,`)
-		if !*tls {
-			log.Print(`⚠ HTTP/2 Server Push works only when TLS in enabled ⚠`)
-		}
-	}
-
-	var notFoundPath *string
-	if *notFound {
-		if *spa {
-			log.Print(`⚠ -notFound and -spa are both set. SPA flag is ignored ⚠`)
-		}
-
-		if notFoundPath = utils.IsFileExist(*directory, notFoundFilename); notFoundPath == nil {
-			log.Printf(`%s%s is unreachable. Not found flag ignored.`, *directory, notFoundFilename)
-			*notFound = false
-		} else {
-			log.Printf(`404 will be %s`, *notFoundPath)
-		}
-	}
-
-	requestsHandler = viws.ServerPushHandler(owasp.Handler(owaspConfig, viws.FileHandler(*directory, *spa, notFoundPath)), pushPaths)
+	requestsHandler = viwsApp.ServerPushHandler(owasp.Handler(owaspConfig, viwsApp.FileHandler()))
 	envHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, env.Handler(envConfig)))
 	apiHandler = prometheus.Handler(prometheusConfig, rate.Handler(rateConfig, gziphandler.GzipHandler(handler())))
 
+	log.Printf(`Starting server on port %s`, *port)
 	server := &http.Server{
 		Addr:    `:` + *port,
 		Handler: apiHandler,

@@ -29,6 +29,10 @@ bench:
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws viws.go
 
+start-api:
+	go run viws.go \
+		-directory `pwd`
+
 docker-deps:
 	curl -s -o cacert.pem https://curl.haxx.se/ca/cacert.pem
 
