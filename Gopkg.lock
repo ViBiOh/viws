@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
-  revision = "47ca22a0aeea4c9ceddfb935d818d636d934c312"
+  revision = "289a3b81f5aedc99f8d6eb0f67827c142f1310d8"
 
 [[projects]]
   branch = "master"
@@ -28,7 +28,7 @@
     "rate",
     "tools"
   ]
-  revision = "d4377b875d3d705711b30964e5015a2e3e325c09"
+  revision = "481900a491a7bcf17a366e01f47b39c0828a0daf"
 
 [[projects]]
   branch = "master"
