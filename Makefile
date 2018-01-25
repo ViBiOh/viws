@@ -19,7 +19,7 @@ format:
 
 lint:
 	golint `go list ./... | grep -v vendor`
-	errcheck `go list ./... | grep -v vendor`
+	errcheck -ignoretests `go list ./... | grep -v vendor`
 	go vet ./...
 
 tst:

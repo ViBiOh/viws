@@ -30,6 +30,8 @@ func Handler(config map[string]*string) http.Handler {
 			}
 		}
 
-		httputils.ResponseJSON(w, http.StatusOK, env, httputils.IsPretty(r.URL.RawQuery))
+		if err := httputils.ResponseJSON(w, http.StatusOK, env, httputils.IsPretty(r.URL.RawQuery)); err != nil {
+			httputils.InternalServerError(w, err)
+		}
 	})
 }

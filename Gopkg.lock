@@ -14,7 +14,7 @@
     "alcotest",
     "httpclient"
   ]
-  revision = "7187d04caa2bfd06fc89ca52092c0ff924ff39bc"
+  revision = "10d38c99a86257c343dd2abaf4f6a6192e7aa3f8"
 
 [[projects]]
   branch = "master"
@@ -28,7 +28,7 @@
     "rate",
     "tools"
   ]
-  revision = "fa93fc0999b8df153b7f1b46c7c92a404f833efb"
+  revision = "d4377b875d3d705711b30964e5015a2e3e325c09"
 
 [[projects]]
   branch = "master"
@@ -40,7 +40,7 @@
   branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
-  revision = "1e59b77b52bf8e4b449a57e6f79f21226d571845"
+  revision = "c65a0412e71e8b9b3bfd22925720d23c0f054237"
 
 [[projects]]
   name = "github.com/matttproud/golang_protobuf_extensions"
@@ -55,7 +55,7 @@
     "prometheus",
     "prometheus/promhttp"
   ]
-  revision = "180b8fdc22b4ea7750bcb43c925277654a1ea2f3"
+  revision = "06bc6e01f4baf4ee783ffcd23abfcb0b0f9dfada"
 
 [[projects]]
   branch = "master"
@@ -71,16 +71,18 @@
     "internal/bitbucket.org/ww/goautoneg",
     "model"
   ]
-  revision = "2e54d0b93cba2fd133edc32211dcc32c06ef72ca"
+  revision = "89604d197083d4781071d3c65855d24ecfb0a563"
 
 [[projects]]
   branch = "master"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
+    "internal/util",
+    "nfs",
     "xfs"
   ]
-  revision = "b15cd069a83443be3154b719d0cc9fe8117f09fb"
+  revision = "cb4147076ac75738c9a7d279075a253c0cc5acbd"
 
 [[projects]]
   name = "github.com/tdewolff/minify"
