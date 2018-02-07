@@ -22,6 +22,11 @@ func Handler(config map[string]*string) http.Handler {
 	envKeys := strings.Split(*config[`env`], `,`)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
 		env := make(map[string]string)
 
 		for _, key := range envKeys {

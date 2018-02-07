@@ -43,16 +43,8 @@ Usage of viws:
       [viws] Graceful 404 page at /404.html
   -port string
       Listening port (default "1080")
-  -prometheusMetricsHost string
-      [prometheus] Allowed hostname to call metrics endpoint (default "localhost")
-  -prometheusMetricsPath string
-      [prometheus] Metrics endpoint path (default "/metrics")
-  -prometheusPrefix string
-      [prometheus] Prefix (default "http")
   -push string
       [viws] Paths for HTTP/2 Server Push on index, comma separated
-  -rateCount uint
-      [rate] IP limit (default 5000)
   -spa
       [viws] Indicate Single Page Application mode
   -tls

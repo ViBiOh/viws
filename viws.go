@@ -11,8 +11,6 @@ import (
 	"github.com/ViBiOh/httputils/cert"
 	"github.com/ViBiOh/httputils/cors"
 	"github.com/ViBiOh/httputils/owasp"
-	"github.com/ViBiOh/httputils/prometheus"
-	"github.com/ViBiOh/httputils/rate"
 	"github.com/ViBiOh/viws/env"
 	"github.com/ViBiOh/viws/viws"
 )
@@ -20,7 +18,6 @@ import (
 var (
 	requestsHandler http.Handler
 	envHandler      http.Handler
-	apiHandler      http.Handler
 )
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,11 +30,6 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			return
-		}
-
 		if r.URL.Path == `/health` {
 			healthHandler(w, r)
 		} else if r.URL.Path == `/env` {
@@ -51,10 +43,10 @@ func handler() http.Handler {
 func main() {
 	port := flag.String(`port`, `1080`, `Listening port`)
 	tls := flag.Bool(`tls`, false, `Serve TLS content`)
+
 	alcotestConfig := alcotest.Flags(``)
+
 	certConfig := cert.Flags(`tls`)
-	prometheusConfig := prometheus.Flags(`prometheus`)
-	rateConfig := rate.Flags(`rate`)
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
 
@@ -72,12 +64,11 @@ func main() {
 
 	requestsHandler = viwsApp.ServerPushHandler(owasp.Handler(owaspConfig, viwsApp.FileHandler()))
 	envHandler = owasp.Handler(owaspConfig, cors.Handler(corsConfig, env.Handler(envConfig)))
-	apiHandler = prometheus.Handler(prometheusConfig, rate.Handler(rateConfig, gziphandler.GzipHandler(handler())))
 
 	log.Printf(`Starting server on port %s`, *port)
 	server := &http.Server{
 		Addr:    `:` + *port,
-		Handler: apiHandler,
+		Handler: gziphandler.GzipHandler(handler()),
 	}
 
 	var serveError = make(chan error)

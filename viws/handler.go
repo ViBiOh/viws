@@ -86,6 +86,11 @@ func (a *App) ServerPushHandler(next http.Handler) http.Handler {
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
 		if r.URL.Path == `/` {
 			if pusher, ok := w.(http.Pusher); ok {
 				for _, path := range a.pushPaths {
@@ -103,6 +108,11 @@ func (a *App) ServerPushHandler(next http.Handler) http.Handler {
 // FileHandler serve file given configuration
 func (a *App) FileHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
 		if filename := utils.IsFileExist(a.directory, r.URL.Path); filename != nil {
 			http.ServeFile(w, r, *filename)
 		} else if a.notFoundPath != nil {
