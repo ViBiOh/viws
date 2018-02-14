@@ -30,7 +30,7 @@ bench:
 
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws viws.go
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -installsuffix nocgo -o bin/viws-arm viws.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm go build -installsuffix nocgo -o bin/viws-arm viws.go
 
 start-api:
 	go run viws.go \
