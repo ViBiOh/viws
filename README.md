@@ -42,7 +42,7 @@ Usage of viws:
   -notFound
       [viws] Graceful 404 page at /404.html
   -port string
-      Listening port (default "1080")
+      Listen port (default "1080")
   -push string
       [viws] Paths for HTTP/2 Server Push on index, comma separated
   -spa
