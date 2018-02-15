@@ -24,7 +24,7 @@ type App struct {
 }
 
 // NewApp creates new App from Flags' config
-func NewApp(config map[string]interface{}, tls bool) (*App, error) {
+func NewApp(config map[string]interface{}) (*App, error) {
 	spa := *(config[`spa`].(*bool))
 	notFound := *(config[`notFound`].(*bool))
 	directory := *(config[`directory`].(*string))
@@ -50,10 +50,6 @@ func NewApp(config map[string]interface{}, tls bool) (*App, error) {
 
 	var pushPaths []string
 	if push != `` {
-		if !tls {
-			return nil, errors.New(`HTTP/2 Server Push works only when TLS in enabled`)
-		}
-
 		pushPaths = strings.Split(push, `,`)
 	}
 

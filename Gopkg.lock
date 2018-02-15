@@ -26,7 +26,7 @@
     "owasp",
     "tools"
   ]
-  revision = "25bff7e5ea008fefc07a5467745b73ade0eba52c"
+  revision = "288533be2fefec40812d7805b6b5abf603ac283b"
 
 [[projects]]
   name = "github.com/tdewolff/minify"
