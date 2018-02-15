@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/NYTimes/gziphandler"
-	"github.com/ViBiOh/alcotest/healthcheck"
 	"github.com/ViBiOh/httputils"
 	"github.com/ViBiOh/httputils/cors"
+	"github.com/ViBiOh/httputils/healthcheck"
 	"github.com/ViBiOh/httputils/owasp"
 	"github.com/ViBiOh/viws/env"
 	"github.com/ViBiOh/viws/viws"
