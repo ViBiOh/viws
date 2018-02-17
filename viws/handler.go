@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ViBiOh/httputils"
+	"github.com/ViBiOh/httputils/httperror"
 	"github.com/ViBiOh/httputils/tools"
 	"github.com/ViBiOh/viws/utils"
 )
@@ -118,7 +118,7 @@ func (a *App) FileHandler() http.Handler {
 			w.Header().Add(`Cache-Control`, `no-cache`)
 			http.ServeFile(w, r, a.directory)
 		} else {
-			httputils.NotFound(w)
+			httperror.NotFound(w)
 		}
 	})
 }

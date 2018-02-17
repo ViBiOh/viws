@@ -25,7 +25,6 @@ func main() {
 	envConfig := env.Flags(``)
 
 	httputils.StartMainServer(func() http.Handler {
-
 		viwsApp, err := viws.NewApp(viwsConfig)
 		if err != nil {
 			log.Fatalf(`Error while instanciating viws: %v`, err)
