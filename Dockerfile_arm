@@ -1,9 +1,9 @@
 FROM scratch
 
-HEALTHCHECK --retries=10 CMD http://localhost:1080/health
+HEALTHCHECK --retries=10 CMD [ "/viws", "-url", "http://localhost:1080/health" ]
 
 EXPOSE 1080
-ENTRYPOINT [ "/bin/sh" ]
+ENTRYPOINT [ "/viws" ]
 
 COPY cacert.pem /etc/ssl/certs/ca-certificates.crt
-COPY bin/viws-arm /bin/sh
+COPY bin/viws-arm /viws

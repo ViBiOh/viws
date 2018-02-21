@@ -17,8 +17,6 @@ By default, server is listening on the `1080` port and serve content for GET req
 
 ```
 Usage of viws:
-  -c string
-      [health] URL to check
   -corsCredentials
       [cors] Access-Control-Allow-Credentials
   -corsExpose string
@@ -55,6 +53,8 @@ Usage of viws:
       [tls] Self-signed certificate hosts, comma separated (default "localhost")
   -tlsKey string
       [tls] PEM Key file
+  -url string
+      [health] URL to check
 ```
 
 ## Single Page Application

@@ -4,8 +4,8 @@
 [[projects]]
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
-  revision = "d6f46609c7629af3a02d791a4666866eed3cbd3e"
-  version = "v1.0.0"
+  revision = "2600fb119af974220d3916a5916d6e31176aac1b"
+  version = "v1.0.1"
 
 [[projects]]
   branch = "master"
@@ -16,15 +16,17 @@
     "cert",
     "cors",
     "healthcheck",
+    "httperror",
+    "json",
     "owasp",
     "server",
     "tools"
   ]
-  revision = "2802a9be4581106f0f41023d815ed5239145382d"
+  revision = "ffedff675f711425bed74940efee7021ba098536"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "32226d619b0de869292bb96a199f3529ab87f2fd731f41cc7ecf099fc7100f35"
+  inputs-digest = "7fecad1b602a03eb7fd318a0deeaf843b9caf89b322bf6c34c292c1062508eec"
   solver-name = "gps-cdcl"
   solver-version = 1
