@@ -35,6 +35,8 @@ Usage of viws:
       [env] Environments key variables to expose, comma separated
   -frameOptions string
       [owasp] X-Frame-Options (default "deny")
+  -headers string
+      [viws] Custom headers, comma separated (e.g. content-language:"fr",X-UA-Compatible:"test")
   -hsts
       [owasp] Indicate Strict Transport Security (default true)
   -notFound

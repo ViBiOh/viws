@@ -20,6 +20,7 @@ type App struct {
 	spa          bool
 	directory    string
 	pushPaths    []string
+	headers      map[string]string
 	notFoundPath *string
 }
 
@@ -69,6 +70,7 @@ func NewApp(config map[string]interface{}) (*App, error) {
 func Flags(prefix string) map[string]interface{} {
 	return map[string]interface{}{
 		`directory`: flag.String(tools.ToCamel(prefix+`Directory`), `/www/`, `[viws] Directory to serve`),
+		`headers`:   flag.String(tools.ToCamel(prefix+`Headers`), ``, `[viws] Custom headers, comma separated (e.g. content-language:"fr",X-UA-Compatible:"test")`),
 		`notFound`:  flag.Bool(tools.ToCamel(prefix+`NotFound`), false, `[viws] Graceful 404 page at /404.html`),
 		`spa`:       flag.Bool(tools.ToCamel(prefix+`Spa`), false, `[viws] Indicate Single Page Application mode`),
 		`push`:      flag.String(tools.ToCamel(prefix+`Push`), ``, `[viws] Paths for HTTP/2 Server Push on index, comma separated`),
