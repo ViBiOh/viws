@@ -90,6 +90,12 @@ func Flags(prefix string) map[string]interface{} {
 	}
 }
 
+func (a *App) addCustomHeaders(w http.ResponseWriter) {
+	for key, value := range a.headers {
+		w.Header().Set(key, value)
+	}
+}
+
 // ServerPushHandler add server push when serving index
 func (a *App) ServerPushHandler(next http.Handler) http.Handler {
 	if len(a.pushPaths) == 0 {
@@ -125,12 +131,15 @@ func (a *App) FileHandler() http.Handler {
 		}
 
 		if filename := utils.IsFileExist(a.directory, r.URL.Path); filename != nil {
+			a.addCustomHeaders(w)
 			http.ServeFile(w, r, *filename)
 		} else if a.notFoundPath != nil {
 			w.WriteHeader(http.StatusNotFound)
+			a.addCustomHeaders(w)
 			http.ServeFile(w, r, *a.notFoundPath)
 		} else if a.spa {
-			w.Header().Add(`Cache-Control`, `no-cache`)
+			w.Header().Set(`Cache-Control`, `no-cache`)
+			a.addCustomHeaders(w)
 			http.ServeFile(w, r, a.directory)
 		} else {
 			httperror.NotFound(w)
