@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/ViBiOh/httputils/httperror"
-	"github.com/ViBiOh/httputils/json"
+	"github.com/ViBiOh/httputils/httpjson"
 	"github.com/ViBiOh/httputils/tools"
 )
 
@@ -36,7 +36,7 @@ func Handler(config map[string]*string) http.Handler {
 			}
 		}
 
-		if err := json.ResponseJSON(w, http.StatusOK, env, json.IsPretty(r.URL.RawQuery)); err != nil {
+		if err := httpjson.ResponseJSON(w, http.StatusOK, env, httpjson.IsPretty(r.URL.RawQuery)); err != nil {
 			httperror.InternalServerError(w, err)
 		}
 	})

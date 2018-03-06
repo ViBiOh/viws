@@ -17,16 +17,16 @@
     "cors",
     "healthcheck",
     "httperror",
-    "json",
+    "httpjson",
     "owasp",
     "server",
     "tools"
   ]
-  revision = "ffedff675f711425bed74940efee7021ba098536"
+  revision = "203b8898ad2677a44cfc79ef8df214e93e7d4899"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7fecad1b602a03eb7fd318a0deeaf843b9caf89b322bf6c34c292c1062508eec"
+  inputs-digest = "7226792e815cec50ec7628ad9d72261e20109d3a23a34c33ef36d500103feba9"
   solver-name = "gps-cdcl"
   solver-version = 1
