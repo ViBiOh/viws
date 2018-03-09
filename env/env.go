@@ -2,6 +2,7 @@ package env
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -14,7 +15,7 @@ import (
 // Flags add flags for given prefix
 func Flags(prefix string) map[string]*string {
 	return map[string]*string{
-		`env`: flag.String(tools.ToCamel(prefix+`Env`), ``, `[env] Environments key variables to expose, comma separated`),
+		`env`: flag.String(tools.ToCamel(fmt.Sprintf(`%s%s`, prefix, `Env`)), ``, `[env] Environments key variables to expose, comma separated`),
 	}
 }
 
