@@ -30,8 +30,6 @@ bench:
 
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws viws.go
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws-arm viws.go
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws-arm64 viws.go
 
 start-api:
 	go run viws.go \
@@ -42,11 +40,7 @@ docker-deps:
 
 docker-build:
 	docker build -t ${DOCKER_USER}/viws .
-	docker build -t ${DOCKER_USER}/viws:arm -f Dockerfile_arm .
-	docker build -t ${DOCKER_USER}/viws:arm64 -f Dockerfile_arm64 .
 
 docker-push:
 	docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 	docker push ${DOCKER_USER}/viws
-	docker push ${DOCKER_USER}/viws:arm
-	docker push ${DOCKER_USER}/viws:arm64
