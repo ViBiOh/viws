@@ -24,7 +24,7 @@ func main() {
 	viwsConfig := viws.Flags(``)
 	envConfig := env.Flags(``)
 
-	httputils.StartMainServer(func() http.Handler {
+	httputils.NewApp(httputils.Flags(``), func() http.Handler {
 		viwsApp, err := viws.NewApp(viwsConfig)
 		if err != nil {
 			log.Fatalf(`Error while instanciating viws: %v`, err)
@@ -47,6 +47,5 @@ func main() {
 		})
 
 		return gziphandler.GzipHandler(handler)
-	}, nil)
-
+	}, nil).ListenAndServe()
 }

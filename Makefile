@@ -33,6 +33,7 @@ build:
 
 start-api:
 	go run viws.go \
+		-tls=false \
 		-directory `pwd`
 
 docker-deps:

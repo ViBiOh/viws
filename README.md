@@ -28,7 +28,7 @@ Usage of viws:
   -corsOrigin string
       [cors] Access-Control-Allow-Origin (default "*")
   -csp string
-      [owasp] Content-Security-Policy (default "default-src 'self'")
+      [owasp] Content-Security-Policy (default "default-src 'self'; base-uri 'self'")
   -directory string
       [viws] Directory to serve (default "/www/")
   -env string
@@ -41,14 +41,14 @@ Usage of viws:
       [owasp] Indicate Strict Transport Security (default true)
   -notFound
       [viws] Graceful 404 page at /404.html
-  -port string
-      Listen port (default "1080")
+  -port int
+      Listen port (default 1080)
   -push string
       [viws] Paths for HTTP/2 Server Push on index, comma separated
   -spa
       [viws] Indicate Single Page Application mode
   -tls
-      Serve TLS content
+      Serve TLS content (default true)
   -tlsCert string
       [tls] PEM Certificate file
   -tlsHosts string

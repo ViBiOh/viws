@@ -1,6 +1,6 @@
 FROM scratch
 
-HEALTHCHECK --retries=10 CMD [ "/viws", "-url", "http://localhost:1080/health" ]
+HEALTHCHECK --retries=10 CMD [ "/viws", "-url", "https://localhost:1080/health" ]
 
 EXPOSE 1080
 ENTRYPOINT [ "/viws" ]

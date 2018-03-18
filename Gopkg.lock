@@ -19,14 +19,15 @@
     "httperror",
     "httpjson",
     "owasp",
+    "request",
     "server",
     "tools"
   ]
-  revision = "203b8898ad2677a44cfc79ef8df214e93e7d4899"
+  revision = "9fdf00023e957b3f8b87805f09a4a3f589fa06b7"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "7226792e815cec50ec7628ad9d72261e20109d3a23a34c33ef36d500103feba9"
+  inputs-digest = "229cb4578829af9cf4535c4478801e6043bc5244000a016a09c2bd5d025c76ac"
   solver-name = "gps-cdcl"
   solver-version = 1
