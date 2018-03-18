@@ -13,7 +13,9 @@ import (
 	"github.com/ViBiOh/viws/utils"
 )
 
-const notFoundFilename = `404.html`
+const (
+	notFoundFilename = `404.html`
+)
 
 // App stores informations and secret of API
 type App struct {

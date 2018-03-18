@@ -30,9 +30,11 @@ func main() {
 			log.Fatalf(`Error while instanciating viws: %v`, err)
 		}
 
+		envApp := env.NewApp(envConfig)
+
 		healthcheckHandler := healthcheck.Handler()
 		requestsHandler := viwsApp.ServerPushHandler(owasp.Handler(owaspConfig, viwsApp.FileHandler()))
-		envHandler := owasp.Handler(owaspConfig, cors.Handler(corsConfig, env.Handler(envConfig)))
+		envHandler := owasp.Handler(owaspConfig, cors.Handler(corsConfig, envApp.Handler()))
 
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path == healthPrefix {

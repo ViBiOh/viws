@@ -5,9 +5,11 @@ import (
 	"path"
 )
 
-const indexFilename = `index.html`
+const (
+	indexFilename = `index.html`
+)
 
-// IsFileExist check if given paths are available for serving
+// IsFileExist check if concatenated paths are available for serving
 func IsFileExist(parts ...string) *string {
 	fullPath := path.Join(parts...)
 	info, err := os.Stat(fullPath)
