@@ -23,7 +23,7 @@
     "server",
     "tools"
   ]
-  revision = "9fdf00023e957b3f8b87805f09a4a3f589fa06b7"
+  revision = "5c62c9e3695cffd4dbde49503ef43f1e36ca09bb"
 
 [solve-meta]
   analyzer-name = "dep"

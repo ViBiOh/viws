@@ -55,6 +55,7 @@ func NewApp(config map[string]interface{}) (*App, error) {
 	var pushPaths []string
 	if push != `` {
 		pushPaths = strings.Split(push, `,`)
+		log.Printf(`[viws] HTTP/2 Push of %s`, pushPaths)
 	}
 
 	headers := make(map[string]string)
@@ -98,19 +99,15 @@ func (a *App) addCustomHeaders(w http.ResponseWriter) {
 	}
 }
 
-// ServerPushHandler add server push when serving index
-func (a *App) ServerPushHandler(next http.Handler) http.Handler {
-	if len(a.pushPaths) == 0 {
-		return next
-	}
-
+// Handler serve file given configuration
+func (a *App) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
 
-		if r.URL.Path == `/` {
+		if r.URL.Path == `/` && len(a.pushPaths) == 0 {
 			if pusher, ok := w.(http.Pusher); ok {
 				for _, path := range a.pushPaths {
 					if err := pusher.Push(path, nil); err != nil {
@@ -118,18 +115,6 @@ func (a *App) ServerPushHandler(next http.Handler) http.Handler {
 					}
 				}
 			}
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-// FileHandler serve file given configuration
-func (a *App) FileHandler() http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			return
 		}
 
 		if filename := utils.IsFileExist(a.directory, r.URL.Path); filename != nil {

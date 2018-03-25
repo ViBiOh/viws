@@ -33,7 +33,7 @@ func main() {
 		envApp := env.NewApp(envConfig)
 
 		healthcheckHandler := healthcheck.Handler()
-		requestsHandler := viwsApp.ServerPushHandler(owasp.Handler(owaspConfig, viwsApp.FileHandler()))
+		requestsHandler := owasp.Handler(owaspConfig, viwsApp.Handler())
 		envHandler := owasp.Handler(owaspConfig, cors.Handler(corsConfig, envApp.Handler()))
 
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
