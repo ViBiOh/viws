@@ -33,7 +33,6 @@ build:
 
 start-api:
 	go run viws.go \
-		-tls=false \
 		-directory `pwd`/example \
 		-push /index.css
 
