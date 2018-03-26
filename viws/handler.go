@@ -107,7 +107,7 @@ func (a *App) Handler() http.Handler {
 			return
 		}
 
-		if r.URL.Path == `/` && len(a.pushPaths) == 0 {
+		if r.URL.Path == `/` && len(a.pushPaths) != 0 {
 			if pusher, ok := w.(http.Pusher); ok {
 				for _, path := range a.pushPaths {
 					if err := pusher.Push(path, nil); err != nil {
