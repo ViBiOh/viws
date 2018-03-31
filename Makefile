@@ -14,8 +14,8 @@ deps:
 	dep ensure
 
 format:
-	goimports -w *.go
-	gofmt -s -w *.go
+	goimports -w **/*.go
+	gofmt -s -w **/*.go
 
 lint:
 	golint `go list ./... | grep -v vendor`
@@ -29,10 +29,10 @@ bench:
 	go test ./... -bench . -benchmem -run Benchmark.*
 
 build:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws viws.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws cmd/viws.go
 
 start-api:
-	go run viws.go \
+	go run cmd/viws.go \
 		-directory `pwd`/example \
 		-push /index.css
 

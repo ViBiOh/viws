@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ViBiOh/httputils/request"
+	"github.com/ViBiOh/httputils/pkg/request"
 )
 
 func Test_Flags(t *testing.T) {

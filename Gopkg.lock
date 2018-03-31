@@ -11,23 +11,23 @@
   branch = "master"
   name = "github.com/ViBiOh/httputils"
   packages = [
-    ".",
-    "alcotest",
-    "cert",
-    "cors",
-    "healthcheck",
-    "httperror",
-    "httpjson",
-    "owasp",
-    "request",
-    "server",
-    "tools"
+    "pkg",
+    "pkg/alcotest",
+    "pkg/cert",
+    "pkg/cors",
+    "pkg/healthcheck",
+    "pkg/httperror",
+    "pkg/httpjson",
+    "pkg/owasp",
+    "pkg/request",
+    "pkg/server",
+    "pkg/tools"
   ]
-  revision = "5c62c9e3695cffd4dbde49503ef43f1e36ca09bb"
+  revision = "fe606d9cdfe10039ae176d5ef70cc5c7015bb0a3"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "229cb4578829af9cf4535c4478801e6043bc5244000a016a09c2bd5d025c76ac"
+  inputs-digest = "4c0da39c4f9ddea3a05be67192e3a3204e154e2b7741a6fcffe32428c379a18a"
   solver-name = "gps-cdcl"
   solver-version = 1

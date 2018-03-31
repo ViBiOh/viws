@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/ViBiOh/httputils/httperror"
-	"github.com/ViBiOh/httputils/tools"
-	"github.com/ViBiOh/viws/utils"
+	"github.com/ViBiOh/httputils/pkg/httperror"
+	"github.com/ViBiOh/httputils/pkg/tools"
+	"github.com/ViBiOh/viws/pkg/utils"
 )
 
 const (
