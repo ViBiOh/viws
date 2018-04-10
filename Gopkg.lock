@@ -23,7 +23,7 @@
     "pkg/server",
     "pkg/tools"
   ]
-  revision = "fe606d9cdfe10039ae176d5ef70cc5c7015bb0a3"
+  revision = "6e5a7d80a67ed46f5c0be6e632ac5d0c5e20a74b"
 
 [solve-meta]
   analyzer-name = "dep"
