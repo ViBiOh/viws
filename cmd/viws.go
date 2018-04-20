@@ -7,6 +7,7 @@ import (
 	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/cors"
+	"github.com/ViBiOh/httputils/pkg/datadog"
 	"github.com/ViBiOh/httputils/pkg/healthcheck"
 	"github.com/ViBiOh/httputils/pkg/owasp"
 	"github.com/ViBiOh/viws/pkg/env"
@@ -23,12 +24,15 @@ func main() {
 	corsConfig := cors.Flags(`cors`)
 	viwsConfig := viws.Flags(``)
 	envConfig := env.Flags(``)
+	datadogConfig := datadog.Flags(`datadog`)
 
 	httputils.NewApp(httputils.Flags(``), func() http.Handler {
 		viwsApp, err := viws.NewApp(viwsConfig)
 		if err != nil {
 			log.Fatalf(`Error while instanciating viws: %v`, err)
 		}
+
+		datadogApp := datadog.NewApp(datadogConfig)
 
 		envApp := env.NewApp(envConfig)
 
@@ -46,6 +50,6 @@ func main() {
 			}
 		})
 
-		return gziphandler.GzipHandler(handler)
+		return datadogApp.Handler(gziphandler.GzipHandler(handler))
 	}, nil).ListenAndServe()
 }
