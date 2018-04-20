@@ -32,8 +32,6 @@ func main() {
 			log.Fatalf(`Error while instanciating viws: %v`, err)
 		}
 
-		datadogApp := datadog.NewApp(datadogConfig)
-
 		envApp := env.NewApp(envConfig)
 
 		healthcheckHandler := healthcheck.Handler()
@@ -50,6 +48,6 @@ func main() {
 			}
 		})
 
-		return datadogApp.Handler(gziphandler.GzipHandler(handler))
+		return datadog.NewApp(datadogConfig).Handler(gziphandler.GzipHandler(handler))
 	}, nil).ListenAndServe()
 }
