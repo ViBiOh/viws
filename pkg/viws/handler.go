@@ -99,37 +99,50 @@ func (a *App) addCustomHeaders(w http.ResponseWriter) {
 	}
 }
 
+func (a *App) handlePush(w http.ResponseWriter, r *http.Request) {
+	if pusher, ok := w.(http.Pusher); ok {
+		for _, path := range a.pushPaths {
+			if err := pusher.Push(path, nil); err != nil {
+				log.Printf(`Failed to push %s: %v`, path, err)
+			}
+		}
+	}
+}
+
 // Handler serve file given configuration
 func (a *App) Handler() http.Handler {
+	hasPush := len(a.pushPaths) != 0
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
 
-		if r.URL.Path == `/` && len(a.pushPaths) != 0 {
-			if pusher, ok := w.(http.Pusher); ok {
-				for _, path := range a.pushPaths {
-					if err := pusher.Push(path, nil); err != nil {
-						log.Printf(`Failed to push %s: %v`, path, err)
-					}
-				}
-			}
+		if hasPush && r.URL.Path == `/` {
+			a.handlePush(w, r)
 		}
 
 		if filename := utils.IsFileExist(a.directory, r.URL.Path); filename != nil {
 			a.addCustomHeaders(w)
 			http.ServeFile(w, r, *filename)
-		} else if a.notFoundPath != nil {
+			return
+		}
+
+		if a.notFoundPath != nil {
 			w.WriteHeader(http.StatusNotFound)
 			a.addCustomHeaders(w)
 			http.ServeFile(w, r, *a.notFoundPath)
-		} else if a.spa {
+			return
+		}
+
+		if a.spa {
 			w.Header().Set(`Cache-Control`, `no-cache`)
 			a.addCustomHeaders(w)
 			http.ServeFile(w, r, a.directory)
-		} else {
-			httperror.NotFound(w)
+			return
 		}
+
+		httperror.NotFound(w)
 	})
 }
