@@ -31,8 +31,8 @@ build:
 
 start-api:
 	go run cmd/viws.go \
-		-directory `pwd`/example \
-		-push /index.css
+		-tls=false \
+		-directory `pwd`/example
 
 docker-deps:
 	curl -s -o cacert.pem https://curl.haxx.se/ca/cacert.pem

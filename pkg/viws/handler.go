@@ -85,11 +85,11 @@ func NewApp(config map[string]interface{}) (*App, error) {
 // Flags add flags for given prefix
 func Flags(prefix string) map[string]interface{} {
 	return map[string]interface{}{
-		`directory`: flag.String(tools.ToCamel(fmt.Sprintf(`%s%s`, prefix, `Directory`)), `/www/`, `[viws] Directory to serve`),
-		`headers`:   flag.String(tools.ToCamel(fmt.Sprintf(`%s%s`, prefix, `Headers`)), ``, `[viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)`),
-		`notFound`:  flag.Bool(tools.ToCamel(fmt.Sprintf(`%s%s`, prefix, `NotFound`)), false, `[viws] Graceful 404 page at /404.html`),
-		`spa`:       flag.Bool(tools.ToCamel(fmt.Sprintf(`%s%s`, prefix, `Spa`)), false, `[viws] Indicate Single Page Application mode`),
-		`push`:      flag.String(tools.ToCamel(fmt.Sprintf(`%s%s`, prefix, `Push`)), ``, `[viws] Paths for HTTP/2 Server Push on index, comma separated`),
+		`directory`: flag.String(tools.ToCamel(fmt.Sprintf(`%sDirectory`, prefix)), `/www/`, `[viws] Directory to serve`),
+		`headers`:   flag.String(tools.ToCamel(fmt.Sprintf(`%sHeaders`, prefix)), ``, `[viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)`),
+		`notFound`:  flag.Bool(tools.ToCamel(fmt.Sprintf(`%sNotFound`, prefix)), false, `[viws] Graceful 404 page at /404.html`),
+		`spa`:       flag.Bool(tools.ToCamel(fmt.Sprintf(`%sSpa`, prefix)), false, `[viws] Indicate Single Page Application mode`),
+		`push`:      flag.String(tools.ToCamel(fmt.Sprintf(`%sPush`, prefix)), ``, `[viws] Paths for HTTP/2 Server Push on index, comma separated`),
 	}
 }
 
