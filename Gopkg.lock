@@ -34,7 +34,7 @@
     "pkg/server",
     "pkg/tools"
   ]
-  revision = "03581a10c086a98377aeb8d686cbb1cb175b4f5c"
+  revision = "e7c1fd8a46a63382a359fa2164174aa1f33e1d75"
 
 [[projects]]
   name = "github.com/ugorji/go"
