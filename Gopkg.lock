@@ -34,7 +34,7 @@
     "pkg/server",
     "pkg/tools"
   ]
-  revision = "e7c1fd8a46a63382a359fa2164174aa1f33e1d75"
+  revision = "8028a990597f0ec475330fe26c1ba1bd60a50ccc"
 
 [[projects]]
   name = "github.com/ugorji/go"
@@ -45,7 +45,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["windows"]
-  revision = "6f686a352de66814cdd080d970febae7767857a3"
+  revision = "7c87d13f8e835d2fb3a70a2912c811ed0c1d241b"
 
 [solve-meta]
   analyzer-name = "dep"

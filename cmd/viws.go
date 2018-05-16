@@ -26,6 +26,8 @@ func main() {
 	envConfig := env.Flags(``)
 	datadogConfig := datadog.Flags(`datadog`)
 
+	healthcheckApp := healthcheck.NewApp()
+
 	httputils.NewApp(httputils.Flags(``), func() http.Handler {
 		viwsApp, err := viws.NewApp(viwsConfig)
 		if err != nil {
@@ -34,12 +36,12 @@ func main() {
 
 		envApp := env.NewApp(envConfig)
 
-		healthcheckHandler := healthcheck.Handler()
 		requestsHandler := owasp.Handler(owaspConfig, viwsApp.Handler())
 		envHandler := owasp.Handler(owaspConfig, cors.Handler(corsConfig, envApp.Handler()))
+		healthcheckHandler := healthcheckApp.Handler(nil)
 
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == healthPrefix {
+			if r.URL.Path == `/health` {
 				healthcheckHandler.ServeHTTP(w, r)
 			} else if r.URL.Path == envPrefix {
 				envHandler.ServeHTTP(w, r)
@@ -49,5 +51,5 @@ func main() {
 		})
 
 		return datadog.NewApp(datadogConfig).Handler(gziphandler.GzipHandler(handler))
-	}, nil).ListenAndServe()
+	}, nil, healthcheckApp).ListenAndServe()
 }
