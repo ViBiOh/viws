@@ -29,12 +29,6 @@ Usage of viws:
       [cors] Access-Control-Allow-Origin (default "*")
   -csp string
       [owasp] Content-Security-Policy (default "default-src 'self'; base-uri 'self'")
-  -datadogHostname string
-      Datadog Agent Hostname (default "dd-agent")
-  -datadogPort string
-      Datadog Agent Port (default "8126")
-  -datadogService string
-      Service name
   -directory string
       [viws] Directory to serve (default "/www/")
   -env string
