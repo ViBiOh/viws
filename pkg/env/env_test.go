@@ -41,16 +41,6 @@ func Test_NewApp(t *testing.T) {
 		want      []string
 	}{
 		{
-			`should work with nil params`,
-			nil,
-			nil,
-		},
-		{
-			`should work with empty params`,
-			map[string]*string{},
-			nil,
-		},
-		{
 			`should work with empty values`,
 			map[string]*string{
 				`env`: &emptyString,

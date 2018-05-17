@@ -19,14 +19,9 @@ type App struct {
 
 // NewApp creates new App from Flags' config
 func NewApp(config map[string]*string) *App {
-	env := ``
-	if config != nil {
-		if envConfig, ok := config[`env`]; ok {
-			env = *envConfig
-		}
-	}
-
 	var keys []string
+
+	env := strings.TrimSpace(*config[`env`])
 	if env != `` {
 		keys = strings.Split(env, `,`)
 	}

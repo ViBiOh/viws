@@ -30,9 +30,9 @@ type App struct {
 func NewApp(config map[string]interface{}) (*App, error) {
 	spa := *(config[`spa`].(*bool))
 	notFound := *(config[`notFound`].(*bool))
-	directory := *(config[`directory`].(*string))
-	push := *(config[`push`].(*string))
-	rawHeaders := *(config[`headers`].(*string))
+	directory := strings.TrimSpace(*(config[`directory`].(*string)))
+	push := strings.TrimSpace(*(config[`push`].(*string)))
+	rawHeaders := strings.TrimSpace(*(config[`headers`].(*string)))
 
 	if utils.IsFileExist(directory) == nil {
 		return nil, fmt.Errorf(`Directory %s is unreachable or does not contains index`, directory)
