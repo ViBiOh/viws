@@ -14,11 +14,6 @@ import (
 	"github.com/ViBiOh/viws/pkg/viws"
 )
 
-const (
-	healthPrefix = `/health`
-	envPrefix    = `/env`
-)
-
 func main() {
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
@@ -29,27 +24,31 @@ func main() {
 	healthcheckApp := healthcheck.NewApp()
 
 	httputils.NewApp(httputils.Flags(``), func() http.Handler {
+		envApp := env.NewApp(envConfig)
 		viwsApp, err := viws.NewApp(viwsConfig)
 		if err != nil {
 			log.Fatalf(`Error while instanciating viws: %v`, err)
 		}
 
-		envApp := env.NewApp(envConfig)
-
-		requestsHandler := owasp.Handler(owaspConfig, viwsApp.Handler())
+		viwsHandler := owasp.Handler(owaspConfig, viwsApp.Handler())
 		envHandler := owasp.Handler(owaspConfig, cors.Handler(corsConfig, envApp.Handler()))
-		healthcheckHandler := healthcheckApp.Handler(nil)
-
-		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == `/health` {
-				healthcheckHandler.ServeHTTP(w, r)
-			} else if r.URL.Path == envPrefix {
+		requestHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == `/env` {
 				envHandler.ServeHTTP(w, r)
 			} else {
-				requestsHandler.ServeHTTP(w, r)
+				viwsHandler.ServeHTTP(w, r)
 			}
 		})
 
-		return opentracing.NewApp(opentracingConfig).Handler(gziphandler.GzipHandler(handler))
+		apiHandler := opentracing.NewApp(opentracingConfig).Handler(gziphandler.GzipHandler(requestHandler))
+		healthcheckHandler := healthcheckApp.Handler(nil)
+
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == `/health` {
+				healthcheckHandler.ServeHTTP(w, r)
+			} else {
+				apiHandler.ServeHTTP(w, r)
+			}
+		})
 	}, nil, healthcheckApp).ListenAndServe()
 }
