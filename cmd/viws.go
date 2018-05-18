@@ -8,6 +8,7 @@ import (
 	"github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/cors"
 	"github.com/ViBiOh/httputils/pkg/healthcheck"
+	"github.com/ViBiOh/httputils/pkg/opentracing"
 	"github.com/ViBiOh/httputils/pkg/owasp"
 	"github.com/ViBiOh/viws/pkg/env"
 	"github.com/ViBiOh/viws/pkg/viws"
@@ -23,6 +24,7 @@ func main() {
 	corsConfig := cors.Flags(`cors`)
 	viwsConfig := viws.Flags(``)
 	envConfig := env.Flags(``)
+	opentracingConfig := opentracing.Flags(`tracing`)
 
 	healthcheckApp := healthcheck.NewApp()
 
@@ -48,6 +50,6 @@ func main() {
 			}
 		})
 
-		return gziphandler.GzipHandler(handler)
+		return opentracing.NewApp(opentracingConfig).Handler(gziphandler.GzipHandler(handler))
 	}, nil, healthcheckApp).ListenAndServe()
 }

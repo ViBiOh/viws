@@ -55,6 +55,10 @@ Usage of viws:
       [tls] Self-signed certificate hosts, comma separated (default "localhost")
   -tlsKey string
       [tls] PEM Key file
+  -tracingAgent string
+      [opentracing] Jaeger Agent host:port (default "jaeger:6831")
+  -tracingName string
+      [opentracing] Service name
   -url string
       [health] URL to check
 ```
