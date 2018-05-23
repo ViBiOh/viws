@@ -30,7 +30,7 @@ build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws cmd/viws.go
 
 start-api:
-	go run cmd/viws.go \
+	go run -race cmd/viws.go \
 		-tls=false \
 		-directory `pwd`/example
 
