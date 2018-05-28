@@ -12,8 +12,10 @@
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
+    "pkg/alcotest",
     "pkg/cert",
     "pkg/cors",
+    "pkg/gzip",
     "pkg/healthcheck",
     "pkg/httperror",
     "pkg/httpjson",
@@ -23,7 +25,7 @@
     "pkg/server",
     "pkg/tools"
   ]
-  revision = "102aa71021682a10c43740d54cf8879fb33e59a3"
+  revision = "5f118d9228ef4b0d3a598415e4cccc37b65f5577"
 
 [[projects]]
   branch = "master"
@@ -46,8 +48,8 @@
 [[projects]]
   name = "github.com/matttproud/golang_protobuf_extensions"
   packages = ["pbutil"]
-  revision = "3247c84500bff8d9fb6d579d800f20b3e091582c"
-  version = "v1.0.0"
+  revision = "c12348ce28de40eed0136aa2b644d0ee0650e56c"
+  version = "v1.0.1"
 
 [[projects]]
   branch = "master"
@@ -105,7 +107,7 @@
     "nfs",
     "xfs"
   ]
-  revision = "8b1c2da0d56deffdbb9e48d4414b4e674bd8083e"
+  revision = "fe93d378a6b03758a2c1b65e86cf630bf78681c0"
 
 [[projects]]
   name = "github.com/uber/jaeger-client-go"
@@ -145,6 +147,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b1ecd28750c51b446f82081ae64a9fc48e80ddc3e0c58ff9811789dce6fabfb5"
+  inputs-digest = "479c9f09b61e7874fb6b359dc579858ca8a45f36a28f34c06d6082514b68e9e0"
   solver-name = "gps-cdcl"
   solver-version = 1
