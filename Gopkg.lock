@@ -25,7 +25,7 @@
     "pkg/server",
     "pkg/tools"
   ]
-  revision = "5f118d9228ef4b0d3a598415e4cccc37b65f5577"
+  revision = "9f9961492345a8306528feb1283c6b76fc6d7e3e"
 
 [[projects]]
   branch = "master"
@@ -142,7 +142,7 @@
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
-  revision = "dfa909b99c79129e1100513e5cd36307665e5723"
+  revision = "8d282c4e200f6234d5df69ac4ad1ecb709c3df2c"
 
 [solve-meta]
   analyzer-name = "dep"
