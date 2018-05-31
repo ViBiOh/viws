@@ -93,13 +93,13 @@ func Flags(prefix string) map[string]interface{} {
 	}
 }
 
-func (a *App) addCustomHeaders(w http.ResponseWriter) {
+func (a App) addCustomHeaders(w http.ResponseWriter) {
 	for key, value := range a.headers {
 		w.Header().Set(key, value)
 	}
 }
 
-func (a *App) handlePush(w http.ResponseWriter, r *http.Request) {
+func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
 	if pusher, ok := w.(http.Pusher); ok {
 		for _, path := range a.pushPaths {
 			if err := pusher.Push(path, nil); err != nil {
@@ -110,7 +110,7 @@ func (a *App) handlePush(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handler serve file given configuration
-func (a *App) Handler() http.Handler {
+func (a App) Handler() http.Handler {
 	hasPush := len(a.pushPaths) != 0
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

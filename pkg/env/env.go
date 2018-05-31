@@ -39,7 +39,7 @@ func Flags(prefix string) map[string]*string {
 }
 
 // Handler for net/http package returning environment variables in JSON
-func (a *App) Handler() http.Handler {
+func (a App) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
