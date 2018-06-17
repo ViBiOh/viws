@@ -8,7 +8,7 @@ A superlight HTTP fileserver with customizable behavior.
 ## Installation
 
 ```
-go get -u github.com/ViBiOh/viws/cmd
+go get -u github.com/ViBiOh/viws/cmd/viws
 ```
 
 ## Usage
