@@ -114,6 +114,18 @@ func (a App) Handler() http.Handler {
 	hasPush := len(a.pushPaths) != 0
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodHead {
+			a.addCustomHeaders(w)
+
+			if utils.IsFileExist(a.directory, r.URL.Path) != nil {
+				w.WriteHeader(http.StatusNoContent)
+			} else {
+				httperror.NotFound(w)
+			}
+
+			return
+		}
+
 		if r.Method != http.MethodGet {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
