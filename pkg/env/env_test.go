@@ -14,19 +14,25 @@ import (
 func Test_Flags(t *testing.T) {
 	var cases = []struct {
 		intention string
-		input     string
-		want      int
+		want      string
+		wantType  string
 	}{
 		{
-			`should work with given params`,
-			`test`,
-			1,
+			`should add string env param to flags`,
+			`env`,
+			`*string`,
 		},
 	}
 
 	for _, testCase := range cases {
-		if result := Flags(testCase.input); len(result) != testCase.want {
-			t.Errorf("%s\nFlags(%+v) = %+v, want %+v", testCase.intention, testCase.input, result, testCase.want)
+		result := Flags(testCase.intention)[testCase.want]
+
+		if result == nil {
+			t.Errorf("%s\nFlags() = %+v, want `%s`", testCase.intention, result, testCase.want)
+		}
+
+		if fmt.Sprintf(`%T`, result) != testCase.wantType {
+			t.Errorf("%s\nFlags() = `%T`, want `%s`", testCase.intention, result, testCase.wantType)
 		}
 	}
 }
@@ -124,11 +130,11 @@ func Test_Handler(t *testing.T) {
 		a.Handler().ServeHTTP(writer, testCase.request)
 
 		if result := writer.Code; result != testCase.wantStatus {
-			t.Errorf("%s\nHandler(%+v) = %+v, want status %+v", testCase.intention, testCase.request, result, testCase.wantStatus)
+			t.Errorf("%s\nHandler(%+v) = %d, want status %d", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
 		if result, _ := request.ReadBody(writer.Result().Body); string(result) != testCase.want {
-			t.Errorf("%s\nHandler(%+v) = %+v, want %+v", testCase.intention, testCase.request, string(result), testCase.want)
+			t.Errorf("%s\nHandler(%+v) = %s, want %s", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
 }
