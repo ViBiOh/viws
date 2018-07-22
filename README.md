@@ -45,6 +45,12 @@ Usage of viws:
       Listen port (default 1080)
   -push string
       [viws] Paths for HTTP/2 Server Push on index, comma separated
+  -rollbarEnv string
+      [rollbar] Environment (default "prod")
+  -rollbarServerRoot string
+      [rollbar] Server Root
+  -rollbarToken string
+      [rollbar] Token
   -spa
       [viws] Indicate Single Page Application mode
   -tls
@@ -55,6 +61,8 @@ Usage of viws:
       [tls] Self-signed certificate hosts, comma separated (default "localhost")
   -tlsKey string
       [tls] PEM Key file
+  -tlsOrganization string
+      [tls] Self-signed certificate organization (default "ViBiOh")
   -tracingAgent string
       [opentracing] Jaeger Agent (e.g. host:port) (default "jaeger:6831")
   -tracingName string

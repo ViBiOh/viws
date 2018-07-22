@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:214672e63a10f6e4108dd17c863b3adf09aafa82745473810837afc024a03c37"
+  digest = "1:180fac85edf6cdad84c88a779d0d33005f4d98c38c0a088b5f42a2d2fa2f2bd0"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -25,11 +25,12 @@
     "pkg/opentracing",
     "pkg/owasp",
     "pkg/request",
+    "pkg/rollbar",
     "pkg/server",
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "3d6b6ec57092ce1abfd478ee08a44be1f12b5047"
+  revision = "f38266de7b355232d0813c3dc45d812e8c1be293"
 
 [[projects]]
   branch = "master"
@@ -136,6 +137,14 @@
   revision = "ae68e2d4c00fed4943b5f6698d504a5fe083da8a"
 
 [[projects]]
+  digest = "1:f9141ca80ae9d81b7b8a624848750d6ac73bf942de994086bdcf6e373349be3f"
+  name = "github.com/rollbar/rollbar-go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "dff56a4ed902ad4f385427794b1748ea2182e84c"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:7627e9377eb0551bc8c6e2b0c54abbbf67e9afb675f45ea916bc63d8acb1d690"
   name = "github.com/uber/jaeger-client-go"
   packages = [
@@ -174,7 +183,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "d0887baf81f4598189d4e12a37c6da86f0bba4d0"
+  revision = "a680a1efc54dd51c040b3b5ce4939ea3cf2ea0d1"
 
 [solve-meta]
   analyzer-name = "dep"
