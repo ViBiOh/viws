@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:180fac85edf6cdad84c88a779d0d33005f4d98c38c0a088b5f42a2d2fa2f2bd0"
+  digest = "1:9128a8463208b67a3f36f8015ca449a9e55a61a86bf57ed6d04c3fa052079f42"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -30,7 +30,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "f38266de7b355232d0813c3dc45d812e8c1be293"
+  revision = "86591b20f496b2bfbd5e5b5c8df86937c0d7555b"
 
 [[projects]]
   branch = "master"
@@ -125,7 +125,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:55d7449d6987dabf272b4e81b2f9c449f05b17415c939b68d1e82f57e3374b7f"
+  digest = "1:a37c98f4b7a66bb5c539c0539f0915a74ef1c8e0b3b6f45735289d94cae92bfd"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -134,7 +134,7 @@
     "xfs",
   ]
   pruneopts = "UT"
-  revision = "ae68e2d4c00fed4943b5f6698d504a5fe083da8a"
+  revision = "05ee40e3a273f7245e8777337fc7b46e533a9a92"
 
 [[projects]]
   digest = "1:f9141ca80ae9d81b7b8a624848750d6ac73bf942de994086bdcf6e373349be3f"
@@ -183,7 +183,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "a680a1efc54dd51c040b3b5ce4939ea3cf2ea0d1"
+  revision = "3673e40ba22529d22c3fd7c93e97b0ce50fa7bdd"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -199,6 +199,7 @@
     "github.com/ViBiOh/httputils/pkg/opentracing",
     "github.com/ViBiOh/httputils/pkg/owasp",
     "github.com/ViBiOh/httputils/pkg/request",
+    "github.com/ViBiOh/httputils/pkg/rollbar",
     "github.com/ViBiOh/httputils/pkg/server",
     "github.com/ViBiOh/httputils/pkg/tools",
   ]
