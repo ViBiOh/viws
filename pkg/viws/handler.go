@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/ViBiOh/httputils/pkg/httperror"
+	"github.com/ViBiOh/httputils/pkg/rollbar"
 	"github.com/ViBiOh/httputils/pkg/tools"
 	"github.com/ViBiOh/viws/pkg/utils"
 )
@@ -62,7 +63,7 @@ func NewApp(config map[string]interface{}) (*App, error) {
 	if rawHeaders != `` {
 		for _, header := range strings.Split(rawHeaders, `~`) {
 			if parts := strings.SplitN(header, `:`, 2); len(parts) != 2 {
-				log.Printf(`[viws] Header has wrong format: %s`, header)
+				rollbar.LogWarning(`[viws] Header has wrong format: %s`, header)
 			} else {
 				headers[parts[0]] = parts[1]
 			}
@@ -103,7 +104,7 @@ func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
 	if pusher, ok := w.(http.Pusher); ok {
 		for _, path := range a.pushPaths {
 			if err := pusher.Push(path, nil); err != nil {
-				log.Printf(`Failed to push %s: %v`, path, err)
+				rollbar.LogError(`Failed to push %s: %v`, path, err)
 			}
 		}
 	}

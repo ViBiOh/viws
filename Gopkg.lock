@@ -31,7 +31,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "8d254cb6242112efb13968bb93eea04a37c05512"
+  revision = "d56e89f60c4da56a18f01a35fa745e3a5fddb431"
 
 [[projects]]
   branch = "master"
@@ -114,7 +114,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e469cd65badf7694aeb44874518606d93c1d59e7735d3754ad442782437d3cc3"
+  digest = "1:63b68062b8968092eb86bedc4e68894bd096ea6b24920faca8b9dcf451f54bb5"
   name = "github.com/prometheus/common"
   packages = [
     "expfmt",
@@ -122,7 +122,7 @@
     "model",
   ]
   pruneopts = "UT"
-  revision = "7600349dcfe1abd18d72d3a1770870d9800a7801"
+  revision = "c7de2306084e37d54b8be01f3541a8464345e9a5"
 
 [[projects]]
   branch = "master"
@@ -184,7 +184,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "3673e40ba22529d22c3fd7c93e97b0ce50fa7bdd"
+  revision = "f4c29de78a2a91c00474a2e689954305c350adf9"
 
 [solve-meta]
   analyzer-name = "dep"
