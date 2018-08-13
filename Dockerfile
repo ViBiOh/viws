@@ -13,10 +13,11 @@ RUN make ${APP_NAME} \
 
 FROM scratch
 
+ENV APP_NAME viws
 HEALTHCHECK --retries=10 CMD [ "/viws", "-url", "https://localhost:1080/health" ]
 
 EXPOSE 1080
 ENTRYPOINT [ "/viws" ]
 
 COPY --from=builder /app/cacert.pem /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /app/viws /viws
+COPY --from=builder /app/${APP_NAME} /viws
