@@ -1,8 +1,22 @@
-default: api docker-api
+APP_NAME ?= viws
+VERSION ?= $(shell git log --pretty=format:'%h' -n 1)
+AUTHOR ?= $(shell git log --pretty=format:'%an' -n 1)
 
-api: deps go
+default:
+	docker build -t vibioh/$(APP_NAME):$(VERSION) .
+
+$(APP_NAME): deps go
 
 go: format lint tst bench build
+
+name:
+	@echo -n $(APP_NAME)
+
+version:
+	@echo -n $(VERSION)
+
+author:
+	@python -c 'import sys; import urllib; sys.stdout.write(urllib.quote_plus(sys.argv[1]))' "$(AUTHOR)"
 
 deps:
 	go get github.com/golang/dep/cmd/dep
@@ -27,25 +41,11 @@ bench:
 	go test ./... -bench . -benchmem -run Benchmark.*
 
 build:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/viws cmd/viws/viws.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/$(APP_NAME) cmd/viws/viws.go
 
-start-api:
+start:
 	go run cmd/viws.go \
 		-tls=false \
 		-directory `pwd`/example
 
-docker-deps:
-	curl -s -o cacert.pem https://curl.haxx.se/ca/cacert.pem
-
-docker-login:
-	echo $(DOCKER_PASS) | docker login -u $(DOCKER_USER) --password-stdin
-
-docker-api: docker-build-api docker-push-api
-
-docker-build-api: docker-deps
-	docker build -t $(DOCKER_USER)/viws .
-
-docker-push-api: docker-login
-	docker push $(DOCKER_USER)/viws
-
-.PHONY: api go deps format lint tst bench build start-api docker-deps docker-login docker-api docker-build docker-push
+.PHONY: $(APP_NAME) go name version author deps format lint tst bench build start
