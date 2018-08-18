@@ -48,4 +48,4 @@ start:
 		-tls=false \
 		-directory `pwd`/example
 
-.PHONY: $(APP_NAME) go name version author deps format lint tst bench build start
+.PHONY: docker $(APP_NAME) go name version author deps format lint tst bench build start
