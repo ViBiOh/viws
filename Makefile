@@ -2,9 +2,6 @@ APP_NAME ?= viws
 VERSION ?= $(shell git log --pretty=format:'%h' -n 1)
 AUTHOR ?= $(shell git log --pretty=format:'%an' -n 1)
 
-docker:
-	docker build -t vibioh/$(APP_NAME):$(VERSION) .
-
 $(APP_NAME): deps go
 
 go: format lint tst bench build
@@ -48,4 +45,4 @@ start:
 		-tls=false \
 		-directory `pwd`/example
 
-.PHONY: docker $(APP_NAME) go name version author deps format lint tst bench build start
+.PHONY: $(APP_NAME) go name version author deps format lint tst bench build start
