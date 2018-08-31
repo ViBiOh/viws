@@ -59,7 +59,7 @@ func (a App) Handler() http.Handler {
 			}
 		}
 
-		if err := httpjson.ResponseJSON(w, http.StatusOK, env, httpjson.IsPretty(r.URL.RawQuery)); err != nil {
+		if err := httpjson.ResponseJSON(w, http.StatusOK, env, httpjson.IsPretty(r)); err != nil {
 			httperror.InternalServerError(w, err)
 		}
 	})

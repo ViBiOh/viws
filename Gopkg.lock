@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bca04bf62c1486224d92aea55f95009093b83929e571b7498a9ccbd4fb415363"
+  digest = "1:c56f1e3ab5f369f584eff2a32e3c1d1b717aa29256818758d3fa0e361476673b"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -25,13 +25,14 @@
     "pkg/model",
     "pkg/opentracing",
     "pkg/owasp",
+    "pkg/query",
     "pkg/request",
     "pkg/rollbar",
     "pkg/server",
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "d56e89f60c4da56a18f01a35fa745e3a5fddb431"
+  revision = "f3ea8ad8f900dc62836623435ef0daadf32a887a"
 
 [[projects]]
   branch = "master"
@@ -50,12 +51,12 @@
   revision = "3a0bb77429bd3a61596f5e8a3172445844342120"
 
 [[projects]]
-  digest = "1:15042ad3498153684d09f393bbaec6b216c8eec6d61f63dff711de7d64ed8861"
+  digest = "1:97df918963298c287643883209a2c3f642e6593379f97ab400c2a2e219ab647d"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
   pruneopts = "UT"
-  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
-  version = "v1.1.0"
+  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:ff5ebae34cfbf047d505ee150de27e60570e8c394b3b8fdbb720ff6ac71985fc"
@@ -184,7 +185,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "f4c29de78a2a91c00474a2e689954305c350adf9"
+  revision = "8a410e7b638dca158bf9e766925842f6651ff828"
 
 [solve-meta]
   analyzer-name = "dep"
