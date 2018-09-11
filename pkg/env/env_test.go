@@ -133,7 +133,7 @@ func Test_Handler(t *testing.T) {
 			t.Errorf("%s\nHandler(%+v) = %d, want status %d", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
-		if result, _ := request.ReadBody(writer.Result().Body); string(result) != testCase.want {
+		if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
 			t.Errorf("%s\nHandler(%+v) = %s, want %s", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
