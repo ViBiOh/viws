@@ -13,6 +13,16 @@ A superlight HTTP fileserver with customizable behavior.
 go get github.com/ViBiOh/viws/cmd/viws
 ```
 
+## Features
+
+* Full TLS support
+* Opentracing with Jaeger
+* Prometheus monitoring
+* Rollbar error reporting
+* Read-only container
+* Serve static content, with Single Page App handling
+* Custom 404 page
+
 ## Usage
 
 By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, self-signed, ...) so it sets HSTS flag by default, security matters.
