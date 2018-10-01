@@ -36,18 +36,18 @@ func NewApp(config map[string]interface{}) (*App, error) {
 	rawHeaders := strings.TrimSpace(*(config[`headers`].(*string)))
 
 	if utils.IsFileExist(directory) == nil {
-		return nil, fmt.Errorf(`Directory %s is unreachable or does not contains index`, directory)
+		return nil, fmt.Errorf(`directory %s is unreachable or does not contains index`, directory)
 	}
 	log.Printf(`[viws] Serving file from %s`, directory)
 
 	var notFoundPath *string
 	if notFound {
 		if spa {
-			return nil, errors.New(`Incompatible options provided: -notFound and -spa`)
+			return nil, errors.New(`incompatible options provided: -notFound and -spa`)
 		}
 
 		if notFoundPath = utils.IsFileExist(directory, notFoundFilename); notFoundPath == nil {
-			return nil, fmt.Errorf(`Not found page %s%s is unreachable`, directory, notFoundFilename)
+			return nil, fmt.Errorf(`not found page %s%s is unreachable`, directory, notFoundFilename)
 		}
 
 		log.Printf(`[viws] 404 will be %s`, *notFoundPath)
