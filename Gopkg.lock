@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e9782dfd0eb5c97c098e3b80e98d4955e6534521097246b5e5661087a1718354"
+  digest = "1:ff81ccb854341088c25f01ca87349d0f569ba9c87f23c9db17e9c6e9b4cf7a45"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -32,7 +32,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "b6d3cd35d8be695407c488c7142e582a1e626ebc"
+  revision = "6aaed6f8179e7957c965027b2ed5831e151a4bd9"
 
 [[projects]]
   branch = "master"
@@ -127,7 +127,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ef1dd9945e58ee9b635273d28c0ef3fa3742a7dedc038ebe207fd63e6ce000ef"
+  digest = "1:ef74914912f99c79434d9c09658274678bc85080ebe3ab32bec3940ebce5e1fc"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -136,7 +136,7 @@
     "xfs",
   ]
   pruneopts = "UT"
-  revision = "418d78d0b9a7b7de3a6bbc8a23def624cc977bb2"
+  revision = "185b4288413d2a0dd0806f78c90dde719829e5ae"
 
 [[projects]]
   digest = "1:8b6db3b490230af0836cd57f2da94e092ac0c2837fe24e762458006531749b53"
@@ -185,7 +185,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "4dfa2610cdf3b287375bbba5b8f2a14d3b01d8de"
+  revision = "146acd28ed5894421fb5aac80ca93bc1b1f46f87"
 
 [solve-meta]
   analyzer-name = "dep"
