@@ -63,7 +63,7 @@ build:
 
 ## start: Start app
 start:
-	go run cmd/viws.go \
+	go run cmd/viws/viws.go \
 		-tls=false \
 		-directory `pwd`/example
 

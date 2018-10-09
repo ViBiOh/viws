@@ -38,7 +38,7 @@ func NewApp(config map[string]interface{}) (*App, error) {
 	if utils.IsFileExist(directory) == nil {
 		return nil, fmt.Errorf(`directory %s is unreachable or does not contains index`, directory)
 	}
-	log.Printf(`[viws] Serving file from %s`, directory)
+	log.Printf(`Serving file from %s`, directory)
 
 	var notFoundPath *string
 	if notFound {
@@ -50,20 +50,20 @@ func NewApp(config map[string]interface{}) (*App, error) {
 			return nil, fmt.Errorf(`not found page %s%s is unreachable`, directory, notFoundFilename)
 		}
 
-		log.Printf(`[viws] 404 will be %s`, *notFoundPath)
+		log.Printf(`404 will be %s`, *notFoundPath)
 	}
 
 	var pushPaths []string
 	if push != `` {
 		pushPaths = strings.Split(push, `,`)
-		log.Printf(`[viws] HTTP/2 Push of %s`, pushPaths)
+		log.Printf(`HTTP/2 Push of %s`, pushPaths)
 	}
 
 	headers := make(map[string]string)
 	if rawHeaders != `` {
 		for _, header := range strings.Split(rawHeaders, `~`) {
 			if parts := strings.SplitN(header, `:`, 2); len(parts) != 2 {
-				rollbar.LogWarning(`[viws] Header has wrong format: %s`, header)
+				rollbar.LogWarning(`header has wrong format: %s`, header)
 			} else {
 				headers[parts[0]] = parts[1]
 			}
@@ -71,7 +71,7 @@ func NewApp(config map[string]interface{}) (*App, error) {
 	}
 
 	if spa {
-		log.Print(`[viws] Working in SPA mode`)
+		log.Print(`Working in SPA mode`)
 	}
 
 	return &App{
