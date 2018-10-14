@@ -9,7 +9,7 @@ A superlight HTTP fileserver with customizable behavior.
 
 ## Installation
 
-```
+```bash
 go get github.com/ViBiOh/viws/cmd/viws
 ```
 
@@ -27,7 +27,7 @@ go get github.com/ViBiOh/viws/cmd/viws
 
 By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, self-signed, ...) so it sets HSTS flag by default, security matters.
 
-```
+```bash
 Usage of viws:
   -corsCredentials
       [cors] Access-Control-Allow-Credentials
@@ -90,7 +90,7 @@ Usage of viws:
 This mode is useful when you have a router in your javascript framework (e.g. Angular/React/Vue). When a request target a not found file, it returns the index instead of 404. This option also deactivates cache for the index in order to make work the cache-buster for javascript/style files.
 
 e.g.
-```
+```bash
 curl myWebsite.com/users/vibioh/
 => /index.html
 ```
@@ -115,6 +115,6 @@ COPY dist/ /www/
 
 You need Go 1.9 in order to compile the project.
 
-```
+```bash
 make go
 ```
