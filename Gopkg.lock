@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bb9bc8fb14c75d16be00a1052f1c5b212d82d214306116955b20a48bb8bc1f7b"
+  digest = "1:e6626a399e9435b7e373325c7d54cf37be1f18560c2f78a64b8a6519ee7ac03e"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -22,6 +22,7 @@
     "pkg/healthcheck",
     "pkg/httperror",
     "pkg/httpjson",
+    "pkg/logger",
     "pkg/model",
     "pkg/opentracing",
     "pkg/owasp",
@@ -32,7 +33,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "fd50c443407db1c331917bcaa769fa78261d71bc"
+  revision = "55e0fe4bbad8dca85233b843cb8c907c416dba4d"
 
 [[projects]]
   branch = "master"
@@ -115,7 +116,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:63b68062b8968092eb86bedc4e68894bd096ea6b24920faca8b9dcf451f54bb5"
+  digest = "1:c0d39a0cad193ac49b6e24516e0f994b241d7c27142e5a58e8bd13defb2d9ac8"
   name = "github.com/prometheus/common"
   packages = [
     "expfmt",
@@ -123,7 +124,7 @@
     "model",
   ]
   pruneopts = "UT"
-  revision = "c7de2306084e37d54b8be01f3541a8464345e9a5"
+  revision = "bcb74de08d37a417cb6789eec1d6c810040f0470"
 
 [[projects]]
   branch = "master"
@@ -147,7 +148,7 @@
   version = "v1.0.1"
 
 [[projects]]
-  digest = "1:104a2d7446f4628e4663d7c029b18da1aad4313735de775f37b6e7720b1d0aa7"
+  digest = "1:ac6f26e917fd2fb3194a7ebe2baf6fb32de2f2fbfed130c18aac0e758a6e1d22"
   name = "github.com/uber/jaeger-client-go"
   packages = [
     ".",
@@ -165,11 +166,12 @@
     "thrift-gen/jaeger",
     "thrift-gen/sampling",
     "thrift-gen/zipkincore",
+    "transport",
     "utils",
   ]
   pruneopts = "UT"
-  revision = "b043381d944715b469fd6b37addfd30145ca1758"
-  version = "v2.14.0"
+  revision = "1a782e2da844727691fef1757c72eb190c2909f0"
+  version = "v2.15.0"
 
 [[projects]]
   digest = "1:0f09db8429e19d57c8346ad76fbbc679341fa86073d3b8fb5ac919f0357d8f4c"
@@ -185,7 +187,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "146acd28ed5894421fb5aac80ca93bc1b1f46f87"
+  revision = "49bb7cea24b1df9410e1712aa6433dae904ff66a"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -198,6 +200,7 @@
     "github.com/ViBiOh/httputils/pkg/healthcheck",
     "github.com/ViBiOh/httputils/pkg/httperror",
     "github.com/ViBiOh/httputils/pkg/httpjson",
+    "github.com/ViBiOh/httputils/pkg/logger",
     "github.com/ViBiOh/httputils/pkg/opentracing",
     "github.com/ViBiOh/httputils/pkg/owasp",
     "github.com/ViBiOh/httputils/pkg/request",

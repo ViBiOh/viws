@@ -4,12 +4,11 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/ViBiOh/httputils/pkg/httperror"
-	"github.com/ViBiOh/httputils/pkg/rollbar"
+	"github.com/ViBiOh/httputils/pkg/logger"
 	"github.com/ViBiOh/httputils/pkg/tools"
 	"github.com/ViBiOh/viws/pkg/utils"
 )
@@ -38,7 +37,7 @@ func NewApp(config map[string]interface{}) (*App, error) {
 	if utils.IsFileExist(directory) == nil {
 		return nil, fmt.Errorf(`directory %s is unreachable or does not contains index`, directory)
 	}
-	log.Printf(`Serving file from %s`, directory)
+	logger.Info(`Serving file from %s`, directory)
 
 	var notFoundPath *string
 	if notFound {
@@ -50,20 +49,20 @@ func NewApp(config map[string]interface{}) (*App, error) {
 			return nil, fmt.Errorf(`not found page %s%s is unreachable`, directory, notFoundFilename)
 		}
 
-		log.Printf(`404 will be %s`, *notFoundPath)
+		logger.Info(`404 will be %s`, *notFoundPath)
 	}
 
 	var pushPaths []string
 	if push != `` {
 		pushPaths = strings.Split(push, `,`)
-		log.Printf(`HTTP/2 Push of %s`, pushPaths)
+		logger.Info(`HTTP/2 Push of %s`, pushPaths)
 	}
 
 	headers := make(map[string]string)
 	if rawHeaders != `` {
 		for _, header := range strings.Split(rawHeaders, `~`) {
 			if parts := strings.SplitN(header, `:`, 2); len(parts) != 2 {
-				rollbar.LogWarning(`header has wrong format: %s`, header)
+				logger.Warn(`header has wrong format: %s`, header)
 			} else {
 				headers[parts[0]] = parts[1]
 			}
@@ -71,7 +70,7 @@ func NewApp(config map[string]interface{}) (*App, error) {
 	}
 
 	if spa {
-		log.Print(`Working in SPA mode`)
+		logger.Info(`Working in SPA mode`)
 	}
 
 	return &App{
@@ -104,7 +103,7 @@ func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
 	if pusher, ok := w.(http.Pusher); ok {
 		for _, path := range a.pushPaths {
 			if err := pusher.Push(path, nil); err != nil {
-				rollbar.LogError(`Failed to push %s: %v`, path, err)
+				logger.Error(`failed to push %s: %v`, path, err)
 			}
 		}
 	}
