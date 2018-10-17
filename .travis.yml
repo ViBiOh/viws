@@ -10,6 +10,16 @@ jobs:
       echo ${DOCKER_PASS} | docker login -u vibioh --password-stdin
       docker push vibioh/`make name`:`make version`
 
+  - stage: Build
+
+    sudo: required
+    services:
+    - docker
+    script: docker build -t vibioh/`make name`:`make version`-light -f Dockerfile_light .
+    after_success: |
+      echo ${DOCKER_PASS} | docker login -u vibioh --password-stdin
+      docker push vibioh/`make name`:`make version`-light
+
   - stage: Publish
 
     sudo: required
@@ -20,6 +30,9 @@ jobs:
       docker pull vibioh/`make name`:`make version`
       docker tag vibioh/`make name`:`make version` vibioh/`make name`:latest
       docker push vibioh/`make name`:latest
+      docker pull vibioh/`make name`:`make version`-light
+      docker tag vibioh/`make name`:`make version`-light vibioh/`make name`:light
+      docker push vibioh/`make name`:light
     after_success: |
       curl -s -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/viws
 
