@@ -60,6 +60,7 @@ bench:
 ## build: Build binary of app
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o $(BINARY_PATH) cmd/viws/viws.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o $(BINARY_PATH)-light cmd/viws-light/viws-light.go
 
 ## start: Start app
 start:

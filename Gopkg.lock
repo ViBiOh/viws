@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e6626a399e9435b7e373325c7d54cf37be1f18560c2f78a64b8a6519ee7ac03e"
+  digest = "1:c68d866294885154db43aad095fa522053baeecc31ece9bea5aa099871a15ca4"
   name = "github.com/ViBiOh/httputils"
   packages = [
     "pkg",
@@ -26,6 +26,7 @@
     "pkg/model",
     "pkg/opentracing",
     "pkg/owasp",
+    "pkg/prometheus",
     "pkg/query",
     "pkg/request",
     "pkg/rollbar",
@@ -33,7 +34,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "55e0fe4bbad8dca85233b843cb8c907c416dba4d"
+  revision = "bfb729a66891b938fe1c04ba3573893d69535531"
 
 [[projects]]
   branch = "master"
@@ -203,6 +204,7 @@
     "github.com/ViBiOh/httputils/pkg/logger",
     "github.com/ViBiOh/httputils/pkg/opentracing",
     "github.com/ViBiOh/httputils/pkg/owasp",
+    "github.com/ViBiOh/httputils/pkg/prometheus",
     "github.com/ViBiOh/httputils/pkg/request",
     "github.com/ViBiOh/httputils/pkg/rollbar",
     "github.com/ViBiOh/httputils/pkg/server",
