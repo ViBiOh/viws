@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"log"
 	"net/http"
 
 	"github.com/ViBiOh/httputils/pkg"
@@ -10,6 +9,7 @@ import (
 	"github.com/ViBiOh/httputils/pkg/cors"
 	"github.com/ViBiOh/httputils/pkg/gzip"
 	"github.com/ViBiOh/httputils/pkg/healthcheck"
+	"github.com/ViBiOh/httputils/pkg/logger"
 	"github.com/ViBiOh/httputils/pkg/opentracing"
 	"github.com/ViBiOh/httputils/pkg/owasp"
 	"github.com/ViBiOh/httputils/pkg/prometheus"
@@ -46,7 +46,7 @@ func main() {
 
 	viwsApp, err := viws.NewApp(viwsConfig)
 	if err != nil {
-		log.Fatalf(`Error while instanciating viws: %v`, err)
+		logger.Error(`Error while instanciating viws: %v`, err)
 	}
 	envApp := env.NewApp(envConfig)
 
