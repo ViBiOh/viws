@@ -13,6 +13,14 @@ A superlight HTTP fileserver with customizable behavior.
 go get github.com/ViBiOh/viws/cmd/viws
 ```
 
+### Light version
+
+Light version (without Opentracing, Prometheus and Rollbar) is also available, for a smaller binary.
+
+```bash
+go get github.com/ViBiOh/viws/cmd/viws-light
+```
+
 ## Features
 
 * Full TLS support
@@ -55,6 +63,8 @@ Usage of viws:
       [viws] Graceful 404 page at /404.html
   -port int
       Listen port (default 1080)
+  -prometheusPath string
+      [prometheus] Path for exposing metrics (default "/metrics")
   -push string
       [viws] Paths for HTTP/2 Server Push on index, comma separated
   -rollbarEnv string
@@ -97,7 +107,6 @@ curl myWebsite.com/users/vibioh/
 
 Be careful, `-notFound` and `-spa` are incompatible flags. If you set both, you'll get an error.
 
-
 ## Docker
 
 `docker run -d -p 1080:1080 -v /var/www/html/:/www/ vibioh/viws`
@@ -107,6 +116,17 @@ We recommend using a Dockerfile to ship your files inside it.
 e.g.
 ```
 FROM vibioh/viws
+
+COPY dist/ /www/
+```
+
+### Light image
+
+Image with tag `:light` is also available.
+
+e.g.
+```
+FROM vibioh/viws:light
 
 COPY dist/ /www/
 ```
