@@ -22,11 +22,11 @@ import (
 func main() {
 	serverConfig := httputils.Flags(``)
 	alcotestConfig := alcotest.Flags(``)
+	prometheusConfig := prometheus.Flags(`prometheus`)
 	opentracingConfig := opentracing.Flags(`tracing`)
+	rollbarConfig := rollbar.Flags(`rollbar`)
 	owaspConfig := owasp.Flags(``)
 	corsConfig := cors.Flags(`cors`)
-	prometheusConfig := prometheus.Flags(`prometheus`)
-	rollbarConfig := rollbar.Flags(`rollbar`)
 
 	viwsConfig := viws.Flags(``)
 	envConfig := env.Flags(``)
@@ -37,12 +37,12 @@ func main() {
 
 	serverApp := httputils.NewApp(serverConfig)
 	healthcheckApp := healthcheck.NewApp()
-	opentracingApp := opentracing.NewApp(opentracingConfig)
-	owaspApp := owasp.NewApp(owaspConfig)
-	corsApp := cors.NewApp(corsConfig)
 	prometheusApp := prometheus.NewApp(prometheusConfig)
+	opentracingApp := opentracing.NewApp(opentracingConfig)
 	rollbarApp := rollbar.NewApp(rollbarConfig)
 	gzipApp := gzip.NewApp()
+	owaspApp := owasp.NewApp(owaspConfig)
+	corsApp := cors.NewApp(corsConfig)
 
 	viwsApp, err := viws.NewApp(viwsConfig)
 	if err != nil {

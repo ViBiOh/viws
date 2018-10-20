@@ -31,9 +31,9 @@ func main() {
 
 	serverApp := httputils.NewApp(serverConfig)
 	healthcheckApp := healthcheck.NewApp()
+	gzipApp := gzip.NewApp()
 	owaspApp := owasp.NewApp(owaspConfig)
 	corsApp := cors.NewApp(corsConfig)
-	gzipApp := gzip.NewApp()
 
 	viwsApp, err := viws.NewApp(viwsConfig)
 	if err != nil {
