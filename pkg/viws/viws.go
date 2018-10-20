@@ -1,12 +1,12 @@
 package viws
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/ViBiOh/httputils/pkg/errors"
 	"github.com/ViBiOh/httputils/pkg/httperror"
 	"github.com/ViBiOh/httputils/pkg/logger"
 	"github.com/ViBiOh/httputils/pkg/tools"
@@ -35,7 +35,7 @@ func NewApp(config map[string]interface{}) (*App, error) {
 	rawHeaders := strings.TrimSpace(*(config[`headers`].(*string)))
 
 	if utils.IsFileExist(directory) == nil {
-		return nil, fmt.Errorf(`directory %s is unreachable or does not contains index`, directory)
+		return nil, errors.New(`directory %s is unreachable or does not contains index`, directory)
 	}
 	logger.Info(`Serving file from %s`, directory)
 
@@ -46,7 +46,7 @@ func NewApp(config map[string]interface{}) (*App, error) {
 		}
 
 		if notFoundPath = utils.IsFileExist(directory, notFoundFilename); notFoundPath == nil {
-			return nil, fmt.Errorf(`not found page %s%s is unreachable`, directory, notFoundFilename)
+			return nil, errors.New(`not found page %s%s is unreachable`, directory, notFoundFilename)
 		}
 
 		logger.Info(`404 will be %s`, *notFoundPath)
@@ -103,7 +103,7 @@ func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
 	if pusher, ok := w.(http.Pusher); ok {
 		for _, path := range a.pushPaths {
 			if err := pusher.Push(path, nil); err != nil {
-				logger.Error(`failed to push %s: %v`, path, err)
+				logger.Error(`failed to push %s: %+v`, path, err)
 			}
 		}
 	}

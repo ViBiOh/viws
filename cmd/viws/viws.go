@@ -46,7 +46,7 @@ func main() {
 
 	viwsApp, err := viws.NewApp(viwsConfig)
 	if err != nil {
-		logger.Error(`Error while instanciating viws: %v`, err)
+		logger.Error(`%+v`, err)
 	}
 	envApp := env.NewApp(envConfig)
 
