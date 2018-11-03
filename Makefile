@@ -1,10 +1,9 @@
-MAKEFLAGS += --silent
-GOBIN=bin
-BINARY_PATH=$(GOBIN)/$(APP_NAME)
+APP_NAME ?= viws
 VERSION ?= $(shell git log --pretty=format:'%h' -n 1)
 AUTHOR ?= $(shell git log --pretty=format:'%an' -n 1)
 
-APP_NAME ?= viws
+GOBIN=bin
+BINARY_PATH=$(GOBIN)/$(APP_NAME)
 
 .PHONY: help
 help: Makefile
