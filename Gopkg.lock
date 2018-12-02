@@ -35,7 +35,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "56a96ad8671ec77441ad5cd779ca9ec7364a0ea9"
+  revision = "63354573662b9507636ac5ad9a68281f58525804"
 
 [[projects]]
   branch = "master"
@@ -126,11 +126,11 @@
     "model",
   ]
   pruneopts = "UT"
-  revision = "aeab699e26f4d4089dba5e522e5d9babd2adbaf7"
+  revision = "4724e9255275ce38f7179b2478abeae4e28c904f"
 
 [[projects]]
   branch = "master"
-  digest = "1:ef74914912f99c79434d9c09658274678bc85080ebe3ab32bec3940ebce5e1fc"
+  digest = "1:9ea97158ea06d60b1f324aa384f6a4cbd596a81b3cae994e17108b195f398d01"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -139,7 +139,7 @@
     "xfs",
   ]
   pruneopts = "UT"
-  revision = "185b4288413d2a0dd0806f78c90dde719829e5ae"
+  revision = "aa55a523dc0a8297edf51bb75e8eec13eb3be45d"
 
 [[projects]]
   digest = "1:03a89169777b38862145711ef2317a36e19e1cdf717ab622e196f6a851b71ad9"
@@ -189,7 +189,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "adae6a3d119ae4890b46832a2e88a95adc62b8e7"
+  revision = "351d144fa1fc0bd934e2408202be0c29f25e35a0"
 
 [solve-meta]
   analyzer-name = "dep"
