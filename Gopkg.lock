@@ -35,7 +35,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "63354573662b9507636ac5ad9a68281f58525804"
+  revision = "c63a4d292c81848acc76c431f66e5140190df87e"
 
 [[projects]]
   branch = "master"
@@ -71,11 +71,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:51fb21c0dd1b64d5ae74c34f544e312ee73edd2a258db6347369014b5949f44a"
+  digest = "1:5d7236b6cedaadd901d2f1533113f11c955bb676df646b676c94d13c43dfedbe"
   name = "github.com/opentracing-contrib/go-stdlib"
   packages = ["nethttp"]
   pruneopts = "UT"
-  revision = "c9628a4f0148d7e441a4af66dc0b1653cd941c20"
+  revision = "09659152d0aa5b83bb7683a9c33c79f8ee57038c"
 
 [[projects]]
   digest = "1:450b7623b185031f3a456801155c8320209f75d0d4c4e633c6b1e59d44d6e392"
@@ -130,7 +130,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:9ea97158ea06d60b1f324aa384f6a4cbd596a81b3cae994e17108b195f398d01"
+  digest = "1:d39e7c7677b161c2dd4c635a2ac196460608c7d8ba5337cc8cae5825a2681f8f"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -139,7 +139,7 @@
     "xfs",
   ]
   pruneopts = "UT"
-  revision = "aa55a523dc0a8297edf51bb75e8eec13eb3be45d"
+  revision = "1dc9a6cbc91aacc3e8b2d63db4d2e957a5394ac4"
 
 [[projects]]
   digest = "1:03a89169777b38862145711ef2317a36e19e1cdf717ab622e196f6a851b71ad9"
@@ -189,7 +189,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "351d144fa1fc0bd934e2408202be0c29f25e35a0"
+  revision = "891ebc4b82d6e74f468c533b06f983c7be918a96"
 
 [solve-meta]
   analyzer-name = "dep"
