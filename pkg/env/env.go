@@ -12,29 +12,34 @@ import (
 	"github.com/ViBiOh/httputils/pkg/tools"
 )
 
-// App stores informations
+// Config of package
+type Config struct {
+	env *string
+}
+
+// App of package
 type App struct {
 	keys []string
 }
 
-// NewApp creates new App from Flags' config
-func NewApp(config map[string]*string) *App {
+// Flags adds flags for configuring package
+func Flags(fs *flag.FlagSet, prefix string) Config {
+	return Config{
+		env: fs.String(tools.ToCamel(fmt.Sprintf(`%sEnv`, prefix)), ``, `[env] Environments key variables to expose, comma separated`),
+	}
+}
+
+// New creates new App from Config
+func New(config Config) *App {
 	var keys []string
 
-	env := strings.TrimSpace(*config[`env`])
+	env := strings.TrimSpace(*config.env)
 	if env != `` {
 		keys = strings.Split(env, `,`)
 	}
 
 	return &App{
 		keys: keys,
-	}
-}
-
-// Flags adds flags for given prefix
-func Flags(prefix string) map[string]*string {
-	return map[string]*string{
-		`env`: flag.String(tools.ToCamel(fmt.Sprintf(`%sEnv`, prefix)), ``, `[env] Environments key variables to expose, comma separated`),
 	}
 }
 

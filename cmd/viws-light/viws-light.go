@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"os"
 
 	httputils "github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/alcotest"
@@ -17,29 +18,33 @@ import (
 )
 
 func main() {
-	serverConfig := httputils.Flags(``)
-	alcotestConfig := alcotest.Flags(``)
-	owaspConfig := owasp.Flags(``)
-	corsConfig := cors.Flags(`cors`)
+	fs := flag.NewFlagSet(`viws`, flag.ExitOnError)
 
-	viwsConfig := viws.Flags(``)
-	envConfig := env.Flags(``)
+	serverConfig := httputils.Flags(fs, ``)
+	alcotestConfig := alcotest.Flags(fs, ``)
+	owaspConfig := owasp.Flags(fs, ``)
+	corsConfig := cors.Flags(fs, `cors`)
 
-	flag.Parse()
+	viwsConfig := viws.Flags(fs, ``)
+	envConfig := env.Flags(fs, ``)
+
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		logger.Fatal(`%+v`, err)
+	}
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	serverApp := httputils.NewApp(serverConfig)
-	healthcheckApp := healthcheck.NewApp()
-	gzipApp := gzip.NewApp()
-	owaspApp := owasp.NewApp(owaspConfig)
-	corsApp := cors.NewApp(corsConfig)
+	serverApp := httputils.New(serverConfig)
+	healthcheckApp := healthcheck.New()
+	gzipApp := gzip.New()
+	owaspApp := owasp.New(owaspConfig)
+	corsApp := cors.New(corsConfig)
 
-	viwsApp, err := viws.NewApp(viwsConfig)
+	viwsApp, err := viws.New(viwsConfig)
 	if err != nil {
 		logger.Error(`%+v`, err)
 	}
-	envApp := env.NewApp(envConfig)
+	envApp := env.New(envConfig)
 
 	viwsHandler := server.ChainMiddlewares(viwsApp.Handler(), owaspApp)
 	envHandler := server.ChainMiddlewares(envApp.Handler(), owaspApp, corsApp)

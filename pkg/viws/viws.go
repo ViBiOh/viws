@@ -17,7 +17,16 @@ const (
 	notFoundFilename = `404.html`
 )
 
-// App stores informations and secret of API
+// Config of package
+type Config struct {
+	directory *string
+	headers   *string
+	notFound  *bool
+	spa       *bool
+	push      *string
+}
+
+// App of package
 type App struct {
 	spa          bool
 	directory    string
@@ -26,13 +35,24 @@ type App struct {
 	notFoundPath *string
 }
 
-// NewApp creates new App from Flags' config
-func NewApp(config map[string]interface{}) (*App, error) {
-	spa := *(config[`spa`].(*bool))
-	notFound := *(config[`notFound`].(*bool))
-	directory := strings.TrimSpace(*(config[`directory`].(*string)))
-	push := strings.TrimSpace(*(config[`push`].(*string)))
-	rawHeaders := strings.TrimSpace(*(config[`headers`].(*string)))
+// Flags adds flags for configuring package
+func Flags(fs *flag.FlagSet, prefix string) Config {
+	return Config{
+		directory: fs.String(tools.ToCamel(fmt.Sprintf(`%sDirectory`, prefix)), `/www/`, `[viws] Directory to serve`),
+		headers:   fs.String(tools.ToCamel(fmt.Sprintf(`%sHeaders`, prefix)), ``, `[viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)`),
+		notFound:  fs.Bool(tools.ToCamel(fmt.Sprintf(`%sNotFound`, prefix)), false, `[viws] Graceful 404 page at /404.html`),
+		spa:       fs.Bool(tools.ToCamel(fmt.Sprintf(`%sSpa`, prefix)), false, `[viws] Indicate Single Page Application mode`),
+		push:      fs.String(tools.ToCamel(fmt.Sprintf(`%sPush`, prefix)), ``, `[viws] Paths for HTTP/2 Server Push on index, comma separated`),
+	}
+}
+
+// New creates new App from Config
+func New(config Config) (*App, error) {
+	spa := *config.spa
+	notFound := *config.notFound
+	directory := strings.TrimSpace(*config.directory)
+	push := strings.TrimSpace(*config.push)
+	rawHeaders := strings.TrimSpace(*config.headers)
 
 	if utils.IsFileExist(directory) == nil {
 		return nil, errors.New(`directory %s is unreachable or does not contains index`, directory)
@@ -80,17 +100,6 @@ func NewApp(config map[string]interface{}) (*App, error) {
 		notFoundPath: notFoundPath,
 		headers:      headers,
 	}, nil
-}
-
-// Flags add flags for given prefix
-func Flags(prefix string) map[string]interface{} {
-	return map[string]interface{}{
-		`directory`: flag.String(tools.ToCamel(fmt.Sprintf(`%sDirectory`, prefix)), `/www/`, `[viws] Directory to serve`),
-		`headers`:   flag.String(tools.ToCamel(fmt.Sprintf(`%sHeaders`, prefix)), ``, `[viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)`),
-		`notFound`:  flag.Bool(tools.ToCamel(fmt.Sprintf(`%sNotFound`, prefix)), false, `[viws] Graceful 404 page at /404.html`),
-		`spa`:       flag.Bool(tools.ToCamel(fmt.Sprintf(`%sSpa`, prefix)), false, `[viws] Indicate Single Page Application mode`),
-		`push`:      flag.String(tools.ToCamel(fmt.Sprintf(`%sPush`, prefix)), ``, `[viws] Paths for HTTP/2 Server Push on index, comma separated`),
-	}
 }
 
 func (a App) addCustomHeaders(w http.ResponseWriter) {

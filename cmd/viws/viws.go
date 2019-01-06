@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"os"
 
 	httputils "github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/alcotest"
@@ -20,35 +21,39 @@ import (
 )
 
 func main() {
-	serverConfig := httputils.Flags(``)
-	alcotestConfig := alcotest.Flags(``)
-	prometheusConfig := prometheus.Flags(`prometheus`)
-	opentracingConfig := opentracing.Flags(`tracing`)
-	rollbarConfig := rollbar.Flags(`rollbar`)
-	owaspConfig := owasp.Flags(``)
-	corsConfig := cors.Flags(`cors`)
+	fs := flag.NewFlagSet(`viws`, flag.ExitOnError)
 
-	viwsConfig := viws.Flags(``)
-	envConfig := env.Flags(``)
+	serverConfig := httputils.Flags(fs, ``)
+	alcotestConfig := alcotest.Flags(fs, ``)
+	prometheusConfig := prometheus.Flags(fs, `prometheus`)
+	opentracingConfig := opentracing.Flags(fs, `tracing`)
+	rollbarConfig := rollbar.Flags(fs, `rollbar`)
+	owaspConfig := owasp.Flags(fs, ``)
+	corsConfig := cors.Flags(fs, `cors`)
 
-	flag.Parse()
+	viwsConfig := viws.Flags(fs, ``)
+	envConfig := env.Flags(fs, ``)
+
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		logger.Fatal(`%+v`, err)
+	}
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	serverApp := httputils.NewApp(serverConfig)
-	healthcheckApp := healthcheck.NewApp()
-	prometheusApp := prometheus.NewApp(prometheusConfig)
-	opentracingApp := opentracing.NewApp(opentracingConfig)
-	rollbarApp := rollbar.NewApp(rollbarConfig)
-	gzipApp := gzip.NewApp()
-	owaspApp := owasp.NewApp(owaspConfig)
-	corsApp := cors.NewApp(corsConfig)
+	serverApp := httputils.New(serverConfig)
+	healthcheckApp := healthcheck.New()
+	prometheusApp := prometheus.New(prometheusConfig)
+	opentracingApp := opentracing.New(opentracingConfig)
+	rollbarApp := rollbar.New(rollbarConfig)
+	gzipApp := gzip.New()
+	owaspApp := owasp.New(owaspConfig)
+	corsApp := cors.New(corsConfig)
 
-	viwsApp, err := viws.NewApp(viwsConfig)
+	viwsApp, err := viws.New(viwsConfig)
 	if err != nil {
 		logger.Error(`%+v`, err)
 	}
-	envApp := env.NewApp(envConfig)
+	envApp := env.New(envConfig)
 
 	viwsHandler := server.ChainMiddlewares(viwsApp.Handler(), owaspApp)
 	envHandler := server.ChainMiddlewares(envApp.Handler(), owaspApp, corsApp)

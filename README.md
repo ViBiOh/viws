@@ -92,7 +92,7 @@ Usage of viws:
   -url string
       [health] URL to check
   -userAgent string
-      [health] User-Agent used (default "Golang alcotest")
+      [health] User-Agent for check (default "Golang alcotest")
 ```
 
 ## Single Page Application
