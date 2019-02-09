@@ -15,7 +15,7 @@ go get github.com/ViBiOh/viws/cmd/viws
 
 ### Light version
 
-Light version (without Opentracing, Prometheus and Rollbar) is also available, for a smaller binary.
+Light version (without Opentracing and Prometheus) is also available, for a smaller binary.
 
 ```bash
 go get github.com/ViBiOh/viws/cmd/viws-light
@@ -26,7 +26,6 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 * Full TLS support
 * Opentracing with Jaeger
 * Prometheus monitoring
-* Rollbar error reporting
 * Read-only container
 * Serve static content, with Single Page App handling
 * Custom 404 page
@@ -67,12 +66,6 @@ Usage of viws:
       [prometheus] Path for exposing metrics (default "/metrics")
   -push string
       [viws] Paths for HTTP/2 Server Push on index, comma separated
-  -rollbarEnv string
-      [rollbar] Environment (default "prod")
-  -rollbarServerRoot string
-      [rollbar] Server Root
-  -rollbarToken string
-      [rollbar] Token
   -spa
       [viws] Indicate Single Page Application mode
   -tls

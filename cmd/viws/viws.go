@@ -14,7 +14,6 @@ import (
 	"github.com/ViBiOh/httputils/pkg/opentracing"
 	"github.com/ViBiOh/httputils/pkg/owasp"
 	"github.com/ViBiOh/httputils/pkg/prometheus"
-	"github.com/ViBiOh/httputils/pkg/rollbar"
 	"github.com/ViBiOh/httputils/pkg/server"
 	"github.com/ViBiOh/viws/pkg/env"
 	"github.com/ViBiOh/viws/pkg/viws"
@@ -27,7 +26,6 @@ func main() {
 	alcotestConfig := alcotest.Flags(fs, ``)
 	prometheusConfig := prometheus.Flags(fs, `prometheus`)
 	opentracingConfig := opentracing.Flags(fs, `tracing`)
-	rollbarConfig := rollbar.Flags(fs, `rollbar`)
 	owaspConfig := owasp.Flags(fs, ``)
 	corsConfig := cors.Flags(fs, `cors`)
 
@@ -44,7 +42,6 @@ func main() {
 	healthcheckApp := healthcheck.New()
 	prometheusApp := prometheus.New(prometheusConfig)
 	opentracingApp := opentracing.New(opentracingConfig)
-	rollbarApp := rollbar.New(rollbarConfig)
 	gzipApp := gzip.New()
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)
@@ -64,7 +61,7 @@ func main() {
 			viwsHandler.ServeHTTP(w, r)
 		}
 	})
-	apiHandler := server.ChainMiddlewares(requestHandler, prometheusApp, opentracingApp, rollbarApp, gzipApp)
+	apiHandler := server.ChainMiddlewares(requestHandler, prometheusApp, opentracingApp, gzipApp)
 
-	serverApp.ListenAndServe(apiHandler, nil, healthcheckApp, rollbarApp)
+	serverApp.ListenAndServe(apiHandler, nil, healthcheckApp)
 }
