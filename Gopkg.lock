@@ -2,12 +2,12 @@
 
 
 [[projects]]
-  digest = "1:0803645e1f57fb5271a6edc7570b9ea59bac2e5de67957075a43f3d74c8dbd97"
+  digest = "1:8e53ab383e902619948eecae0c5e328057905a9a7abbe34ea178fe0a9157a918"
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
   pruneopts = "UT"
-  revision = "2600fb119af974220d3916a5916d6e31176aac1b"
-  version = "v1.0.1"
+  revision = "b8a1976e622c1b8052c79219930d64a340ac5fcd"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -34,7 +34,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "7f11176ba376626586783547b622aa2be1dbe724"
+  revision = "8db5456bcd622608cae6d1ccd1081460ed31ccc9"
 
 [[projects]]
   branch = "master"
@@ -181,7 +181,7 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "65e2d4e15006aab9813ff8769e768bbf4bb667a0"
+  revision = "3a22650c66bd7f4fb6d1e8072ffd7b75c8a27898"
 
 [solve-meta]
   analyzer-name = "dep"
