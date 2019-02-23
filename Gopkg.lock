@@ -2,12 +2,12 @@
 
 
 [[projects]]
-  digest = "1:8e53ab383e902619948eecae0c5e328057905a9a7abbe34ea178fe0a9157a918"
+  digest = "1:af6e785bedb62fc2abb81977c58a7a44e5cf9f7e41b8d3c8dd4d872edea0ce08"
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
   pruneopts = "UT"
-  revision = "b8a1976e622c1b8052c79219930d64a340ac5fcd"
-  version = "v1.1.0"
+  revision = "dd0439581c7657cb652dfe5c71d7d48baf39541d"
+  version = "v1.1.1"
 
 [[projects]]
   branch = "master"
@@ -34,7 +34,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "8db5456bcd622608cae6d1ccd1081460ed31ccc9"
+  revision = "9dfd599fe510ee361516657fe3579ba2533d4e69"
 
 [[projects]]
   branch = "master"
@@ -130,16 +130,17 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f0bb332b39488b057a8671557f307997426e5c650ee738a634a0697a41e207c5"
+  digest = "1:ca30ee2c96d195cef49b546d10825d3e13b50c63da4df23c80e77c51e07bad0d"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
     "internal/util",
+    "iostats",
     "nfs",
     "xfs",
   ]
   pruneopts = "UT"
-  revision = "f8d8b3f739bd91a7c0462cb55235ef63c79c9abc"
+  revision = "e4d4a2206da023361ed100d85c5f2cf9c8364e9f"
 
 [[projects]]
   digest = "1:ac6f26e917fd2fb3194a7ebe2baf6fb32de2f2fbfed130c18aac0e758a6e1d22"
