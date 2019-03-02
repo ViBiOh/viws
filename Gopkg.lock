@@ -34,7 +34,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "fe6853cdcbced4fb6193f8634a4530c97aaf947a"
+  revision = "7cbf1759de457453c3522c4205b0dd678fa6dc42"
 
 [[projects]]
   branch = "master"
