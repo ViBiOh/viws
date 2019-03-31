@@ -83,4 +83,4 @@ build:
 start:
 	go run cmd/viws/viws.go \
 		-tls=false \
-		-directory `pwd`/example
+		-directory $(pwd)/example
