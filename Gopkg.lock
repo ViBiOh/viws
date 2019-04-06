@@ -34,7 +34,7 @@
     "pkg/tools",
   ]
   pruneopts = "UT"
-  revision = "a3654c130b1e16698c9c2ebb5d22796d9dd6ddaf"
+  revision = "864a7148bc82cda83652d30ce21a8c48909b5927"
 
 [[projects]]
   branch = "master"
@@ -126,7 +126,7 @@
   name = "github.com/prometheus/procfs"
   packages = ["."]
   pruneopts = "UT"
-  revision = "af7bedc223fba51343f25a6fa7aba84355d0357a"
+  revision = "ea9eea63887261e4d8ed8315f4078e88d540c725"
 
 [[projects]]
   digest = "1:3b0ac1ac6f703e6d43f4e29c97da2c9e34465c66e2e19f9828e9841d1c9279a4"
