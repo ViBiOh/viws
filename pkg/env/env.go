@@ -25,7 +25,7 @@ type App struct {
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string) Config {
 	return Config{
-		env: fs.String(tools.ToCamel(fmt.Sprintf(`%sEnv`, prefix)), ``, `[env] Environments key variables to expose, comma separated`),
+		env: fs.String(tools.ToCamel(fmt.Sprintf("%sEnv", prefix)), "", "[env] Environments key variables to expose, comma separated"),
 	}
 }
 
@@ -34,8 +34,8 @@ func New(config Config) *App {
 	var keys []string
 
 	env := strings.TrimSpace(*config.env)
-	if env != `` {
-		keys = strings.Split(env, `,`)
+	if env != "" {
+		keys = strings.Split(env, ",")
 	}
 
 	return &App{
@@ -57,10 +57,10 @@ func (a App) Handler() http.Handler {
 		env := make(map[string]string)
 
 		for _, key := range a.keys {
-			if value := os.Getenv(key); value != `` {
+			if value := os.Getenv(key); value != "" {
 				env[key] = value
 			} else {
-				env[key] = ``
+				env[key] = ""
 			}
 		}
 

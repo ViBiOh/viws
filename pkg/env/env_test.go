@@ -12,8 +12,8 @@ import (
 )
 
 func Test_New(t *testing.T) {
-	emptyString := ``
-	envValue := `PATH,BASH,VERSION`
+	emptyString := ""
+	envValue := "PATH,BASH,VERSION"
 
 	var cases = []struct {
 		intention string
@@ -21,21 +21,21 @@ func Test_New(t *testing.T) {
 		want      []string
 	}{
 		{
-			`should work with empty values`,
+			"should work with empty values",
 			Config{
 				env: &emptyString,
 			},
 			nil,
 		},
 		{
-			`should work with env value`,
+			"should work with env value",
 			Config{
 				env: &envValue,
 			},
 			[]string{
-				`PATH`,
-				`BASH`,
-				`VERSION`,
+				"PATH",
+				"BASH",
+				"VERSION",
 			},
 		},
 	}
@@ -48,8 +48,8 @@ func Test_New(t *testing.T) {
 }
 
 func Test_Handler(t *testing.T) {
-	user := os.Getenv(`USER`)
-	path := os.Getenv(`PATH`)
+	user := os.Getenv("USER")
+	path := os.Getenv("PATH")
 
 	var cases = []struct {
 		intention  string
@@ -59,37 +59,37 @@ func Test_Handler(t *testing.T) {
 		wantStatus int
 	}{
 		{
-			`should respond to OPTIONS request`,
-			httptest.NewRequest(http.MethodOptions, `/`, nil),
-			``,
-			``,
+			"should respond to OPTIONS request",
+			httptest.NewRequest(http.MethodOptions, "/", nil),
+			"",
+			"",
 			http.StatusOK,
 		},
 		{
-			`should reject non GET/OPTIONS request`,
-			httptest.NewRequest(http.MethodPost, `/`, nil),
-			``,
-			``,
+			"should reject non GET/OPTIONS request",
+			httptest.NewRequest(http.MethodPost, "/", nil),
+			"",
+			"",
 			http.StatusMethodNotAllowed,
 		},
 		{
-			`should return empty JSON if no key`,
-			httptest.NewRequest(http.MethodGet, `/`, nil),
-			``,
-			`{}`,
+			"should return empty JSON if no key",
+			httptest.NewRequest(http.MethodGet, "/", nil),
+			"",
+			"{}",
 			http.StatusOK,
 		},
 		{
-			`should return asked keys`,
-			httptest.NewRequest(http.MethodGet, `/`, nil),
-			`USER,PATH`,
+			"should return asked keys",
+			httptest.NewRequest(http.MethodGet, "/", nil),
+			"USER,PATH",
 			fmt.Sprintf(`{"PATH":"%s","USER":"%s"}`, path, user),
 			http.StatusOK,
 		},
 		{
-			`should return empty value for not found keys`,
-			httptest.NewRequest(http.MethodGet, `/`, nil),
-			`USER,UNKNOWN_ENV_VAR`,
+			"should return empty value for not found keys",
+			httptest.NewRequest(http.MethodGet, "/", nil),
+			"USER,UNKNOWN_ENV_VAR",
 			fmt.Sprintf(`{"UNKNOWN_ENV_VAR":"","USER":"%s"}`, user),
 			http.StatusOK,
 		},

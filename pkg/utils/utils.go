@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	indexFilename = `index.html`
+	indexFilename = "index.html"
 )
 
 // IsFileExist check if concatenated paths are available for serving
