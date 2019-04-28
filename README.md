@@ -31,7 +31,7 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 
 ## Usage
 
-By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, self-signed, ...) so it sets HSTS flag by default, security matters.
+By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag by default, security matters.
 
 ```bash
 Usage of viws:
