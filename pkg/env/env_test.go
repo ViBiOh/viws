@@ -11,7 +11,7 @@ import (
 	"github.com/ViBiOh/httputils/pkg/request"
 )
 
-func Test_New(t *testing.T) {
+func TestNew(t *testing.T) {
 	emptyString := ""
 	envValue := "PATH,BASH,VERSION"
 
@@ -47,7 +47,7 @@ func Test_New(t *testing.T) {
 	}
 }
 
-func Test_Handler(t *testing.T) {
+func TestHandler(t *testing.T) {
 	user := os.Getenv("USER")
 	path := os.Getenv("PATH")
 
