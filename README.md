@@ -119,7 +119,7 @@ COPY dist/ /www/
 
 ## Compilation
 
-You need Go 1.9 in order to compile the project.
+You need Go 1.11+ with go modules enabled in order to compile the project.
 
 ```bash
 make go
