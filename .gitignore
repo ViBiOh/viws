@@ -1,6 +1,5 @@
 # Golang
 bin/
-vendor/
 coverage.*
 
 # Docker

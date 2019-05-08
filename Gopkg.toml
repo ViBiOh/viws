@@ -1,7 +1,0 @@
-[[constraint]]
-  branch = "master"
-  name = "github.com/ViBiOh/httputils"
-
-[prune]
-  go-tests = true
-  unused-packages = true
