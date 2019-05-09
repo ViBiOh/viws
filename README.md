@@ -50,7 +50,7 @@ Environment variables are exposed as JSON from a single and easy to remember end
 This feature is useful for Single Page Application, you first request `/env` in order to know the `API_URL` or `CONFIGURATION_TOKEN` and then proceed. You reuse the same artifact between `pre-production` and `production`, only variables change.
 
 ```bash
-docker run -e API_URL=https://api.vibioh.fr -p 1080:1080/tcp -v "$(pwd):/www/:ro" vibioh/viws --env API_URL
+API_URL=https://api.vibioh.fr vibioh/viws --env API_URL
 
 > curl http://localhost:1080/env
 {"API_URL":"https://api.vibioh.fr"}
@@ -126,7 +126,13 @@ Usage of viws:
 
 ## Docker
 
-`docker run -d -p 1080:1080 -v /var/www/html/:/www/ vibioh/viws`
+```bash
+docker run \
+  -d \
+  -p 1080:1080/tcp \
+  -v "$(pwd):/www/:ro" \
+  vibioh/viws
+```
 
 We recommend using a Dockerfile to ship your files inside it.
 
