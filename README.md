@@ -27,7 +27,50 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 * Prometheus monitoring
 * Read-only container
 * Serve static content, with Single Page App handling
+* Serve environment variables for easier-config
 * Custom 404 page
+* Graceful close
+
+## Single Page Application
+
+This mode is useful when you have a router in your javascript framework (e.g. Angular/React/Vue). When a request target a not found file, it returns the index instead of 404. This option also deactivates cache for the index in order to make work the cache-buster for javascript/style files.
+
+e.g.
+```bash
+curl myWebsite.com/users/vibioh/
+=> /index.html
+```
+
+Be careful, `-notFound` and `-spa` are incompatible flags. If you set both, you'll get an error.
+
+## Environment variables
+
+Environment variables are exposed as JSON from a single and easy to remember endpoint: `/env`. You have full control of exposed variables by declaring them on the CLI.
+
+This feature is useful for Single Page Application, you first request `/env` in order to know the `API_URL` or `CONFIGURATION_TOKEN` and then proceed. You reuse the same artifact between `pre-production` and `production`, only variables change.
+
+```bash
+docker run -e API_URL=https://api.vibioh.fr -p 1080:1080/tcp -v "$(pwd):/www/:ro" vibioh/viws --env API_URL
+
+> curl http://localhost:1080/env
+{"API_URL":"https://api.vibioh.fr"}
+```
+
+```js
+// index.js
+
+const response = await fetch('/env');
+const config = await response.json();
+ReactDOM.render(<App />, document.getElementById('root'));
+```
+
+## Graceful close
+
+For avoiding violent teardown, HTTP server ends gracefully in that way:
+
+1. Listening to `SIGTERM`
+1. `/health` endpoint respond with HTTP/503 Status during 35 seconds. Your load-balancer has time to handle it
+1. [HTTP Server Shutdown](https://golang.org/pkg/net/http/#Server.Shutdown) without closing active connections, with a 10 seconds timeout
 
 ## Usage
 
@@ -80,18 +123,6 @@ Usage of viws:
   -userAgent string
         [alcotest] User-Agent for check (default "Golang alcotest")
 ```
-
-## Single Page Application
-
-This mode is useful when you have a router in your javascript framework (e.g. Angular/React/Vue). When a request target a not found file, it returns the index instead of 404. This option also deactivates cache for the index in order to make work the cache-buster for javascript/style files.
-
-e.g.
-```bash
-curl myWebsite.com/users/vibioh/
-=> /index.html
-```
-
-Be careful, `-notFound` and `-spa` are incompatible flags. If you set both, you'll get an error.
 
 ## Docker
 
