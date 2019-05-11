@@ -44,6 +44,12 @@ curl myWebsite.com/users/vibioh/
 
 Be careful, `-notFound` and `-spa` are incompatible flags. If you set both, you'll get an error.
 
+## Endpoints
+
+* `GET /health`: [healthcheck](#graceful-close) of server
+* `GET /version`: value of `VERSION` environment variable
+* `GET /env`: values of [specified environments variables](#environment-variables)
+
 ## Environment variables
 
 Environment variables are exposed as JSON from a single and easy to remember endpoint: `/env`. You have full control of exposed variables by declaring them on the CLI.
@@ -73,13 +79,9 @@ For avoiding violent teardown, HTTP server ends gracefully in that way:
 1. `/health` endpoint respond with HTTP/503 Status during 35 seconds. Your load-balancer has time to handle it
 1. [HTTP Server Shutdown](https://golang.org/pkg/net/http/#Server.Shutdown) without closing active connections, with a 10 seconds timeout
 
-## Version
-
-A `/version` endpoint is available for getting value of `VERSION` environment variable.
-
 ## Usage
 
-By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag by default, security matters.
+By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag by default.
 
 ```bash
 Usage of viws:
