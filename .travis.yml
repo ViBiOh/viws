@@ -5,10 +5,10 @@ jobs:
     sudo: required
     services:
     - docker
-    script: docker build --build-arg "VERSION=$(make version)" -t "vibioh/$(make name):$(make version)" .
-    after_success: |
-      echo "${DOCKER_PASS}" | docker login -u vibioh --password-stdin
-      docker push "vibioh/$(make name):$(make version)"
+    script: docker build --build-arg CODECOV_TOKEN --build-arg "VERSION=$(make version)" -t "vibioh/$(make name):$(make version)" .
+    after_success:
+    - echo "${DOCKER_PASS}" | docker login -u vibioh --password-stdin
+    - docker push "vibioh/$(make name):$(make version)"
 
   - stage: Build
 
@@ -16,9 +16,9 @@ jobs:
     services:
     - docker
     script: docker build --build-arg "VERSION=$(make version)" -t "vibioh/$(make name):$(make version)-light" -f Dockerfile_light .
-    after_success: |
-      echo "${DOCKER_PASS}" | docker login -u vibioh --password-stdin
-      docker push "vibioh/$(make name):$(make version)-light"
+    after_success:
+    - echo "${DOCKER_PASS}" | docker login -u vibioh --password-stdin
+    - docker push "vibioh/$(make name):$(make version)-light"
 
   - stage: Publish
 
@@ -33,8 +33,8 @@ jobs:
       docker pull "vibioh/$(make name):$(make version)-light"
       docker tag "vibioh/$(make name):$(make version)-light" "vibioh/$(make name):light"
       docker push "vibioh/$(make name):light"
-    after_success: |
-      curl -s -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/viws
+    after_success:
+    - curl -s -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/viws
 
 stages:
   - Build
