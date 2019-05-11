@@ -34,7 +34,11 @@ func main() {
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	serverApp := httputils.New(serverConfig)
+	serverApp, err := httputils.New(serverConfig)
+	if err != nil {
+		logger.Fatal("%+v", err)
+	}
+
 	healthcheckApp := healthcheck.New()
 	gzipApp := gzip.New()
 	owaspApp := owasp.New(owaspConfig)

@@ -10,6 +10,8 @@ RUN make ${APP_NAME} \
 
 FROM scratch
 
+ARG VERSION
+ENV VERSION=${VERSION}
 ENV APP_NAME viws
 HEALTHCHECK --retries=10 CMD [ "/viws", "-url", "http://localhost:1080/health" ]
 

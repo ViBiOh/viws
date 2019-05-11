@@ -72,6 +72,10 @@ For avoiding violent teardown, HTTP server ends gracefully in that way:
 1. `/health` endpoint respond with HTTP/503 Status during 35 seconds. Your load-balancer has time to handle it
 1. [HTTP Server Shutdown](https://golang.org/pkg/net/http/#Server.Shutdown) without closing active connections, with a 10 seconds timeout
 
+## Version
+
+A `/version` endpoint is available for getting value of `VERSION` environment variable.
+
 ## Usage
 
 By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag by default, security matters.
@@ -98,6 +102,8 @@ Usage of viws:
         [env] Environments key variables to expose, comma separated
   -frameOptions string
         [owasp] X-Frame-Options (default "deny")
+  -graceful string
+        [http] Graceful close duration (default "35s")
   -headers string
         [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)
   -hsts
@@ -140,6 +146,7 @@ e.g.
 ```
 FROM vibioh/viws
 
+ENV VERSION 1.0.0-1234abcd
 COPY dist/ /www/
 ```
 
@@ -151,6 +158,7 @@ e.g.
 ```
 FROM vibioh/viws:light
 
+ENV VERSION 1.0.0-1234abcd
 COPY dist/ /www/
 ```
 
