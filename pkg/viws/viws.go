@@ -10,7 +10,6 @@ import (
 	"github.com/ViBiOh/httputils/pkg/httperror"
 	"github.com/ViBiOh/httputils/pkg/logger"
 	"github.com/ViBiOh/httputils/pkg/tools"
-	"github.com/ViBiOh/viws/pkg/utils"
 )
 
 const (
@@ -32,54 +31,62 @@ type App struct {
 	directory    string
 	pushPaths    []string
 	headers      map[string]string
-	notFoundPath *string
+	notFoundPath string
 }
 
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string) Config {
+	docPrefix := prefix
+	if prefix == "" {
+		docPrefix = "viws"
+	}
+
 	return Config{
-		directory: fs.String(tools.ToCamel(fmt.Sprintf("%sDirectory", prefix)), "/www/", "[viws] Directory to serve"),
-		headers:   fs.String(tools.ToCamel(fmt.Sprintf("%sHeaders", prefix)), "", "[viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)"),
-		notFound:  fs.Bool(tools.ToCamel(fmt.Sprintf("%sNotFound", prefix)), false, "[viws] Graceful 404 page at /404.html"),
-		spa:       fs.Bool(tools.ToCamel(fmt.Sprintf("%sSpa", prefix)), false, "[viws] Indicate Single Page Application mode"),
-		push:      fs.String(tools.ToCamel(fmt.Sprintf("%sPush", prefix)), "", "[viws] Paths for HTTP/2 Server Push on index, comma separated"),
+		directory: fs.String(tools.ToCamel(fmt.Sprintf("%sDirectory", prefix)), "/www/", fmt.Sprintf("[%s] Directory to serve", docPrefix)),
+		headers:   fs.String(tools.ToCamel(fmt.Sprintf("%sHeaders", prefix)), "", fmt.Sprintf("[%s] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)", docPrefix)),
+		notFound:  fs.Bool(tools.ToCamel(fmt.Sprintf("%sNotFound", prefix)), false, fmt.Sprintf("[%s] Graceful 404 page at /%s", docPrefix, notFoundFilename)),
+		spa:       fs.Bool(tools.ToCamel(fmt.Sprintf("%sSpa", prefix)), false, fmt.Sprintf("[%s] Indicate Single Page Application mode", docPrefix)),
+		push:      fs.String(tools.ToCamel(fmt.Sprintf("%sPush", prefix)), "", fmt.Sprintf("[%s] Paths for HTTP/2 Server Push on index, comma separated", docPrefix)),
 	}
 }
 
 // New creates new App from Config
 func New(config Config) (*App, error) {
-	spa := *config.spa
-	notFound := *config.notFound
-	directory := strings.TrimSpace(*config.directory)
-	push := strings.TrimSpace(*config.push)
-	rawHeaders := strings.TrimSpace(*config.headers)
+	if *config.notFound && *config.spa {
+		return nil, errors.New("incompatible options provided: -notFound and -spa")
+	}
 
-	if utils.IsFileExist(directory) == nil {
-		return nil, errors.New("directory %s is unreachable or does not contains index", directory)
+	directory := strings.TrimSpace(*config.directory)
+	if _, err := getFileToServe(directory); err != nil {
+		return nil, errors.Wrap(err, "directory %s is unreachable or does not contains index", directory)
 	}
 	logger.Info("Serving file from %s", directory)
 
-	var notFoundPath *string
-	if notFound {
-		if spa {
-			return nil, errors.New("incompatible options provided: -notFound and -spa")
+	var notFoundPath string
+	var err error
+
+	if *config.notFound {
+		if notFoundPath, err = getFileToServe(directory, notFoundFilename); err != nil {
+			return nil, errors.Wrap(err, "not found page %s is unreachable", notFoundPath)
 		}
 
-		if notFoundPath = utils.IsFileExist(directory, notFoundFilename); notFoundPath == nil {
-			return nil, errors.New("not found page %s%s is unreachable", directory, notFoundFilename)
-		}
-
-		logger.Info("404 will be %s", *notFoundPath)
+		logger.Info("404 will be %s", notFoundPath)
 	}
 
 	var pushPaths []string
+	push := strings.TrimSpace(*config.push)
+
 	if push != "" {
 		pushPaths = strings.Split(push, ",")
 		logger.Info("HTTP/2 Push of %s", pushPaths)
 	}
 
-	headers := make(map[string]string)
+	var headers map[string]string
+	rawHeaders := strings.TrimSpace(*config.headers)
+
 	if rawHeaders != "" {
+		headers = make(map[string]string)
+
 		for _, header := range strings.Split(rawHeaders, "~") {
 			if parts := strings.SplitN(header, ":", 2); len(parts) != 2 {
 				logger.Warn("header has wrong format: %s", header)
@@ -89,12 +96,12 @@ func New(config Config) (*App, error) {
 		}
 	}
 
-	if spa {
-		logger.Info("Working in SPA mode")
+	if *config.spa {
+		logger.Info("Single Page Application mode enabled")
 	}
 
 	return &App{
-		spa:          spa,
+		spa:          *config.spa,
 		directory:    directory,
 		pushPaths:    pushPaths,
 		notFoundPath: notFoundPath,
@@ -118,49 +125,47 @@ func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (a App) serve(w http.ResponseWriter, r *http.Request, path string) {
+	a.addCustomHeaders(w)
+
+	if r.Method == http.MethodGet {
+		http.ServeFile(w, r, path)
+	} else {
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
 // Handler serve file given configuration
 func (a App) Handler() http.Handler {
 	hasPush := len(a.pushPaths) != 0
+	hasNotFound := a.notFoundPath != ""
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodHead {
-			a.addCustomHeaders(w)
-
-			if utils.IsFileExist(a.directory, r.URL.Path) != nil {
-				w.WriteHeader(http.StatusNoContent)
-			} else {
-				httperror.NotFound(w)
-			}
-
-			return
-		}
-
-		if r.Method != http.MethodGet {
+		if r.Method != http.MethodGet && r.Method != http.MethodHead {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
 
-		if hasPush && r.URL.Path == "/" {
+		if hasPush && r.Method == http.MethodGet && tools.IsRoot(r) {
 			a.handlePush(w, r)
 		}
 
-		if filename := utils.IsFileExist(a.directory, r.URL.Path); filename != nil {
-			a.addCustomHeaders(w)
-			http.ServeFile(w, r, *filename)
+		if filename, err := getFileToServe(a.directory, r.URL.Path); err == nil {
+			a.serve(w, r, filename)
 			return
 		}
 
-		if a.notFoundPath != nil {
+		if hasNotFound {
 			w.WriteHeader(http.StatusNotFound)
-			a.addCustomHeaders(w)
-			http.ServeFile(w, r, *a.notFoundPath)
+
+			a.serve(w, r, a.notFoundPath)
 			return
 		}
 
 		if a.spa {
 			w.Header().Set("Cache-Control", "no-cache")
-			a.addCustomHeaders(w)
-			http.ServeFile(w, r, a.directory)
+
+			a.serve(w, r, a.directory)
 			return
 		}
 

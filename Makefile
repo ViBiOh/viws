@@ -82,4 +82,4 @@ build:
 .PHONY: start
 start:
 	$(SERVER_RUNNER) \
-		-directory $(pwd)/example
+		-directory $(PWD)/example
