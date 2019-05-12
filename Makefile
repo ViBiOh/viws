@@ -1,9 +1,7 @@
 SHELL = /bin/sh
 
-APP_NAME ?= viws
-
+APP_NAME = viws
 PACKAGES ?= ./...
-APP_PACKAGES = $(shell go list -e $(PACKAGES) | grep -v node_modules)
 
 GOBIN=bin
 BINARY_PATH=$(GOBIN)/$(APP_NAME)
@@ -60,9 +58,9 @@ format:
 ## lint: Lint code of app
 .PHONY: lint
 lint:
-	golint $(APP_PACKAGES)
-	errcheck -ignoretests $(APP_PACKAGES)
-	go vet $(APP_PACKAGES)
+	golint $(PACKAGES)
+	errcheck -ignoretests $(PACKAGES)
+	go vet $(PACKAGES)
 
 ## test: Test code of app with coverage
 .PHONY: test
@@ -72,7 +70,7 @@ test:
 ## bench: Benchmark code of app
 .PHONY: bench
 bench:
-	go test $(APP_PACKAGES) -bench . -benchmem -run Benchmark.*
+	go test $(PACKAGES) -bench . -benchmem -run Benchmark.*
 
 ## build: Build binary of app
 .PHONY: build
