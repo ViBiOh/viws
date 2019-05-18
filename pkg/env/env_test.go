@@ -49,7 +49,7 @@ func TestNew(t *testing.T) {
 
 func TestHandler(t *testing.T) {
 	user := os.Getenv("USER")
-	path := os.Getenv("PATH")
+	os.Setenv("ESCAPE", `it's a "test"`)
 
 	var cases = []struct {
 		intention  string
@@ -82,8 +82,8 @@ func TestHandler(t *testing.T) {
 		{
 			"should return asked keys",
 			httptest.NewRequest(http.MethodGet, "/", nil),
-			"USER,PATH",
-			fmt.Sprintf(`{"PATH":"%s","USER":"%s"}`, path, user),
+			"USER,ESCAPE",
+			fmt.Sprintf(`{"ESCAPE":"it's a \"test\"","USER":"%s"}`, user),
 			http.StatusOK,
 		},
 		{
