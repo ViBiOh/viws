@@ -42,7 +42,7 @@ func TestNew(t *testing.T) {
 
 	for _, testCase := range cases {
 		if result := New(testCase.input); !reflect.DeepEqual(result.keys, testCase.want) {
-			t.Errorf("%s\nNew(%+v) = %+v, want %+v", testCase.intention, testCase.input, result.keys, testCase.want)
+			t.Errorf("%s\nNew(%#v) = %#v, want %#v", testCase.intention, testCase.input, result.keys, testCase.want)
 		}
 	}
 }
@@ -104,11 +104,11 @@ func TestHandler(t *testing.T) {
 		a.Handler().ServeHTTP(writer, testCase.request)
 
 		if result := writer.Code; result != testCase.wantStatus {
-			t.Errorf("%s\nHandler(%+v) = %d, want status %d", testCase.intention, testCase.request, result, testCase.wantStatus)
+			t.Errorf("%s\nHandler(%#v) = %d, want status %d", testCase.intention, testCase.request, result, testCase.wantStatus)
 		}
 
 		if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
-			t.Errorf("%s\nHandler(%+v) = %s, want %s", testCase.intention, testCase.request, string(result), testCase.want)
+			t.Errorf("%s\nHandler(%#v) = %s, want %s", testCase.intention, testCase.request, string(result), testCase.want)
 		}
 	}
 }

@@ -119,7 +119,7 @@ func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
 	if pusher, ok := w.(http.Pusher); ok {
 		for _, path := range a.pushPaths {
 			if err := pusher.Push(path, nil); err != nil {
-				logger.Error("failed to push %s: %+v", path, err)
+				logger.Error("failed to push %s: %#v", path, err)
 			}
 		}
 	}
