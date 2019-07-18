@@ -2,7 +2,9 @@
 
 set -o nounset -o pipefail -o errexit
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 readonly OUTPUT_DIR="${SCRIPT_DIR}/../release"
+readonly TARGETS=('darwin/amd64' 'linux/amd64' 'linux/arm' 'linux/arm64')
 
 rm -rf "${OUTPUT_DIR}"
 mkdir "${OUTPUT_DIR}"
@@ -21,8 +23,6 @@ build() {
     return 1
   fi
 
-  local TARGETS=('darwin/amd64' 'linux/amd64' 'linux/arm' 'linux/arm64')
-
   for os_arch in "${TARGETS[@]}"; do
     IFS='/' read -ra context <<< "${os_arch}"
 
@@ -31,6 +31,13 @@ build() {
 
     GOOS="${GOOS}" GOARCH="${GOARCH}" CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o "${OUTPUT_DIR}/${1}_${GOOS}_${GOARCH}" "${SCRIPT_DIR}/../${2}"
   done
+}
+
+get_release_body() {
+  local CURRENT_TAG="${GIT_TAG}"
+  local PREVIOUS_TAG=$(git tag --sort=-creatordate | grep -v "${CURRENT_TAG}" | head -n 1)
+
+  echo $(git log --no-merges --pretty=format:'%h %s' "${CURRENT_TAG}...${PREVIOUS_TAG}" | awk '$0="* "$0')
 }
 
 release() {
@@ -55,7 +62,8 @@ release() {
     "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" \
     -d "{
       \"tag_name\": \"${GIT_TAG}\",
-      \"name\": \"${RELEASE_NAME}\"
+      \"name\": \"${RELEASE_NAME}\",
+      \"body\": \"$(get_release_body)\"
     }")
 
   if [[ "${HTTP_STATUS}" != "201" ]]; then
