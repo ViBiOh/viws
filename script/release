@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+set -o nounset -o pipefail -o errexit
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly OUTPUT_DIR="${SCRIPT_DIR}/../release"
+
+rm -rf "${OUTPUT_DIR}"
+mkdir "${OUTPUT_DIR}"
+
+readVariableIfRequired() {
+  if [[ -z "${!1:-}" ]]; then
+    read -p "${2:-${1}=}" "${1}"
+  else
+    echo "${1}="${!1}
+  fi
+}
+
+build() {
+  if [[ "${#}" -lt 2 ]]; then
+    echo "Usage: build [BINARY_NAME] [MAIN_SOURCE]"
+    return 1
+  fi
+
+  local TARGETS=('darwin/amd64' 'linux/amd64' 'linux/arm' 'linux/arm64')
+
+  for os_arch in "${TARGETS[@]}"; do
+    IFS='/' read -ra context <<< "${os_arch}"
+
+    local GOOS="${context[0]}"
+    local GOARCH="${context[1]}"
+
+    GOOS="${GOOS}" GOARCH="${GOARCH}" CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o "${OUTPUT_DIR}/${1}_${GOOS}_${GOARCH}" "${SCRIPT_DIR}/../${2}"
+  done
+}
+
+release() {
+  readVariableIfRequired GITHUB_OAUTH_TOKEN
+  readVariableIfRequired GITHUB_REPOSITORY
+  readVariableIfRequired GIT_TAG
+  readVariableIfRequired RELEASE_NAME
+
+  local RED='\033[0;31m'
+  local GREEN='\033[0;32m'
+  local BLUE='\033[0;34m'
+  local RESET='\033[0m'
+
+  echo -e "${BLUE}Creating release ${GIT_TAG} for ${GITHUB_REPOSITORY}...${RESET}"
+  echo
+  local HTTP_STATUS=$(curl \
+    -H "Content-Type: application/json" \
+    -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" \
+    -X POST \
+    -o create.txt \
+    -w "%{http_code}" \
+    "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" \
+    -d "{
+      \"tag_name\": \"${GIT_TAG}\",
+      \"name\": \"${RELEASE_NAME}\"
+    }")
+
+  if [[ "${HTTP_STATUS}" != "201" ]]; then
+     echo -e "${RED}Failed to create Release${RESET}"
+     cat create.txt
+     exit 1
+  fi
+
+  local response_url=$(python -c 'import json; data = json.load(open("create.txt")); print(data["upload_url"])' | sed 's|{.*||')
+  rm -rf create.txt
+
+  for asset in "${OUTPUT_DIR}"/*; do
+    echo -e "${BLUE}Uploading asset ${asset}...${RESET}"
+    echo
+
+    local HTTP_STATUS=$(curl \
+      -H "Content-Type: application/x-executable" \
+      -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" \
+      -X POST \
+      -o upload.txt \
+      -w "%{http_code}" \
+      "${response_url}?name=$(basename ${asset})" \
+      --data-binary "@${asset}")
+
+    if [[ "${HTTP_STATUS}" != "201" ]]; then
+       echo -e "${RED}Failed to upload asset ${asset}${RESET}"
+       cat upload.txt
+       exit 1
+    fi
+  done
+
+  rm -rf upload.txt
+
+  echo -e "${GREEN}Done!${RESET}"
+}
+
+build "viws" "cmd/viws/viws.go"
+build "viws-light" "cmd/viws-light/viws-light.go"
+release

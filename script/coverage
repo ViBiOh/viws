@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 set -o nounset -o pipefail -o errexit
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+pushd "${SCRIPT_DIR}/../"
 
 MODE="mode: atomic"
-
 echo "${MODE}" > coverage.txt
 
 for pkg in $(go list "${PACKAGES:-./...}"); do
@@ -16,3 +18,5 @@ for pkg in $(go list "${PACKAGES:-./...}"); do
 done
 
 go tool cover -func=coverage.txt
+
+popd
