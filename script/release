@@ -9,7 +9,7 @@ readonly TARGETS=('darwin/amd64' 'linux/amd64' 'linux/arm' 'linux/arm64')
 rm -rf "${OUTPUT_DIR}"
 mkdir "${OUTPUT_DIR}"
 
-readVariableIfRequired() {
+read_variable_if_required() {
   if [[ -z "${!1:-}" ]]; then
     read -p "${2:-${1}=}" "${1}"
   else
@@ -41,10 +41,10 @@ get_release_body() {
 }
 
 release() {
-  readVariableIfRequired GITHUB_OAUTH_TOKEN
-  readVariableIfRequired GITHUB_REPOSITORY
-  readVariableIfRequired GIT_TAG
-  readVariableIfRequired RELEASE_NAME
+  read_variable_if_required GITHUB_OAUTH_TOKEN
+  read_variable_if_required GITHUB_REPOSITORY
+  read_variable_if_required GIT_TAG
+  read_variable_if_required RELEASE_NAME
 
   local RED='\033[0;31m'
   local GREEN='\033[0;32m'
