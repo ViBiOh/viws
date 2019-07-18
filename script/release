@@ -37,7 +37,7 @@ get_release_body() {
   local CURRENT_TAG="${GIT_TAG}"
   local PREVIOUS_TAG=$(git tag --sort=-creatordate | grep -v "${CURRENT_TAG}" | head -n 1)
 
-  echo $(git log --no-merges --pretty=format:'%h %s' "${CURRENT_TAG}...${PREVIOUS_TAG}" | awk '$0="* "$0')
+  git log --no-merges --pretty=format:'%h %s' "${CURRENT_TAG}...${PREVIOUS_TAG}" | uniq | awk '{printf "* %s\n",$0}'
 }
 
 release() {
