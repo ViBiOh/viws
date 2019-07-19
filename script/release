@@ -4,10 +4,8 @@ set -o nounset -o pipefail -o errexit
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 readonly OUTPUT_DIR="${SCRIPT_DIR}/../release"
+readonly OUTPUT_TXT="output.txt"
 readonly TARGETS=('darwin/amd64' 'linux/amd64' 'linux/arm' 'linux/arm64')
-
-rm -rf "${OUTPUT_DIR}"
-mkdir "${OUTPUT_DIR}"
 
 read_variable_if_required() {
   if [[ -z "${!1:-}" ]]; then
@@ -17,8 +15,13 @@ read_variable_if_required() {
   fi
 }
 
+clean() {
+  rm -rf "${OUTPUT_DIR}"
+  mkdir "${OUTPUT_DIR}"
+}
+
 build() {
-  if [[ "${#}" -lt 2 ]]; then
+  if [[ "${#}" -ne 2 ]]; then
     echo "Usage: build [BINARY_NAME] [MAIN_SOURCE]"
     return 1
   fi
@@ -34,10 +37,14 @@ build() {
 }
 
 get_release_body() {
-  local CURRENT_TAG="${GIT_TAG}"
-  local PREVIOUS_TAG=$(git tag --sort=-creatordate | grep -v "${CURRENT_TAG}" | head -n 1)
+  if [[ "${#}" -ne 1 ]]; then
+    echo "Usage: get_release_body [GIT_TAG]"
+    return 1
+  fi
 
-  git log --no-merges --pretty=format:'%h %s' "${CURRENT_TAG}...${PREVIOUS_TAG}" | uniq | awk '{printf "* %s\n",$0}'
+  local PREVIOUS_TAG=$(git tag --sort=-creatordate | grep -v "${1}" | head -n 1)
+
+  git log --no-merges --pretty=format:'%h %s' "${1}...${PREVIOUS_TAG}" | uniq | awk '{printf "* %s\n",$0}'
 }
 
 release() {
@@ -57,23 +64,24 @@ release() {
     -H "Content-Type: application/json" \
     -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" \
     -X POST \
-    -o create.txt \
+    -o "${OUTPUT_TXT}" \
     -w "%{http_code}" \
     "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" \
     -d "{
       \"tag_name\": \"${GIT_TAG}\",
       \"name\": \"${RELEASE_NAME}\",
-      \"body\": \"$(get_release_body)\"
+      \"body\": \"$(get_release_body "${GIT_TAG}")\"
     }")
 
   if [[ "${HTTP_STATUS}" != "201" ]]; then
-     echo -e "${RED}Failed to create Release${RESET}"
-     cat create.txt
+     echo -e "${RED}Failed to create release${RESET}"
+     cat "${OUTPUT_TXT}"
+     rm "${OUTPUT_TXT}"
      exit 1
   fi
 
-  local response_url=$(python -c 'import json; data = json.load(open("create.txt")); print(data["upload_url"])' | sed 's|{.*||')
-  rm -rf create.txt
+  local response_url=$(python -c "import json; data = json.load(open(\"${OUTPUT_TXT}\")); print(data[\"upload_url\"]);" | sed 's|{.*||')
+  rm "${OUTPUT_TXT}"
 
   for asset in "${OUTPUT_DIR}"/*; do
     echo -e "${BLUE}Uploading asset ${asset}...${RESET}"
@@ -83,23 +91,25 @@ release() {
       -H "Content-Type: application/x-executable" \
       -H "Authorization: token ${GITHUB_OAUTH_TOKEN}" \
       -X POST \
-      -o upload.txt \
+      -o "${OUTPUT_TXT}" \
       -w "%{http_code}" \
       "${response_url}?name=$(basename ${asset})" \
       --data-binary "@${asset}")
 
     if [[ "${HTTP_STATUS}" != "201" ]]; then
        echo -e "${RED}Failed to upload asset ${asset}${RESET}"
-       cat upload.txt
+       cat "${OUTPUT_TXT}"
+       rm "${OUTPUT_TXT}"
        exit 1
     fi
   done
 
-  rm -rf upload.txt
+  rm "${OUTPUT_TXT}"
 
   echo -e "${GREEN}Done!${RESET}"
 }
 
+clean
 build "viws" "cmd/viws/viws.go"
 build "viws-light" "cmd/viws-light/viws-light.go"
 release

@@ -1,5 +1,10 @@
 SHELL = /bin/sh
 
+ifneq ("$(wildcard .env)","")
+	include .env
+	export
+endif
+
 APP_NAME = viws
 PACKAGES ?= ./...
 GO_FILES ?= */*/*.go
@@ -20,6 +25,16 @@ endif
 help: Makefile
 	@sed -n 's|^##||p' $< | column -t -s ':' | sed -e 's|^| |'
 
+## name: Output app name
+.PHONY: name
+name:
+	@echo -n $(APP_NAME)
+
+## version: Output last commit sha1
+.PHONY: version
+version:
+	@echo -n $(shell git rev-parse --short HEAD)
+
 ## app: Build app with dependencies download
 .PHONY: app
 app: deps go
@@ -28,26 +43,6 @@ app: deps go
 .PHONY: go
 go: format lint test bench build
 
-## name: Output name of app
-.PHONY: name
-name:
-	@echo -n $(APP_NAME)
-
-## dist: Output build output path
-.PHONY: dist
-dist:
-	@echo -n $(BINARY_PATH)
-
-## version: Output sha1 of last commit
-.PHONY: version
-version:
-	@echo -n $(shell git rev-parse --short HEAD)
-
-## author: Output author's name of last commit
-.PHONY: author
-author:
-	@python -c 'import sys; import urllib; sys.stdout.write(urllib.quote_plus(sys.argv[1]))' "$(shell git log --pretty=format:'%an' -n 1)"
-
 ## deps: Download dependencies
 .PHONY: deps
 deps:
@@ -55,30 +50,30 @@ deps:
 	go get golang.org/x/lint/golint
 	go get golang.org/x/tools/cmd/goimports
 
-## format: Format code of app
+## format: Format code
 .PHONY: format
 format:
 	goimports -w $(GO_FILES)
 	gofmt -s -w $(GO_FILES)
 
-## lint: Lint code of app
+## lint: Lint code
 .PHONY: lint
 lint:
 	golint $(PACKAGES)
 	errcheck -ignoretests $(PACKAGES)
 	go vet $(PACKAGES)
 
-## test: Test code of app with coverage
+## test: Test with coverage
 .PHONY: test
 test:
 	script/coverage
 
-## bench: Benchmark code of app
+## bench: Benchmark code
 .PHONY: bench
 bench:
 	go test $(PACKAGES) -bench . -benchmem -run Benchmark.*
 
-## build: Build binary of app
+## build: Build binary
 .PHONY: build
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o $(BINARY_PATH) $(SERVER_SOURCE)
