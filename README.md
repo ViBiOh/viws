@@ -114,7 +114,7 @@ Usage of viws:
   -key string
         [http] Key file
   -notFound
-        [viws] Graceful 404 page at /404.html
+        [viws] Graceful 404 page at /404.html (GET request)
   -port int
         [http] Listen port (default 1080)
   -prometheusPath string

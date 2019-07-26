@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/ViBiOh/httputils/pkg/errors"
@@ -44,7 +45,7 @@ func Flags(fs *flag.FlagSet, prefix string) Config {
 	return Config{
 		directory: fs.String(tools.ToCamel(fmt.Sprintf("%sDirectory", prefix)), "/www/", fmt.Sprintf("[%s] Directory to serve", docPrefix)),
 		headers:   fs.String(tools.ToCamel(fmt.Sprintf("%sHeaders", prefix)), "", fmt.Sprintf("[%s] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)", docPrefix)),
-		notFound:  fs.Bool(tools.ToCamel(fmt.Sprintf("%sNotFound", prefix)), false, fmt.Sprintf("[%s] Graceful 404 page at /%s", docPrefix, notFoundFilename)),
+		notFound:  fs.Bool(tools.ToCamel(fmt.Sprintf("%sNotFound", prefix)), false, fmt.Sprintf("[%s] Graceful 404 page at /%s (GET request)", docPrefix, notFoundFilename)),
 		spa:       fs.Bool(tools.ToCamel(fmt.Sprintf("%sSpa", prefix)), false, fmt.Sprintf("[%s] Indicate Single Page Application mode", docPrefix)),
 		push:      fs.String(tools.ToCamel(fmt.Sprintf("%sPush", prefix)), "", fmt.Sprintf("[%s] Paths for HTTP/2 Server Push on index, comma separated", docPrefix)),
 	}
@@ -125,13 +126,24 @@ func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a App) serve(w http.ResponseWriter, r *http.Request, path string) {
+func (a App) serve(w http.ResponseWriter, r *http.Request, filepath string) {
 	a.addCustomHeaders(w)
 
 	if r.Method == http.MethodGet {
-		http.ServeFile(w, r, path)
+		http.ServeFile(w, r, filepath)
+		return
+	}
+
+	if strings.Contains(filepath, "..") {
+		w.WriteHeader(http.StatusBadRequest)
 	} else {
-		w.WriteHeader(http.StatusNoContent)
+		if _, err := os.Stat(filepath); err == nil {
+			w.WriteHeader(http.StatusNoContent)
+		} else if os.IsNotExist(err) {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}
 }
 
