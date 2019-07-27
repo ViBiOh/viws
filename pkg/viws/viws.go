@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/ViBiOh/httputils/pkg/errors"
@@ -131,19 +130,8 @@ func (a App) serve(w http.ResponseWriter, r *http.Request, filepath string) {
 
 	if r.Method == http.MethodGet {
 		http.ServeFile(w, r, filepath)
-		return
-	}
-
-	if strings.Contains(filepath, "..") {
-		w.WriteHeader(http.StatusBadRequest)
 	} else {
-		if _, err := os.Stat(filepath); err == nil {
-			w.WriteHeader(http.StatusNoContent)
-		} else if os.IsNotExist(err) {
-			w.WriteHeader(http.StatusNotFound)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
@@ -164,6 +152,11 @@ func (a App) Handler() http.Handler {
 
 		if filename, err := getFileToServe(a.directory, r.URL.Path); err == nil {
 			a.serve(w, r, filename)
+			return
+		}
+
+		if r.Method == http.MethodHead {
+			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 
