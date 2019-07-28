@@ -32,16 +32,12 @@ func main() {
 	viwsConfig := viws.Flags(fs, "")
 	envConfig := env.Flags(fs, "")
 
-	if err := fs.Parse(os.Args[1:]); err != nil {
-		logger.Fatal("%#v", err)
-	}
+	logger.Fatal(fs.Parse(os.Args[1:]))
 
 	alcotest.DoAndExit(alcotestConfig)
 
 	serverApp, err := httputils.New(serverConfig)
-	if err != nil {
-		logger.Fatal("%#v", err)
-	}
+	logger.Fatal(err)
 
 	healthcheckApp := healthcheck.New()
 	prometheusApp := prometheus.New(prometheusConfig)
@@ -51,9 +47,7 @@ func main() {
 	corsApp := cors.New(corsConfig)
 
 	viwsApp, err := viws.New(viwsConfig)
-	if err != nil {
-		logger.Fatal("%#v", err)
-	}
+	logger.Fatal(err)
 	envApp := env.New(envConfig)
 
 	viwsHandler := server.ChainMiddlewares(viwsApp.Handler(), owaspApp)
