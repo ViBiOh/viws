@@ -9,10 +9,8 @@ import (
 	"github.com/ViBiOh/httputils/pkg/alcotest"
 	"github.com/ViBiOh/httputils/pkg/cors"
 	"github.com/ViBiOh/httputils/pkg/gzip"
-	"github.com/ViBiOh/httputils/pkg/healthcheck"
 	"github.com/ViBiOh/httputils/pkg/logger"
 	"github.com/ViBiOh/httputils/pkg/owasp"
-	"github.com/ViBiOh/httputils/pkg/server"
 	"github.com/ViBiOh/viws/pkg/env"
 	"github.com/ViBiOh/viws/pkg/viws"
 )
@@ -35,7 +33,6 @@ func main() {
 	serverApp, err := httputils.New(serverConfig)
 	logger.Fatal(err)
 
-	healthcheckApp := healthcheck.New()
 	gzipApp := gzip.New()
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)
@@ -46,8 +43,8 @@ func main() {
 	}
 	envApp := env.New(envConfig)
 
-	viwsHandler := server.ChainMiddlewares(viwsApp.Handler(), owaspApp)
-	envHandler := server.ChainMiddlewares(envApp.Handler(), owaspApp, corsApp)
+	viwsHandler := httputils.ChainMiddlewares(viwsApp.Handler(), owaspApp)
+	envHandler := httputils.ChainMiddlewares(envApp.Handler(), owaspApp, corsApp)
 	requestHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/env" {
 			envHandler.ServeHTTP(w, r)
@@ -55,7 +52,7 @@ func main() {
 			viwsHandler.ServeHTTP(w, r)
 		}
 	})
-	apiHandler := server.ChainMiddlewares(requestHandler, gzipApp)
+	apiHandler := httputils.ChainMiddlewares(requestHandler, gzipApp)
 
-	serverApp.ListenAndServe(apiHandler, nil, healthcheckApp)
+	serverApp.ListenAndServe(apiHandler, nil, nil)
 }

@@ -13,7 +13,7 @@ FROM scratch
 
 EXPOSE 1080
 
-HEALTHCHECK --retries=10 CMD [ "/viws", "-url", "http://localhost:1080/health" ]
+HEALTHCHECK --retries=5 CMD [ "/viws", "-url", "http://localhost:1080/health" ]
 ENTRYPOINT [ "/viws" ]
 
 ARG APP_VERSION

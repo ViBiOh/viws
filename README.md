@@ -71,14 +71,6 @@ const config = await response.json();
 ReactDOM.render(<App />, document.getElementById('root'));
 ```
 
-## Graceful close
-
-For avoiding violent teardown, HTTP server ends gracefully in that way:
-
-1. Listening to `SIGTERM`
-1. `/health` endpoint respond with HTTP/503 Status during 35 seconds. Your load-balancer has time to handle it
-1. [HTTP Server Shutdown](https://golang.org/pkg/net/http/#Server.Shutdown) without closing active connections, with a 10 seconds timeout
-
 ## Usage
 
 By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag by default.
