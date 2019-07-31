@@ -58,5 +58,5 @@ func main() {
 	})
 	apiHandler := httputils.ChainMiddlewares(requestHandler, prometheusApp, opentracingApp, gzipApp)
 
-	serverApp.ListenAndServe(apiHandler, nil, nil)
+	serverApp.ListenAndServe(apiHandler, httputils.HealthHandler(nil), nil)
 }
