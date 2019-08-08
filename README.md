@@ -30,7 +30,6 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 * Serve static content, with Single Page App handling
 * Serve environment variables for easier-config
 * Custom 404 page
-* Graceful close
 
 ## Single Page Application
 
@@ -46,7 +45,7 @@ Be careful, `-notFound` and `-spa` are incompatible flags. If you set both, you'
 
 ## Endpoints
 
-* `GET /health`: [healthcheck](#graceful-close) of server
+* `GET /health`: healthcheck of server (always respond 204 if HTTP is up)
 * `GET /version`: value of `VERSION` environment variable
 * `GET /env`: values of [specified environments variables](#environment-variables)
 
@@ -56,6 +55,8 @@ Environment variables are exposed as JSON from a single and easy to remember end
 
 This feature is useful for Single Page Application, you first request `/env` in order to know the `API_URL` or `CONFIGURATION_TOKEN` and then proceed. You reuse the same artifact between `pre-production` and `production`, only variables change.
 
+### Configuration example
+
 ```bash
 API_URL=https://api.vibioh.fr vibioh/viws --env API_URL
 
@@ -63,12 +64,14 @@ API_URL=https://api.vibioh.fr vibioh/viws --env API_URL
 {"API_URL":"https://api.vibioh.fr"}
 ```
 
+### Usage in SPA
+
 ```js
 // index.js
 
 const response = await fetch('/env');
 const config = await response.json();
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App config={config} />, document.getElementById('root'));
 ```
 
 ## Usage
@@ -166,4 +169,5 @@ make go
 ```
 
 ## License
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FViBiOh%2Fviws.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FViBiOh%2Fviws?ref=badge_large)
