@@ -8,7 +8,6 @@ import (
 	httputils "github.com/ViBiOh/httputils/pkg"
 	"github.com/ViBiOh/httputils/pkg/alcotest"
 	"github.com/ViBiOh/httputils/pkg/cors"
-	"github.com/ViBiOh/httputils/pkg/gzip"
 	"github.com/ViBiOh/httputils/pkg/logger"
 	"github.com/ViBiOh/httputils/pkg/owasp"
 	"github.com/ViBiOh/viws/pkg/env"
@@ -33,7 +32,6 @@ func main() {
 	serverApp, err := httputils.New(serverConfig)
 	logger.Fatal(err)
 
-	gzipApp := gzip.New()
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)
 
@@ -52,7 +50,6 @@ func main() {
 			viwsHandler.ServeHTTP(w, r)
 		}
 	})
-	apiHandler := httputils.ChainMiddlewares(requestHandler, gzipApp)
 
-	serverApp.ListenAndServe(apiHandler, httputils.HealthHandler(nil), nil)
+	serverApp.ListenAndServe(requestHandler, httputils.HealthHandler(nil), nil)
 }

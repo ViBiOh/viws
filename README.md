@@ -15,7 +15,7 @@ go get github.com/ViBiOh/viws/cmd/viws
 
 ### Light version
 
-Light version (without Opentracing and Prometheus) is also available, for a smaller binary.
+Light version (without GZIP, Opentracing and Prometheus) is also available, for a smaller binary.
 
 ```bash
 go get github.com/ViBiOh/viws/cmd/viws-light
@@ -24,6 +24,7 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 ## Features
 
 * Full TLS support
+* GZIP Compression
 * Opentracing with Jaeger
 * Prometheus monitoring
 * Read-only container
