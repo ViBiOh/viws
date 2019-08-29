@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/ViBiOh/httputils/pkg/errors"
@@ -13,6 +14,7 @@ import (
 )
 
 const (
+	indexFilename    = "index.html"
 	notFoundFilename = "404.html"
 )
 
@@ -111,7 +113,7 @@ func New(config Config) (*App, error) {
 
 func (a App) addCustomHeaders(w http.ResponseWriter) {
 	for key, value := range a.headers {
-		w.Header().Set(key, value)
+		w.Header().Add(key, value)
 	}
 }
 
@@ -139,6 +141,7 @@ func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string) 
 func (a App) Handler() http.Handler {
 	hasPush := len(a.pushPaths) != 0
 	hasNotFound := a.notFoundPath != ""
+	indexPath := path.Join(a.directory, indexFilename)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet && r.Method != http.MethodHead {
@@ -170,7 +173,7 @@ func (a App) Handler() http.Handler {
 		if a.spa {
 			w.Header().Set("Cache-Control", "no-cache")
 
-			a.serveFile(w, r, a.directory)
+			a.serveFile(w, r, indexPath)
 			return
 		}
 
