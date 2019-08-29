@@ -7,10 +7,6 @@ import (
 	"github.com/ViBiOh/httputils/pkg/errors"
 )
 
-const (
-	indexFilename = "index.html"
-)
-
 func getFileToServe(parts ...string) (string, error) {
 	path := path.Join(parts...)
 
