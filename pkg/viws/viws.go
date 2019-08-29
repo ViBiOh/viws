@@ -125,7 +125,7 @@ func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a App) serve(w http.ResponseWriter, r *http.Request, filepath string) {
+func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string) {
 	a.addCustomHeaders(w)
 
 	if r.Method == http.MethodGet {
@@ -151,7 +151,7 @@ func (a App) Handler() http.Handler {
 		}
 
 		if filename, err := getFileToServe(a.directory, r.URL.Path); err == nil {
-			a.serve(w, r, filename)
+			a.serveFile(w, r, filename)
 			return
 		}
 
@@ -163,14 +163,14 @@ func (a App) Handler() http.Handler {
 		if hasNotFound {
 			w.WriteHeader(http.StatusNotFound)
 
-			a.serve(w, r, a.notFoundPath)
+			a.serveFile(w, r, a.notFoundPath)
 			return
 		}
 
 		if a.spa {
 			w.Header().Set("Cache-Control", "no-cache")
 
-			a.serve(w, r, a.directory)
+			a.serveFile(w, r, a.directory)
 			return
 		}
 

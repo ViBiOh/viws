@@ -19,11 +19,9 @@ func getFileToServe(parts ...string) (string, error) {
 		return path, errors.WithStack(err)
 	}
 
-	if info.IsDir() {
-		if _, err := getFileToServe(append(parts, indexFilename)...); err != nil {
-			return path, err
-		}
+	if !info.IsDir() {
+		return path, nil
 	}
 
-	return path, nil
+	return getFileToServe(append(parts, indexFilename)...)
 }
