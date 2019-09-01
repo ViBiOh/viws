@@ -63,7 +63,7 @@ release() {
   echo -e "${GREEN}${BODY}${RESET}"
 
   local OUTPUT_TXT="output.txt"
-  local CLIENT_ARGS=("curl" "-o" "${OUTPUT_TXT}" "-w" "%{http_code}" "-H" "Authorization: token ${GITHUB_OAUTH_TOKEN}")
+  local CLIENT_ARGS=("curl" "-q" "-sS" "-o" "${OUTPUT_TXT}" "-w" "%{http_code}" "-H" "Authorization: token ${GITHUB_OAUTH_TOKEN}")
 
   echo
   local HTTP_STATUS="$("${CLIENT_ARGS[@]}" \
