@@ -52,7 +52,7 @@ stages:
   - name: Release
     if: tag =~ /^v\d+\.\d+\.\d+$/
   - name: Publish
-    if: branch = master
+    if: branch = master && type = push
 
 notifications:
   email: false
