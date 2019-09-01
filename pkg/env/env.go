@@ -18,7 +18,11 @@ type Config struct {
 }
 
 // App of package
-type App struct {
+type App interface {
+	Handler() http.Handler
+}
+
+type app struct {
 	keys []string
 }
 
@@ -30,7 +34,7 @@ func Flags(fs *flag.FlagSet, prefix string) Config {
 }
 
 // New creates new App from Config
-func New(config Config) *App {
+func New(config Config) App {
 	var keys []string
 
 	env := strings.TrimSpace(*config.env)
@@ -38,13 +42,13 @@ func New(config Config) *App {
 		keys = strings.Split(env, ",")
 	}
 
-	return &App{
+	return app{
 		keys: keys,
 	}
 }
 
 // Handler for net/http package returning environment variables in JSON
-func (a App) Handler() http.Handler {
+func (a app) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
