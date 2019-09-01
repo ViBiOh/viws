@@ -28,7 +28,11 @@ type Config struct {
 }
 
 // App of package
-type App struct {
+type App interface {
+	Handler() http.Handler
+}
+
+type app struct {
 	spa          bool
 	directory    string
 	pushPaths    []string
@@ -53,7 +57,7 @@ func Flags(fs *flag.FlagSet, prefix string) Config {
 }
 
 // New creates new App from Config
-func New(config Config) (*App, error) {
+func New(config Config) (App, error) {
 	if *config.notFound && *config.spa {
 		return nil, errors.New("incompatible options provided: -notFound and -spa")
 	}
@@ -102,7 +106,7 @@ func New(config Config) (*App, error) {
 		logger.Info("Single Page Application mode enabled")
 	}
 
-	return &App{
+	return app{
 		spa:          *config.spa,
 		directory:    directory,
 		pushPaths:    pushPaths,
@@ -111,13 +115,13 @@ func New(config Config) (*App, error) {
 	}, nil
 }
 
-func (a App) addCustomHeaders(w http.ResponseWriter) {
+func (a app) addCustomHeaders(w http.ResponseWriter) {
 	for key, value := range a.headers {
 		w.Header().Add(key, value)
 	}
 }
 
-func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
+func (a app) handlePush(w http.ResponseWriter, r *http.Request) {
 	if pusher, ok := w.(http.Pusher); ok {
 		for _, path := range a.pushPaths {
 			if err := pusher.Push(path, nil); err != nil {
@@ -127,7 +131,7 @@ func (a App) handlePush(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string) {
+func (a app) serveFile(w http.ResponseWriter, r *http.Request, filepath string) {
 	a.addCustomHeaders(w)
 
 	if r.Method == http.MethodGet {
@@ -138,7 +142,7 @@ func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string) 
 }
 
 // Handler serve file given configuration
-func (a App) Handler() http.Handler {
+func (a app) Handler() http.Handler {
 	hasPush := len(a.pushPaths) != 0
 	hasNotFound := a.notFoundPath != ""
 	indexPath := path.Join(a.directory, indexFilename)

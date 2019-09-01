@@ -11,7 +11,7 @@ import (
 func TestHandler(t *testing.T) {
 	var cases = []struct {
 		intention  string
-		app        App
+		app        app
 		request    *http.Request
 		want       string
 		wantStatus int
@@ -19,7 +19,7 @@ func TestHandler(t *testing.T) {
 	}{
 		{
 			"invalid method",
-			App{},
+			app{},
 			httptest.NewRequest(http.MethodOptions, "/", nil),
 			"",
 			http.StatusMethodNotAllowed,
@@ -27,7 +27,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"head index",
-			App{
+			app{
 				directory: "../../example/",
 			},
 			httptest.NewRequest(http.MethodHead, "/", nil),
@@ -37,7 +37,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get index",
-			App{
+			app{
 				directory: "../../example/",
 			},
 			httptest.NewRequest(http.MethodGet, "/", nil),
@@ -58,7 +58,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get file with header",
-			App{
+			app{
 				directory: "../../example/",
 				headers: map[string]string{
 					"Etag": "test",
@@ -74,7 +74,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"head not found",
-			App{
+			app{
 				directory: "../../example/",
 			},
 			httptest.NewRequest(http.MethodHead, "/404.html", nil),
@@ -84,7 +84,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get not found",
-			App{
+			app{
 				directory: "../../example/",
 			},
 			httptest.NewRequest(http.MethodGet, "/404.html", nil),
@@ -95,7 +95,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get not found with file",
-			App{
+			app{
 				directory:    "../../example/",
 				notFoundPath: "../../example/index.js",
 			},
@@ -107,7 +107,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get not found with spa",
-			App{
+			app{
 				directory: "../../example/",
 				spa:       true,
 			},
