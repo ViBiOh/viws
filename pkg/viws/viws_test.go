@@ -1,12 +1,128 @@
 package viws
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/ViBiOh/httputils/pkg/request"
 )
+
+func TestNew(t *testing.T) {
+	falseVar := false
+	trueVar := true
+	emptyString := ""
+	exempleDir := "../../example/"
+	examplePush := "index.js,index.css"
+	exampleHeader := "X-UA-Compatible:ie=edge~content-language:fr~invalidformat"
+
+	var cases = []struct {
+		intention string
+		input     Config
+		want      App
+		wantErr   error
+	}{
+		{
+			"minimal config",
+			Config{
+				directory: &exempleDir,
+				headers:   &emptyString,
+				spa:       &falseVar,
+				push:      &emptyString,
+			},
+			app{
+				spa:       false,
+				directory: "../../example/",
+			},
+			nil,
+		},
+		{
+			"spa config",
+			Config{
+				directory: &exempleDir,
+				headers:   &emptyString,
+				spa:       &trueVar,
+				push:      &emptyString,
+			},
+			app{
+				spa:       true,
+				directory: "../../example/",
+			},
+			nil,
+		},
+		{
+			"empty config",
+			Config{
+				directory: &emptyString,
+				headers:   &emptyString,
+				spa:       &falseVar,
+				push:      &emptyString,
+			},
+			nil,
+			errors.New("directory  is unreachable or does not contains index"),
+		},
+		{
+			"pushPaths",
+			Config{
+				directory: &exempleDir,
+				headers:   &emptyString,
+				spa:       &falseVar,
+				push:      &examplePush,
+			},
+			app{
+				spa:       false,
+				directory: "../../example/",
+				pushPaths: []string{
+					"index.js",
+					"index.css",
+				},
+			},
+			nil,
+		},
+		{
+			"header",
+			Config{
+				directory: &exempleDir,
+				headers:   &exampleHeader,
+				spa:       &falseVar,
+				push:      &emptyString,
+			},
+			app{
+				spa:       false,
+				directory: "../../example/",
+				headers: map[string]string{
+					"X-UA-Compatible":  "ie=edge",
+					"content-language": "fr",
+				},
+			},
+			nil,
+		},
+	}
+
+	for _, testCase := range cases {
+		t.Run(testCase.intention, func(t *testing.T) {
+			result, err := New(testCase.input)
+
+			failed := false
+
+			if err == nil && testCase.wantErr != nil {
+				failed = true
+			} else if err != nil && testCase.wantErr == nil {
+				failed = true
+			} else if err != nil && err.Error() != testCase.wantErr.Error() {
+				failed = true
+			} else if !reflect.DeepEqual(result, testCase.want) {
+				failed = true
+			}
+
+			if failed {
+				t.Errorf("New() = (%#v, %#v), want (%#v, %#v)", result, err, testCase.want, testCase.wantErr)
+			}
+		})
+	}
+}
 
 func TestHandler(t *testing.T) {
 	var cases = []struct {

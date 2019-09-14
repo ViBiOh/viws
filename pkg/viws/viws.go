@@ -22,7 +22,6 @@ const (
 type Config struct {
 	directory *string
 	headers   *string
-	notFound  *bool
 	spa       *bool
 	push      *string
 }
@@ -50,7 +49,6 @@ func Flags(fs *flag.FlagSet, prefix string) Config {
 	return Config{
 		directory: fs.String(tools.ToCamel(fmt.Sprintf("%sDirectory", prefix)), "/www/", fmt.Sprintf("[%s] Directory to serve", docPrefix)),
 		headers:   fs.String(tools.ToCamel(fmt.Sprintf("%sHeaders", prefix)), "", fmt.Sprintf("[%s] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)", docPrefix)),
-		notFound:  fs.Bool(tools.ToCamel(fmt.Sprintf("%sNotFound", prefix)), false, fmt.Sprintf("[%s] Graceful 404 page at /%s (GET request)", docPrefix, notFoundFilename)),
 		spa:       fs.Bool(tools.ToCamel(fmt.Sprintf("%sSpa", prefix)), false, fmt.Sprintf("[%s] Indicate Single Page Application mode", docPrefix)),
 		push:      fs.String(tools.ToCamel(fmt.Sprintf("%sPush", prefix)), "", fmt.Sprintf("[%s] Paths for HTTP/2 Server Push on index, comma separated", docPrefix)),
 	}
@@ -58,10 +56,6 @@ func Flags(fs *flag.FlagSet, prefix string) Config {
 
 // New creates new App from Config
 func New(config Config) (App, error) {
-	if *config.notFound && *config.spa {
-		return nil, errors.New("incompatible options provided: -notFound and -spa")
-	}
-
 	directory := strings.TrimSpace(*config.directory)
 	if _, err := getFileToServe(directory); err != nil {
 		return nil, errors.Wrap(err, "directory %s is unreachable or does not contains index", directory)
@@ -69,14 +63,11 @@ func New(config Config) (App, error) {
 	logger.Info("Serving file from %s", directory)
 
 	var notFoundPath string
-	var err error
 
-	if *config.notFound {
-		if notFoundPath, err = getFileToServe(directory, notFoundFilename); err != nil {
-			return nil, errors.Wrap(err, "not found page %s is unreachable", notFoundPath)
-		}
-
-		logger.Info("404 will be %s", notFoundPath)
+	if path, err := getFileToServe(directory, notFoundFilename); err != nil {
+		logger.Warn("no %s file on directory, 404 will be plain text", notFoundFilename)
+	} else {
+		notFoundPath = path
 	}
 
 	var pushPaths []string
@@ -131,10 +122,11 @@ func (a app) handlePush(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a app) serveFile(w http.ResponseWriter, r *http.Request, filepath string) {
+func (a app) serveFile(w http.ResponseWriter, r *http.Request, status int, filepath string) {
 	a.addCustomHeaders(w)
 
 	if r.Method == http.MethodGet {
+		w.WriteHeader(status)
 		http.ServeFile(w, r, filepath)
 	} else {
 		w.WriteHeader(http.StatusNoContent)
@@ -158,7 +150,7 @@ func (a app) Handler() http.Handler {
 		}
 
 		if filename, err := getFileToServe(a.directory, r.URL.Path); err == nil {
-			a.serveFile(w, r, filename)
+			a.serveFile(w, r, http.StatusOK, filename)
 			return
 		}
 
@@ -168,16 +160,14 @@ func (a app) Handler() http.Handler {
 		}
 
 		if hasNotFound {
-			w.WriteHeader(http.StatusNotFound)
-
-			a.serveFile(w, r, a.notFoundPath)
+			a.serveFile(w, r, http.StatusNotFound, a.notFoundPath)
 			return
 		}
 
 		if a.spa {
 			w.Header().Set("Cache-Control", "no-cache")
 
-			a.serveFile(w, r, indexPath)
+			a.serveFile(w, r, http.StatusOK, indexPath)
 			return
 		}
 

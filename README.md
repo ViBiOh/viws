@@ -42,8 +42,6 @@ curl myWebsite.com/users/vibioh/
 => /index.html
 ```
 
-Be careful, `-notFound` and `-spa` are incompatible flags. If you set both, you'll get an error.
-
 ## Endpoints
 
 * `GET /health`: healthcheck of server (always respond 204 if HTTP is up)
@@ -109,8 +107,6 @@ Usage of viws:
         [owasp] Indicate Strict Transport Security (default true)
   -key string
         [http] Key file
-  -notFound
-        [viws] Graceful 404 page at /404.html (GET request)
   -port int
         [http] Listen port (default 1080)
   -prometheusPath string
