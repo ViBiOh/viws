@@ -64,12 +64,15 @@ func New(config Config) (App, error) {
 	}
 	logger.Info("Serving file from %s", directory)
 
+	spa := *config.spa
 	var notFoundPath string
 
-	if path, err := getFileToServe(directory, notFoundFilename); err != nil {
-		logger.Warn("no %s file on directory, 404 will be plain text", notFoundFilename)
-	} else {
-		notFoundPath = path
+	if !spa {
+		if path, err := getFileToServe(directory, notFoundFilename); err != nil {
+			logger.Warn("no %s file on directory, 404 will be plain text", notFoundFilename)
+		} else {
+			notFoundPath = path
+		}
 	}
 
 	var pushPaths []string
@@ -100,7 +103,7 @@ func New(config Config) (App, error) {
 	}
 
 	return app{
-		spa:          *config.spa,
+		spa:          spa,
 		directory:    directory,
 		pushPaths:    pushPaths,
 		notFoundPath: notFoundPath,
