@@ -218,7 +218,7 @@ func TestHandler(t *testing.T) {
 			httptest.NewRequest(http.MethodGet, "/404.html", nil),
 			`console.log('Ready');
 `,
-			http.StatusNotFound,
+			http.StatusOK,
 			nil,
 		},
 		{
