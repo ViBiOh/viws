@@ -99,8 +99,6 @@ Usage of viws:
         [env] Environments key variables to expose, comma separated
   -frameOptions string
         [owasp] X-Frame-Options (default "deny")
-  -graceful string
-        [http] Graceful close duration (default "35s")
   -headers string
         [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)
   -hsts

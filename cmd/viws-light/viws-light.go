@@ -29,9 +29,6 @@ func main() {
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	serverApp, err := httputils.New(serverConfig)
-	logger.Fatal(err)
-
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)
 
@@ -51,5 +48,5 @@ func main() {
 		}
 	})
 
-	serverApp.ListenAndServe(requestHandler, httputils.HealthHandler(nil), nil)
+	httputils.New(serverConfig).ListenAndServe(requestHandler, httputils.HealthHandler(nil), nil)
 }
