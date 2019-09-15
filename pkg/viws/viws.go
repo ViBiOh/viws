@@ -3,7 +3,10 @@ package viws
 import (
 	"flag"
 	"fmt"
+	"io"
+	"mime"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 
@@ -14,7 +17,6 @@ import (
 )
 
 const (
-	indexFilename    = "index.html"
 	notFoundFilename = "404.html"
 )
 
@@ -132,11 +134,24 @@ func (a app) serveFile(w http.ResponseWriter, r *http.Request, filepath string) 
 	}
 }
 
+func (a app) serveLocalFile(w http.ResponseWriter, filepath string) {
+	file, err := os.Open(filepath)
+	if err != nil {
+		httperror.InternalServerError(w, errors.WithStack(err))
+		return
+	}
+
+	w.WriteHeader(http.StatusNotFound)
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Content-Type", mime.TypeByExtension(filepath))
+	if _, err = io.Copy(w, file); err != nil {
+		logger.Error("unable to copy content to writer: %#v", errors.WithStack(err))
+	}
+}
+
 // Handler serve file given configuration
 func (a app) Handler() http.Handler {
 	hasPush := len(a.pushPaths) != 0
-	hasNotFound := a.notFoundPath != ""
-	indexPath := path.Join(a.directory, indexFilename)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet && r.Method != http.MethodHead {
@@ -160,13 +175,12 @@ func (a app) Handler() http.Handler {
 
 		if a.spa {
 			w.Header().Set("Cache-Control", "no-cache")
-
-			a.serveFile(w, r, indexPath)
+			a.serveFile(w, r, path.Join(a.directory, "index.html"))
 			return
 		}
 
-		if hasNotFound {
-			a.serveFile(w, r, a.notFoundPath)
+		if a.notFoundPath != "" {
+			a.serveLocalFile(w, a.notFoundPath)
 			return
 		}
 
