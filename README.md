@@ -79,6 +79,8 @@ By default, server is listening on the `1080` port and serve content for GET req
 
 ```bash
 Usage of viws:
+  -address string
+        [http] Listen address
   -cert string
         [http] Certificate file
   -corsCredentials
