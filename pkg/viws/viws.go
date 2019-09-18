@@ -2,7 +2,6 @@ package viws
 
 import (
 	"flag"
-	"fmt"
 	"io"
 	"mime"
 	"net/http"
@@ -10,10 +9,10 @@ import (
 	"path"
 	"strings"
 
-	"github.com/ViBiOh/httputils/pkg/errors"
-	"github.com/ViBiOh/httputils/pkg/httperror"
-	"github.com/ViBiOh/httputils/pkg/logger"
-	"github.com/ViBiOh/httputils/pkg/tools"
+	"github.com/ViBiOh/httputils/v2/pkg/errors"
+	"github.com/ViBiOh/httputils/v2/pkg/httperror"
+	"github.com/ViBiOh/httputils/v2/pkg/logger"
+	"github.com/ViBiOh/httputils/v2/pkg/tools"
 )
 
 const (
@@ -43,16 +42,11 @@ type app struct {
 
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string) Config {
-	docPrefix := prefix
-	if prefix == "" {
-		docPrefix = "viws"
-	}
-
 	return Config{
-		directory: fs.String(tools.ToCamel(fmt.Sprintf("%sDirectory", prefix)), "/www/", fmt.Sprintf("[%s] Directory to serve", docPrefix)),
-		headers:   fs.String(tools.ToCamel(fmt.Sprintf("%sHeaders", prefix)), "", fmt.Sprintf("[%s] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)", docPrefix)),
-		spa:       fs.Bool(tools.ToCamel(fmt.Sprintf("%sSpa", prefix)), false, fmt.Sprintf("[%s] Indicate Single Page Application mode", docPrefix)),
-		push:      fs.String(tools.ToCamel(fmt.Sprintf("%sPush", prefix)), "", fmt.Sprintf("[%s] Paths for HTTP/2 Server Push on index, comma separated", docPrefix)),
+		directory: tools.NewFlag(prefix, "viws").Name("Directory").Default("/www/").Label("Directory to serve").ToString(fs),
+		headers:   tools.NewFlag(prefix, "viws").Name("Headers").Default("").Label("Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)").ToString(fs),
+		spa:       tools.NewFlag(prefix, "viws").Name("Spa").Default(false).Label("Indicate Single Page Application mode").ToBool(fs),
+		push:      tools.NewFlag(prefix, "viws").Name("Push").Default("").Label("Paths for HTTP/2 Server Push on index, comma separated").ToString(fs),
 	}
 }
 

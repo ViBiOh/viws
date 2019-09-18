@@ -2,14 +2,13 @@ package env
 
 import (
 	"flag"
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
 
-	"github.com/ViBiOh/httputils/pkg/httperror"
-	"github.com/ViBiOh/httputils/pkg/httpjson"
-	"github.com/ViBiOh/httputils/pkg/tools"
+	"github.com/ViBiOh/httputils/v2/pkg/httperror"
+	"github.com/ViBiOh/httputils/v2/pkg/httpjson"
+	"github.com/ViBiOh/httputils/v2/pkg/tools"
 )
 
 // Config of package
@@ -29,7 +28,7 @@ type app struct {
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string) Config {
 	return Config{
-		env: fs.String(tools.ToCamel(fmt.Sprintf("%sEnv", prefix)), "", "[env] Environments key variables to expose, comma separated"),
+		env: tools.NewFlag(prefix, "env").Name("Env").Default("").Label("Environments key variables to expose, comma separated").ToString(fs),
 	}
 }
 

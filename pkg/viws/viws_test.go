@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ViBiOh/httputils/pkg/request"
+	"github.com/ViBiOh/httputils/v2/pkg/request"
 )
 
 func TestNew(t *testing.T) {

@@ -80,49 +80,49 @@ By default, server is listening on the `1080` port and serve content for GET req
 ```bash
 Usage of viws:
   -address string
-        [http] Listen address
+        [http] Listen address {VIWS_ADDRESS}
   -cert string
-        [http] Certificate file
+        [http] Certificate file {VIWS_CERT}
   -corsCredentials
-        [cors] Access-Control-Allow-Credentials
+        [cors] Access-Control-Allow-Credentials {VIWS_CORS_CREDENTIALS}
   -corsExpose string
-        [cors] Access-Control-Expose-Headers
+        [cors] Access-Control-Expose-Headers {VIWS_CORS_EXPOSE}
   -corsHeaders string
-        [cors] Access-Control-Allow-Headers (default "Content-Type")
+        [cors] Access-Control-Allow-Headers {VIWS_CORS_HEADERS} (default "Content-Type")
   -corsMethods string
-        [cors] Access-Control-Allow-Methods (default "GET")
+        [cors] Access-Control-Allow-Methods {VIWS_CORS_METHODS} (default "GET")
   -corsOrigin string
-        [cors] Access-Control-Allow-Origin (default "*")
+        [cors] Access-Control-Allow-Origin {VIWS_CORS_ORIGIN} (default "*")
   -csp string
-        [owasp] Content-Security-Policy (default "default-src 'self'; base-uri 'self'")
+        [owasp] Content-Security-Policy {VIWS_CSP} (default "default-src 'self'; base-uri 'self'")
   -directory string
-        [viws] Directory to serve (default "/www/")
+        [viws] Directory to serve {VIWS_DIRECTORY} (default "/www/")
   -env string
-        [env] Environments key variables to expose, comma separated
+        [env] Environments key variables to expose, comma separated {VIWS_ENV}
   -frameOptions string
-        [owasp] X-Frame-Options (default "deny")
+        [owasp] X-Frame-Options {VIWS_FRAME_OPTIONS} (default "deny")
   -headers string
-        [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)
+        [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {VIWS_HEADERS}
   -hsts
-        [owasp] Indicate Strict Transport Security (default true)
+        [owasp] Indicate Strict Transport Security {VIWS_HSTS} (default true)
   -key string
-        [http] Key file
+        [http] Key file {VIWS_KEY}
   -port int
-        [http] Listen port (default 1080)
+        [http] Listen port {VIWS_PORT} (default 1080)
   -prometheusPath string
-        [prometheus] Path for exposing metrics (default "/metrics")
+        [prometheus] Path for exposing metrics {VIWS_PROMETHEUS_PATH} (default "/metrics")
   -push string
-        [viws] Paths for HTTP/2 Server Push on index, comma separated
+        [viws] Paths for HTTP/2 Server Push on index, comma separated {VIWS_PUSH}
   -spa
-        [viws] Indicate Single Page Application mode
+        [viws] Indicate Single Page Application mode {VIWS_SPA}
   -tracingAgent string
-        [tracing] Jaeger Agent (e.g. host:port) (default "jaeger:6831")
+        [tracing] Jaeger Agent (e.g. host:port) {VIWS_TRACING_AGENT} (default "jaeger:6831")
   -tracingName string
-        [tracing] Service name
+        [tracing] Service name {VIWS_TRACING_NAME}
   -url string
-        [alcotest] URL to check
+        [alcotest] URL to check {VIWS_URL}
   -userAgent string
-        [alcotest] User-Agent for check (default "Golang alcotest")
+        [alcotest] User-Agent for check {VIWS_USER_AGENT} (default "Golang alcotest")
 ```
 
 ## Docker

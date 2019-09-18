@@ -4,7 +4,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/ViBiOh/httputils/pkg/errors"
+	"github.com/ViBiOh/httputils/v2/pkg/errors"
 )
 
 func getFileToServe(parts ...string) (string, error) {
