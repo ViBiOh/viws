@@ -16,7 +16,7 @@ go get github.com/ViBiOh/viws/cmd/viws
 
 ### Light version
 
-Light version (without GZIP, Opentracing and Prometheus) is also available, for a smaller binary.
+Light version (without GZIP and Prometheus) is also available, for a smaller binary.
 
 ```bash
 go get github.com/ViBiOh/viws/cmd/viws-light
@@ -26,7 +26,6 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 
 * Full TLS support
 * GZIP Compression
-* Opentracing with Jaeger
 * Prometheus monitoring
 * Read-only container
 * Serve static content, with Single Page App handling
@@ -116,10 +115,6 @@ Usage of viws:
         [viws] Paths for HTTP/2 Server Push on index, comma separated {VIWS_PUSH}
   -spa
         [viws] Indicate Single Page Application mode {VIWS_SPA}
-  -tracingAgent string
-        [tracing] Jaeger Agent (e.g. host:port) {VIWS_TRACING_AGENT} (default "jaeger:6831")
-  -tracingName string
-        [tracing] Service name {VIWS_TRACING_NAME}
   -url string
         [alcotest] URL to check {VIWS_URL}
   -userAgent string
