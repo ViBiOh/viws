@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ViBiOh/httputils/v2/pkg/request"
+	"github.com/ViBiOh/httputils/v3/pkg/request"
 )
 
 func TestNew(t *testing.T) {
@@ -61,7 +61,7 @@ func TestNew(t *testing.T) {
 				push:      &emptyString,
 			},
 			nil,
-			errors.New("directory  is unreachable or does not contains index"),
+			errors.New("directory  is unreachable or does not contains index: stat : no such file or directory"),
 		},
 		{
 			"pushPaths",
@@ -257,7 +257,7 @@ func TestHandler(t *testing.T) {
 				t.Errorf("Status %d, want %d", result, testCase.wantStatus)
 			}
 
-			if result, _ := request.ReadBody(writer.Result().Body); string(result) != testCase.want {
+			if result, _ := request.ReadContent(writer.Result().Body); string(result) != testCase.want {
 				t.Errorf("Body `%s`, want `%s`", string(result), testCase.want)
 			}
 

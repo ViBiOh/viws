@@ -2,6 +2,7 @@ package viws
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"mime"
 	"net/http"
@@ -9,10 +10,10 @@ import (
 	"path"
 	"strings"
 
-	"github.com/ViBiOh/httputils/v2/pkg/errors"
-	"github.com/ViBiOh/httputils/v2/pkg/httperror"
-	"github.com/ViBiOh/httputils/v2/pkg/logger"
-	"github.com/ViBiOh/httputils/v2/pkg/tools"
+	"github.com/ViBiOh/httputils/v3/pkg/flags"
+	"github.com/ViBiOh/httputils/v3/pkg/httperror"
+	"github.com/ViBiOh/httputils/v3/pkg/logger"
+	"github.com/ViBiOh/httputils/v3/pkg/query"
 )
 
 const (
@@ -43,10 +44,10 @@ type app struct {
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string) Config {
 	return Config{
-		directory: tools.NewFlag(prefix, "viws").Name("Directory").Default("/www/").Label("Directory to serve").ToString(fs),
-		headers:   tools.NewFlag(prefix, "viws").Name("Headers").Default("").Label("Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)").ToString(fs),
-		spa:       tools.NewFlag(prefix, "viws").Name("Spa").Default(false).Label("Indicate Single Page Application mode").ToBool(fs),
-		push:      tools.NewFlag(prefix, "viws").Name("Push").Default("").Label("Paths for HTTP/2 Server Push on index, comma separated").ToString(fs),
+		directory: flags.New(prefix, "viws").Name("Directory").Default("/www/").Label("Directory to serve").ToString(fs),
+		headers:   flags.New(prefix, "viws").Name("Headers").Default("").Label("Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)").ToString(fs),
+		spa:       flags.New(prefix, "viws").Name("Spa").Default(false).Label("Indicate Single Page Application mode").ToBool(fs),
+		push:      flags.New(prefix, "viws").Name("Push").Default("").Label("Paths for HTTP/2 Server Push on index, comma separated").ToString(fs),
 	}
 }
 
@@ -54,7 +55,7 @@ func Flags(fs *flag.FlagSet, prefix string) Config {
 func New(config Config) (App, error) {
 	directory := strings.TrimSpace(*config.directory)
 	if _, err := getFileToServe(directory); err != nil {
-		return nil, errors.Wrap(err, "directory %s is unreachable or does not contains index", directory)
+		return nil, fmt.Errorf("directory %s is unreachable or does not contains index: %w", directory, err)
 	}
 	logger.Info("Serving file from %s", directory)
 
@@ -134,7 +135,7 @@ func (a app) serveFile(w http.ResponseWriter, r *http.Request, filepath string) 
 func (a app) serveLocalFile(w http.ResponseWriter, filepath string) {
 	file, err := os.Open(filepath)
 	if err != nil {
-		httperror.InternalServerError(w, errors.WithStack(err))
+		httperror.InternalServerError(w, err)
 		return
 	}
 
@@ -142,7 +143,7 @@ func (a app) serveLocalFile(w http.ResponseWriter, filepath string) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Content-Type", mime.TypeByExtension(filepath))
 	if _, err = io.Copy(w, file); err != nil {
-		logger.Error("unable to copy content to writer: %#v", errors.WithStack(err))
+		logger.Error("unable to copy content to writer: %s", err)
 	}
 }
 
@@ -156,7 +157,7 @@ func (a app) Handler() http.Handler {
 			return
 		}
 
-		if hasPush && r.Method == http.MethodGet && tools.IsRoot(r) {
+		if hasPush && r.Method == http.MethodGet && query.IsRoot(r) {
 			a.handlePush(w, r)
 		}
 

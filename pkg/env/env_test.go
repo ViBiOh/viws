@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ViBiOh/httputils/v2/pkg/request"
+	"github.com/ViBiOh/httputils/v3/pkg/request"
 )
 
 func TestNew(t *testing.T) {
@@ -78,21 +78,21 @@ func TestHandler(t *testing.T) {
 			"should return empty JSON if no key",
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			"",
-			"{}",
+			"{}\n",
 			http.StatusOK,
 		},
 		{
 			"should return asked keys",
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			"USER,ESCAPE",
-			fmt.Sprintf(`{"ESCAPE":"it's a \"test\"","USER":"%s"}`, user),
+			fmt.Sprintf("{\"ESCAPE\":\"it's a \\\"test\\\"\",\"USER\":\"%s\"}\n", user),
 			http.StatusOK,
 		},
 		{
 			"should return empty value for not found keys",
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			"USER,UNKNOWN_ENV_VAR",
-			fmt.Sprintf(`{"UNKNOWN_ENV_VAR":"","USER":"%s"}`, user),
+			fmt.Sprintf("{\"UNKNOWN_ENV_VAR\":\"\",\"USER\":\"%s\"}\n", user),
 			http.StatusOK,
 		},
 	}

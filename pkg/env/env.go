@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ViBiOh/httputils/v2/pkg/httperror"
-	"github.com/ViBiOh/httputils/v2/pkg/httpjson"
-	"github.com/ViBiOh/httputils/v2/pkg/tools"
+	"github.com/ViBiOh/httputils/v3/pkg/flags"
+	"github.com/ViBiOh/httputils/v3/pkg/httperror"
+	"github.com/ViBiOh/httputils/v3/pkg/httpjson"
 )
 
 // Config of package
@@ -28,7 +28,7 @@ type app struct {
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string) Config {
 	return Config{
-		env: tools.NewFlag(prefix, "env").Name("Env").Default("").Label("Environments key variables to expose, comma separated").ToString(fs),
+		env: flags.New(prefix, "env").Name("Env").Default("").Label("Environments key variables to expose, comma separated").ToString(fs),
 	}
 }
 

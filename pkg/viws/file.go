@@ -3,8 +3,6 @@ package viws
 import (
 	"os"
 	"path"
-
-	"github.com/ViBiOh/httputils/v2/pkg/errors"
 )
 
 func getFileToServe(parts ...string) (string, error) {
@@ -12,7 +10,7 @@ func getFileToServe(parts ...string) (string, error) {
 
 	info, err := os.Stat(path)
 	if err != nil {
-		return path, errors.WithStack(err)
+		return path, err
 	}
 
 	if !info.IsDir() {
