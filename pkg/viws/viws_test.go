@@ -257,7 +257,7 @@ func TestHandler(t *testing.T) {
 				t.Errorf("Status %d, want %d", result, testCase.wantStatus)
 			}
 
-			if result, _ := request.ReadContent(writer.Result().Body); string(result) != testCase.want {
+			if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
 				t.Errorf("Body `%s`, want `%s`", string(result), testCase.want)
 			}
 

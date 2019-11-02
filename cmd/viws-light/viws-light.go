@@ -34,7 +34,7 @@ func main() {
 
 	viwsApp, err := viws.New(viwsConfig)
 	if err != nil {
-		logger.Error("%#v", err)
+		logger.Error("%s", err)
 	}
 	envApp := env.New(envConfig)
 
