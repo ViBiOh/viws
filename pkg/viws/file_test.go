@@ -49,7 +49,7 @@ func TestGetFileToServe(t *testing.T) {
 			}
 
 			if failed {
-				t.Errorf("getFileToServe(%#v) = (`%s`, %#v), want (`%s`, %#v)", testCase.input, result, err, testCase.want, testCase.wantErr)
+				t.Errorf("getFileToServe() = (%s, %s), want (%s, %s)", result, err, testCase.want, testCase.wantErr)
 			}
 		})
 	}
