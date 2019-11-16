@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"os"
 
-	httputils "github.com/ViBiOh/httputils/v3/pkg"
 	"github.com/ViBiOh/httputils/v3/pkg/alcotest"
 	"github.com/ViBiOh/httputils/v3/pkg/cors"
 	"github.com/ViBiOh/httputils/v3/pkg/gzip"
+	"github.com/ViBiOh/httputils/v3/pkg/httputils"
 	"github.com/ViBiOh/httputils/v3/pkg/logger"
 	"github.com/ViBiOh/httputils/v3/pkg/owasp"
 	"github.com/ViBiOh/httputils/v3/pkg/prometheus"
@@ -32,8 +32,6 @@ func main() {
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	prometheusApp := prometheus.New(prometheusConfig)
-	gzipApp := gzip.New()
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)
 
@@ -50,7 +48,9 @@ func main() {
 			viwsHandler.ServeHTTP(w, r)
 		}
 	})
-	apiHandler := httputils.ChainMiddlewares(requestHandler, prometheusApp, gzipApp)
 
-	httputils.New(serverConfig).ListenAndServe(apiHandler, httputils.HealthHandler(nil), nil)
+	server := httputils.New(serverConfig)
+	server.Middleware(prometheus.New(prometheusConfig))
+	server.Middleware(gzip.New())
+	server.ListenServeWait(requestHandler)
 }

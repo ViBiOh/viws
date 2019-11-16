@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	httputils "github.com/ViBiOh/httputils/v3/pkg"
 	"github.com/ViBiOh/httputils/v3/pkg/alcotest"
 	"github.com/ViBiOh/httputils/v3/pkg/cors"
+	"github.com/ViBiOh/httputils/v3/pkg/httputils"
 	"github.com/ViBiOh/httputils/v3/pkg/logger"
 	"github.com/ViBiOh/httputils/v3/pkg/owasp"
 	"github.com/ViBiOh/viws/pkg/env"
@@ -48,5 +48,6 @@ func main() {
 		}
 	})
 
-	httputils.New(serverConfig).ListenAndServe(requestHandler, httputils.HealthHandler(nil), nil)
+	server := httputils.New(serverConfig)
+	server.ListenServeWait(requestHandler)
 }

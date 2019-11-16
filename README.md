@@ -118,7 +118,7 @@ Usage of viws:
   -url string
         [alcotest] URL to check {VIWS_URL}
   -userAgent string
-        [alcotest] User-Agent for check {VIWS_USER_AGENT} (default "Golang alcotest")
+        [alcotest] User-Agent for check {VIWS_USER_AGENT} (default "Alcotest")
 ```
 
 ## Docker
