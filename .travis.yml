@@ -1,40 +1,42 @@
+---
+
 jobs:
   include:
-  - stage: Build
+    - stage: Build
 
-    sudo: required
-    language: minimal
-    services:
-    - docker
-    script: docker build --build-arg CODECOV_TOKEN --build-arg "APP_VERSION=$(make version)" -t "${DOCKER_USER}/$(make name):$(make version)" .
-    after_success:
-    - echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
-    - docker push "${DOCKER_USER}/$(make name):$(make version)"
+      sudo: required
+      language: minimal
+      services:
+        - docker
+      script: docker build --build-arg CODECOV_TOKEN --build-arg "APP_VERSION=$(make version)" -t "${DOCKER_USER}/$(make name):$(make version)" .
+      after_success:
+        - echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
+        - docker push "${DOCKER_USER}/$(make name):$(make version)"
 
-  - stage: Build
+    - stage: Build
 
-    sudo: required
-    language: minimal
-    services:
-    - docker
-    script: docker build --build-arg "APP_VERSION=$(make version)" -t "${DOCKER_USER}/$(make name):$(make version)-light" -f Dockerfile_light .
-    after_success:
-    - echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
-    - docker push "${DOCKER_USER}/$(make name):$(make version)-light"
+      sudo: required
+      language: minimal
+      services:
+        - docker
+      script: docker build --build-arg "APP_VERSION=$(make version)" -t "${DOCKER_USER}/$(make name):$(make version)-light" -f Dockerfile_light .
+      after_success:
+        - echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
+        - docker push "${DOCKER_USER}/$(make name):$(make version)-light"
 
-  - stage: Publish
+    - stage: Publish
 
-    sudo: required
-    language: minimal
-    services:
-    - docker
-    script:
-    - echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
-    - curl -q -sSL --max-time 10 "https://raw.githubusercontent.com/ViBiOh/scripts/master/bootstrap" | bash -s "docker_promote"
-    - scripts/docker_promote "${DOCKER_USER}/$(make name)" "$(make version)"
-    - scripts/docker_promote "${DOCKER_USER}/$(make name)" "$(make version)-light"
-    after_success:
-    - curl -q -sSL --max-time 10 -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/viws
+      sudo: required
+      language: minimal
+      services:
+        - docker
+      script:
+        - echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
+        - curl -q -sSL --max-time 10 "https://raw.githubusercontent.com/ViBiOh/scripts/master/bootstrap" | bash -s "docker_promote"
+        - scripts/docker_promote "${DOCKER_USER}/$(make name)" "$(make version)"
+        - scripts/docker_promote "${DOCKER_USER}/$(make name)" "$(make version)-light"
+      after_success:
+        - curl -q -sSL --max-time 10 -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/viws
 
 stages:
   - Build
