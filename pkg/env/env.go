@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/ViBiOh/httputils/v3/pkg/flags"
-	"github.com/ViBiOh/httputils/v3/pkg/httperror"
 	"github.com/ViBiOh/httputils/v3/pkg/httpjson"
 )
 
@@ -67,8 +66,6 @@ func (a app) Handler() http.Handler {
 			}
 		}
 
-		if err := httpjson.ResponseJSON(w, http.StatusOK, env, httpjson.IsPretty(r)); err != nil {
-			httperror.InternalServerError(w, err)
-		}
+		httpjson.ResponseJSON(w, http.StatusOK, env, httpjson.IsPretty(r))
 	})
 }
