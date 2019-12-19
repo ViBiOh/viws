@@ -107,6 +107,8 @@ Usage of viws:
         [owasp] Indicate Strict Transport Security {VIWS_HSTS} (default true)
   -key string
         [http] Key file {VIWS_KEY}
+  -okStatus int
+        [http] Healthy HTTP Status code {VIWS_OK_STATUS} (default 204)
   -port int
         [http] Listen port {VIWS_PORT} (default 1080)
   -prometheusPath string
