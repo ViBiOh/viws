@@ -107,11 +107,11 @@ func TestHandler(t *testing.T) {
 			a.Handler().ServeHTTP(writer, testCase.request)
 
 			if result := writer.Code; result != testCase.wantStatus {
-				t.Errorf("Handler(%#v) = %d, want status %d", testCase.request, result, testCase.wantStatus)
+				t.Errorf("Handler() = %d, want status %d", result, testCase.wantStatus)
 			}
 
 			if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
-				t.Errorf("Handler(%#v) = %s, want %s", testCase.request, string(result), testCase.want)
+				t.Errorf("Handler() = `%s`, want `%s`", string(result), testCase.want)
 			}
 		})
 	}
