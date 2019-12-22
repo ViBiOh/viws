@@ -1,15 +1,46 @@
 package env
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/ViBiOh/httputils/v3/pkg/request"
 )
+
+func TestFlags(t *testing.T) {
+	var cases = []struct {
+		intention string
+		want      string
+	}{
+		{
+			"simple",
+			"Usage of simple:\n  -env string\n    \t[env] Environments key variables to expose, comma separated {SIMPLE_ENV}\n",
+		},
+	}
+
+	for _, testCase := range cases {
+		t.Run(testCase.intention, func(t *testing.T) {
+			fs := flag.NewFlagSet(testCase.intention, flag.ContinueOnError)
+			Flags(fs, "")
+
+			var writer strings.Builder
+			fs.SetOutput(&writer)
+			fs.Usage()
+
+			result := writer.String()
+
+			if result != testCase.want {
+				t.Errorf("Flags() = `%s`, want `%s`", result, testCase.want)
+			}
+		})
+	}
+}
 
 func TestNew(t *testing.T) {
 	emptyString := ""

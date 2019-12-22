@@ -33,13 +33,12 @@ func main() {
 	corsApp := cors.New(corsConfig)
 
 	viwsApp, err := viws.New(viwsConfig)
-	if err != nil {
-		logger.Error("%s", err)
-	}
+	logger.Fatal(err)
+
 	envApp := env.New(envConfig)
 
-	viwsHandler := httputils.ChainMiddlewares(viwsApp.Handler(), owaspApp)
-	envHandler := httputils.ChainMiddlewares(envApp.Handler(), owaspApp, corsApp)
+	viwsHandler := httputils.ChainMiddlewares(viwsApp.Handler(), owaspApp.Middleware)
+	envHandler := httputils.ChainMiddlewares(envApp.Handler(), owaspApp.Middleware, corsApp.Middleware)
 	requestHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/env" {
 			envHandler.ServeHTTP(w, r)

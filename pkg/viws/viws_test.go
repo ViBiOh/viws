@@ -2,13 +2,44 @@ package viws
 
 import (
 	"errors"
+	"flag"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/ViBiOh/httputils/v3/pkg/request"
 )
+
+func TestFlags(t *testing.T) {
+	var cases = []struct {
+		intention string
+		want      string
+	}{
+		{
+			"simple",
+			"Usage of simple:\n  -directory string\n    \t[viws] Directory to serve {SIMPLE_DIRECTORY} (default \"/www/\")\n  -headers string\n    \t[viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {SIMPLE_HEADERS}\n  -push string\n    \t[viws] Paths for HTTP/2 Server Push on index, comma separated {SIMPLE_PUSH}\n  -spa\n    \t[viws] Indicate Single Page Application mode {SIMPLE_SPA}\n",
+		},
+	}
+
+	for _, testCase := range cases {
+		t.Run(testCase.intention, func(t *testing.T) {
+			fs := flag.NewFlagSet(testCase.intention, flag.ContinueOnError)
+			Flags(fs, "")
+
+			var writer strings.Builder
+			fs.SetOutput(&writer)
+			fs.Usage()
+
+			result := writer.String()
+
+			if result != testCase.want {
+				t.Errorf("Flags() = `%s`, want `%s`", result, testCase.want)
+			}
+		})
+	}
+}
 
 func TestNew(t *testing.T) {
 	falseVar := false

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/httputils/v3/pkg/alcotest"
 	"github.com/ViBiOh/httputils/v3/pkg/cors"
-	"github.com/ViBiOh/httputils/v3/pkg/gzip"
 	"github.com/ViBiOh/httputils/v3/pkg/httputils"
 	"github.com/ViBiOh/httputils/v3/pkg/logger"
 	"github.com/ViBiOh/httputils/v3/pkg/owasp"
@@ -39,8 +39,8 @@ func main() {
 	logger.Fatal(err)
 	envApp := env.New(envConfig)
 
-	viwsHandler := httputils.ChainMiddlewares(viwsApp.Handler(), owaspApp)
-	envHandler := httputils.ChainMiddlewares(envApp.Handler(), owaspApp, corsApp)
+	viwsHandler := httputils.ChainMiddlewares(viwsApp.Handler(), owaspApp.Middleware)
+	envHandler := httputils.ChainMiddlewares(envApp.Handler(), owaspApp.Middleware, corsApp.Middleware)
 	requestHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/env" {
 			envHandler.ServeHTTP(w, r)
@@ -50,7 +50,7 @@ func main() {
 	})
 
 	server := httputils.New(serverConfig)
-	server.Middleware(prometheus.New(prometheusConfig))
-	server.Middleware(gzip.New())
+	server.Middleware(prometheus.New(prometheusConfig).Middleware)
+	server.Middleware(gziphandler.GzipHandler)
 	server.ListenServeWait(requestHandler)
 }
