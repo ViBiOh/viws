@@ -36,7 +36,7 @@ jobs:
         - scripts/docker_promote "${DOCKER_USER}/$(make name)" "$(make version)"
         - scripts/docker_promote "${DOCKER_USER}/$(make name)" "$(make version)-light" "light"
       after_success:
-        - curl -q -sSL --max-time 10 -X POST https://goreportcard.com/checks?repo=github.com/ViBiOh/viws
+        - curl -q -sSL --max-time 10 -X POST https://goreportcard.com/checks?repo=github.com/${TRAVIS_REPO_SLUG}
 
 stages:
   - Build
