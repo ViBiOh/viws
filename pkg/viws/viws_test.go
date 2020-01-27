@@ -189,7 +189,7 @@ func TestHandler(t *testing.T) {
 			},
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			`<!DOCTYPE HTML>
-<html>
+<html lang="en">
   <head>
     <title>viws</title>
     <link rel="stylesheet" href="/index.css">
@@ -260,7 +260,7 @@ func TestHandler(t *testing.T) {
 			},
 			httptest.NewRequest(http.MethodGet, "/user/1234", nil),
 			`<!DOCTYPE HTML>
-<html>
+<html lang="en">
   <head>
     <title>viws</title>
     <link rel="stylesheet" href="/index.css">
