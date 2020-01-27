@@ -7,6 +7,7 @@ A superlight HTTP fileserver with customizable behavior.
 [![codecov](https://codecov.io/gh/ViBiOh/viws/branch/master/graph/badge.svg)](https://codecov.io/gh/ViBiOh/viws)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FViBiOh%2Fviws.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FViBiOh%2Fviws?ref=badge_shield)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=ViBiOh/viws)](https://dependabot.com)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ViBiOh_viws&metric=alert_status)](https://sonarcloud.io/dashboard?id=ViBiOh_viws)
 
 ## Installation
 
