@@ -1,15 +1,3 @@
-FROM golang:1.13 as builder
-
-WORKDIR /app
-COPY . .
-
-RUN make \
- && git diff -- *.go \
- && git diff --quiet -- *.go
-
-ARG CODECOV_TOKEN
-RUN curl -q -sSL --max-time 10 https://codecov.io/bash | bash
-
 FROM alpine as fetcher
 
 WORKDIR /app
@@ -27,5 +15,8 @@ ENTRYPOINT [ "/viws" ]
 ARG APP_VERSION
 ENV VERSION=${APP_VERSION}
 
+ARG OS
+ARG ARCH
+
 COPY --from=fetcher /app/cacert.pem /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /app/bin/viws /viws
+COPY viws_${OS}_${ARCH} /viws
