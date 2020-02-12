@@ -19,4 +19,4 @@ ARG OS
 ARG ARCH
 
 COPY --from=fetcher /app/cacert.pem /etc/ssl/certs/ca-certificates.crt
-COPY viws_${OS}_${ARCH} /viws
+COPY release/viws_${OS}_${ARCH} /viws
