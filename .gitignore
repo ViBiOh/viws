@@ -4,9 +4,8 @@ scripts/
 # Golang
 bin/
 release/
-create.txt
-update.txt
 coverage.*
+profile.out
 
-# Docker
+# Files
 cacert.pem
