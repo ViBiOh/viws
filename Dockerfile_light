@@ -1,6 +1,7 @@
 FROM scratch
 
 EXPOSE 1080
+ENV VIWS_PORT 1080
 
 HEALTHCHECK --retries=5 CMD [ "/viws", "-url", "http://localhost:1080/health" ]
 ENTRYPOINT [ "/viws" ]
