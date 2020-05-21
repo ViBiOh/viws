@@ -51,7 +51,9 @@ func (a app) Handler() http.Handler {
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
 			return
-		} else if r.Method != http.MethodGet {
+		}
+
+		if r.Method != http.MethodGet {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
@@ -59,11 +61,7 @@ func (a app) Handler() http.Handler {
 		env := make(map[string]string)
 
 		for _, key := range a.keys {
-			if value := os.Getenv(key); value != "" {
-				env[key] = value
-			} else {
-				env[key] = ""
-			}
+			env[key] = os.Getenv(key)
 		}
 
 		httpjson.ResponseJSON(w, http.StatusOK, env, httpjson.IsPretty(r))

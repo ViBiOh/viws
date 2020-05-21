@@ -30,14 +30,13 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 * Prometheus monitoring
 * Read-only container
 * Serve static content, with Single Page App handling
+* HTTP/2 Server push
 * Serve environment variables for easier-config
-* Custom 404 page
 
 ## Single Page Application
 
 This mode is useful when you have a router in your javascript framework (e.g. Angular/React/Vue). When a request target a not found file, it returns the index instead of 404. This option also deactivates cache for the index in order to make work the cache-buster for javascript/style files.
 
-e.g.
 ```bash
 curl myWebsite.com/users/vibioh/
 => /index.html
@@ -45,7 +44,7 @@ curl myWebsite.com/users/vibioh/
 
 ## Endpoints
 
-* `GET /health`: healthcheck of server (always respond 204 if HTTP is up)
+* `GET /health`: healthcheck of server, respond [`okStatus (default 204)`](#usage) or `503` during [`graceDuration`](#usage) when SIGTERM is received
 * `GET /version`: value of `VERSION` environment variable
 * `GET /env`: values of [specified environments variables](#environment-variables)
 
@@ -53,7 +52,7 @@ curl myWebsite.com/users/vibioh/
 
 Environment variables are exposed as JSON from a single and easy to remember endpoint: `/env`. You have full control of exposed variables by declaring them on the CLI.
 
-This feature is useful for Single Page Application, you first request `/env` in order to know the `API_URL` or `CONFIGURATION_TOKEN` and then proceed. You reuse the same artifact between `pre-production` and `production`, only variables change.
+This feature is useful for Single Page Application, you first request `/env` in order to know the `API_URL` or `CONFIGURATION_TOKEN` and then proceed. You reuse the same artifact between `pre-production` and `production`, only variables change, in [respect of 12factor app](https://12factor.net/config)
 
 ### Configuration example
 
@@ -76,7 +75,7 @@ ReactDOM.render(<App config={config} />, document.getElementById('root'));
 
 ## Usage
 
-By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory, which have to contains an `index.html`. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag by default.
+By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag by default.
 
 ```bash
 Usage of viws:
@@ -102,6 +101,8 @@ Usage of viws:
         [env] Environments key variables to expose, comma separated {VIWS_ENV}
   -frameOptions string
         [owasp] X-Frame-Options {VIWS_FRAME_OPTIONS} (default "deny")
+  -graceDuration string
+        [http] Grace duration when SIGTERM received {VIWS_GRACE_DURATION} (default "15s")
   -headers string
         [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {VIWS_HEADERS}
   -hsts
@@ -110,7 +111,7 @@ Usage of viws:
         [http] Key file {VIWS_KEY}
   -okStatus int
         [http] Healthy HTTP Status code {VIWS_OK_STATUS} (default 204)
-  -port int
+  -port uint
         [http] Listen port {VIWS_PORT} (default 1080)
   -prometheusPath string
         [prometheus] Path for exposing metrics {VIWS_PROMETHEUS_PATH} (default "/metrics")
@@ -127,8 +128,7 @@ Usage of viws:
 ## Docker
 
 ```bash
-docker run \
-  -d \
+docker run -d --name website \
   -p 1080:1080/tcp \
   -v "$(pwd):/www/:ro" \
   vibioh/viws
@@ -140,7 +140,7 @@ e.g.
 ```
 FROM vibioh/viws
 
-ENV VERSION 1.0.0-1234abcd
+ENV VERSION 1.2.3-1234abcd
 COPY dist/ /www/
 ```
 
@@ -158,7 +158,7 @@ COPY dist/ /www/
 
 ## Compilation
 
-You need Go 1.11+ with go modules enabled in order to compile the project.
+You need Go 1.12+ with go modules enabled in order to compile the project.
 
 ```bash
 make go

@@ -1,7 +1,6 @@
 package viws
 
 import (
-	"errors"
 	"flag"
 	"net/http"
 	"net/http/httptest"
@@ -53,7 +52,6 @@ func TestNew(t *testing.T) {
 		intention string
 		input     Config
 		want      App
-		wantErr   error
 	}{
 		{
 			"minimal config",
@@ -67,7 +65,6 @@ func TestNew(t *testing.T) {
 				spa:       false,
 				directory: "../../example/",
 			},
-			nil,
 		},
 		{
 			"spa config",
@@ -81,18 +78,6 @@ func TestNew(t *testing.T) {
 				spa:       true,
 				directory: "../../example/",
 			},
-			nil,
-		},
-		{
-			"empty config",
-			Config{
-				directory: &emptyString,
-				headers:   &emptyString,
-				spa:       &falseVar,
-				push:      &emptyString,
-			},
-			nil,
-			errors.New("directory  is unreachable or does not contains index: stat : no such file or directory"),
 		},
 		{
 			"pushPaths",
@@ -110,7 +95,6 @@ func TestNew(t *testing.T) {
 					"index.css",
 				},
 			},
-			nil,
 		},
 		{
 			"header",
@@ -128,28 +112,13 @@ func TestNew(t *testing.T) {
 					"content-language": "fr",
 				},
 			},
-			nil,
 		},
 	}
 
 	for _, testCase := range cases {
 		t.Run(testCase.intention, func(t *testing.T) {
-			result, err := New(testCase.input)
-
-			failed := false
-
-			if err == nil && testCase.wantErr != nil {
-				failed = true
-			} else if err != nil && testCase.wantErr == nil {
-				failed = true
-			} else if err != nil && err.Error() != testCase.wantErr.Error() {
-				failed = true
-			} else if !reflect.DeepEqual(result, testCase.want) {
-				failed = true
-			}
-
-			if failed {
-				t.Errorf("New() = (%#v, `%s`), want (%#v, `%s`)", result, err, testCase.want, testCase.wantErr)
+			if result := New(testCase.input); !reflect.DeepEqual(result, testCase.want) {
+				t.Errorf("New() = %+v, want %+v", result, testCase.want)
 			}
 		})
 	}
@@ -186,6 +155,28 @@ func TestHandler(t *testing.T) {
 			"get index",
 			app{
 				directory: "../../example/",
+			},
+			httptest.NewRequest(http.MethodGet, "/", nil),
+			`<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <title>viws</title>
+    <link rel="stylesheet" href="/index.css">
+    <script src="/index.js"></script>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+  </body>
+</html>
+`,
+			http.StatusOK,
+			nil,
+		},
+		{
+			"get index push",
+			app{
+				directory: "../../example/",
+				pushPaths: []string{"index.js", "index.css"},
 			},
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			`<!DOCTYPE HTML>
@@ -243,11 +234,18 @@ func TestHandler(t *testing.T) {
 		{
 			"get not found with file",
 			app{
-				directory:    "../../example/",
-				notFoundPath: "../../example/index.js",
+				directory: "../../example/404/",
 			},
-			httptest.NewRequest(http.MethodGet, "/404.html", nil),
-			`console.log('Ready');
+			httptest.NewRequest(http.MethodGet, "/nowhere", nil),
+			`<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <title>viws</title>
+  </head>
+  <body>
+    <h1>Not found!</h1>
+  </body>
+</html>
 `,
 			http.StatusNotFound,
 			nil,
