@@ -1,9 +1,6 @@
 github.com/DATA-DOG/go-sqlmock v1.4.1/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/NYTimes/gziphandler v1.1.1 h1:ZUDjpQae29j0ryrS0u/B8HZfJBtBQHjqw2rQ2cqUQ3I=
 github.com/NYTimes/gziphandler v1.1.1/go.mod h1:n/CVRwUEOgIxrgPvAQhUUr9oeUtvrhMomdKFjzJNB0c=
-github.com/ViBiOh/httputils v1.8.2 h1:ulvdhtq8/Ww4QihYJ5uf0WDTG42yPuwojUCbfv/9W2E=
-github.com/ViBiOh/httputils/v3 v3.18.0 h1:OcUdK2d1oC/qjrCGn4lElMH1zAmwFFzj3oUpjcG0Zvc=
-github.com/ViBiOh/httputils/v3 v3.18.0/go.mod h1:pdjuWUsUok7HrnbqSKGduQ6YnwQiZSYh8MshoytImd8=
 github.com/ViBiOh/httputils/v3 v3.19.2 h1:XYd5w+eZnGTrFX1x87Em4JtSJK9GY4lchF59kyJ9/PQ=
 github.com/ViBiOh/httputils/v3 v3.19.2/go.mod h1:pdjuWUsUok7HrnbqSKGduQ6YnwQiZSYh8MshoytImd8=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=

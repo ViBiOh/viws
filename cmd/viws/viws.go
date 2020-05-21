@@ -35,9 +35,8 @@ func main() {
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)
 
-	viwsApp, err := viws.New(viwsConfig)
-	logger.Fatal(err)
 	envApp := env.New(envConfig)
+	viwsApp := viws.New(viwsConfig)
 
 	viwsHandler := httputils.ChainMiddlewares(viwsApp.Handler(), owaspApp.Middleware)
 	envHandler := httputils.ChainMiddlewares(envApp.Handler(), owaspApp.Middleware, corsApp.Middleware)

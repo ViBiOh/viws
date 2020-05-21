@@ -2,7 +2,6 @@ package viws
 
 import (
 	"flag"
-	"fmt"
 	"io"
 	"mime"
 	"net/http"
@@ -34,11 +33,10 @@ type App interface {
 }
 
 type app struct {
-	spa          bool
-	directory    string
-	pushPaths    []string
-	headers      map[string]string
-	notFoundPath string
+	spa       bool
+	directory string
+	pushPaths []string
+	headers   map[string]string
 }
 
 // Flags adds flags for configuring package
@@ -52,58 +50,38 @@ func Flags(fs *flag.FlagSet, prefix string) Config {
 }
 
 // New creates new App from Config
-func New(config Config) (App, error) {
-	directory := strings.TrimSpace(*config.directory)
-	if _, err := getFileToServe(directory); err != nil {
-		return nil, fmt.Errorf("directory %s is unreachable or does not contains index: %w", directory, err)
-	}
-	logger.Info("Serving file from %s", directory)
-
-	spa := *config.spa
-	var notFoundPath string
-
-	if !spa {
-		if path, err := getFileToServe(directory, notFoundFilename); err != nil {
-			logger.Warn("no %s file on directory, 404 will be plain text", notFoundFilename)
-		} else {
-			notFoundPath = path
-		}
+func New(config Config) App {
+	a := app{
+		spa:       *config.spa,
+		directory: strings.TrimSpace(*config.directory),
 	}
 
-	var pushPaths []string
+	logger.Info("Serving file from %s", a.directory)
+
+	if a.spa {
+		logger.Info("Single Page Application mode enabled")
+	}
+
 	push := strings.TrimSpace(*config.push)
-
-	if push != "" {
-		pushPaths = strings.Split(push, ",")
-		logger.Info("HTTP/2 Push of %s", pushPaths)
+	if len(push) != 0 {
+		a.pushPaths = strings.Split(push, ",")
+		logger.Info("HTTP/2 Push of %s", strings.Join(a.pushPaths, ", "))
 	}
 
-	var headers map[string]string
 	rawHeaders := strings.TrimSpace(*config.headers)
-
-	if rawHeaders != "" {
-		headers = make(map[string]string)
+	if len(rawHeaders) != 0 {
+		a.headers = make(map[string]string)
 
 		for _, header := range strings.Split(rawHeaders, "~") {
 			if parts := strings.SplitN(header, ":", 2); len(parts) != 2 {
 				logger.Warn("header has wrong format: %s", header)
 			} else {
-				headers[parts[0]] = parts[1]
+				a.headers[parts[0]] = parts[1]
 			}
 		}
 	}
 
-	if *config.spa {
-		logger.Info("Single Page Application mode enabled")
-	}
-
-	return app{
-		spa:          spa,
-		directory:    directory,
-		pushPaths:    pushPaths,
-		notFoundPath: notFoundPath,
-		headers:      headers,
-	}, nil
+	return a
 }
 
 func (a app) addCustomHeaders(w http.ResponseWriter) {
@@ -132,8 +110,14 @@ func (a app) serveFile(w http.ResponseWriter, r *http.Request, filepath string) 
 	}
 }
 
-func (a app) serveLocalFile(w http.ResponseWriter, filepath string) {
-	file, err := os.Open(filepath)
+func (a app) serveNotFound(w http.ResponseWriter) {
+	notFoundPath, err := getFileToServe(a.directory, notFoundFilename)
+	if os.IsNotExist(err) {
+		httperror.NotFound(w)
+		return
+	}
+
+	file, err := os.Open(notFoundPath)
 	if err != nil {
 		httperror.InternalServerError(w, err)
 		return
@@ -141,7 +125,7 @@ func (a app) serveLocalFile(w http.ResponseWriter, filepath string) {
 
 	w.WriteHeader(http.StatusNotFound)
 	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Content-Type", mime.TypeByExtension(filepath))
+	w.Header().Set("Content-Type", mime.TypeByExtension(notFoundPath))
 	if _, err = io.Copy(w, file); err != nil {
 		logger.Error("unable to copy content to writer: %s", err)
 	}
@@ -177,11 +161,6 @@ func (a app) Handler() http.Handler {
 			return
 		}
 
-		if a.notFoundPath != "" {
-			a.serveLocalFile(w, a.notFoundPath)
-			return
-		}
-
-		httperror.NotFound(w)
+		a.serveNotFound(w)
 	})
 }
