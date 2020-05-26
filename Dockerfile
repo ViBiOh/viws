@@ -1,4 +1,4 @@
-FROM scratch
+FROM vibioh/scratch
 
 EXPOSE 1080
 ENV VIWS_PORT 1080
