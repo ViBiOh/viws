@@ -6,15 +6,15 @@ import (
 )
 
 func getFileToServe(parts ...string) (string, error) {
-	path := path.Join(parts...)
+	filepath := path.Join(parts...)
 
-	info, err := os.Stat(path)
+	info, err := os.Stat(filepath)
 	if err != nil {
-		return path, err
+		return filepath, err
 	}
 
 	if !info.IsDir() {
-		return path, nil
+		return filepath, nil
 	}
 
 	return getFileToServe(append(parts, "index.html")...)

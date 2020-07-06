@@ -90,11 +90,11 @@ func (a app) addCustomHeaders(w http.ResponseWriter) {
 	}
 }
 
-func (a app) handlePush(w http.ResponseWriter, r *http.Request) {
+func (a app) handlePush(w http.ResponseWriter, _ *http.Request) {
 	if pusher, ok := w.(http.Pusher); ok {
-		for _, path := range a.pushPaths {
-			if err := pusher.Push(path, nil); err != nil {
-				logger.Error("failed to push %s: %s", path, err)
+		for _, pushPath := range a.pushPaths {
+			if err := pusher.Push(pushPath, nil); err != nil {
+				logger.Error("failed to push %s: %s", pushPath, err)
 			}
 		}
 	}
