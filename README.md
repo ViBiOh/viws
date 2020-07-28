@@ -24,13 +24,13 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 
 ## Features
 
-* Full TLS support
-* GZIP Compression
-* Prometheus monitoring
-* Read-only container
-* Serve static content, with Single Page App handling
-* HTTP/2 Server push
-* Serve environment variables for easier-config
+- Full TLS support
+- GZIP Compression
+- Prometheus monitoring
+- Read-only container
+- Serve static content, with Single Page App handling
+- HTTP/2 Server push
+- Serve environment variables for easier-config
 
 ## Single Page Application
 
@@ -43,9 +43,9 @@ curl myWebsite.com/users/vibioh/
 
 ## Endpoints
 
-* `GET /health`: healthcheck of server, respond [`okStatus (default 204)`](#usage) or `503` during [`graceDuration`](#usage) when SIGTERM is received
-* `GET /version`: value of `VERSION` environment variable
-* `GET /env`: values of [specified environments variables](#environment-variables)
+- `GET /health`: healthcheck of server, respond [`okStatus (default 204)`](#usage) or `503` during [`graceDuration`](#usage) when SIGTERM is received
+- `GET /version`: value of `VERSION` environment variable
+- `GET /env`: values of [specified environments variables](#environment-variables)
 
 ## Environment variables
 
@@ -67,9 +67,9 @@ API_URL=https://api.vibioh.fr vibioh/viws --env API_URL
 ```js
 // index.js
 
-const response = await fetch('/env');
+const response = await fetch("/env");
 const config = await response.json();
-ReactDOM.render(<App config={config} />, document.getElementById('root'));
+ReactDOM.render(<App config={config} />, document.getElementById("root"));
 ```
 
 ## Usage
@@ -136,6 +136,7 @@ docker run -d --name website \
 We recommend using a Dockerfile to ship your files inside it.
 
 e.g.
+
 ```
 FROM vibioh/viws
 
@@ -148,6 +149,7 @@ COPY dist/ /www/
 Image with tag `:light` is also available.
 
 e.g.
+
 ```
 FROM vibioh/viws:light
 
