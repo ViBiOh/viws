@@ -17,9 +17,9 @@ jobs:
       script:
         - make
         - git --no-pager diff -- ':(exclude)go.sum' && git diff --quiet -- ':(exclude)go.sum'
-        - curl -q -sSL --max-time 10 -o cacert.pem "https://curl.haxx.se/ca/cacert.pem"
-        - curl -q -sSL --max-time 10 -o mime.types "https://svn.apache.org/viewvc/httpd/httpd/trunk/docs/conf/mime.types?view=co"
-        - curl -q -sSL --max-time 10 "https://raw.githubusercontent.com/ViBiOh/scripts/master/bootstrap" | bash -s "release"
+        - curl -q -sSL --max-time 30 -o cacert.pem "https://curl.haxx.se/ca/cacert.pem"
+        - curl -q -sSL --max-time 30 -o mime.types "https://svn.apache.org/viewvc/httpd/httpd/trunk/docs/conf/mime.types?view=co"
+        - curl -q -sSL --max-time 30 "https://raw.githubusercontent.com/ViBiOh/scripts/master/bootstrap" | bash -s "release"
         - echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
         - ./scripts/release build
         - DOCKER_IMAGE="${DOCKER_USER}/$(make name)" IMAGE_VERSION="$(make version)" ./scripts/release docker
@@ -31,11 +31,11 @@ jobs:
 
       language: minimal
       script:
-        - curl -q -sSL --max-time 10 "https://raw.githubusercontent.com/ViBiOh/scripts/master/bootstrap" | bash -s "docker_promote"
+        - curl -q -sSL --max-time 30 "https://raw.githubusercontent.com/ViBiOh/scripts/master/bootstrap" | bash -s "docker_promote"
         - scripts/docker_promote "${DOCKER_USER}/$(make name)" "$(make version)"
         - scripts/docker_promote "${DOCKER_USER}/$(make name)" "$(make version)-light" "light"
       after_success:
-        - curl -q -sSL --max-time 10 -X POST https://goreportcard.com/checks?repo=github.com/${TRAVIS_REPO_SLUG}
+        - curl -q -sSL --max-time 30 -X POST https://goreportcard.com/checks?repo=github.com/${TRAVIS_REPO_SLUG}
 
 stages:
   - Build
