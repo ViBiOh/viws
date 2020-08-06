@@ -73,8 +73,8 @@ func New(config Config) App {
 		a.headers = make(map[string]string)
 
 		for _, header := range strings.Split(rawHeaders, "~") {
-			if parts := strings.SplitN(header, ":", 2); len(parts) != 2 {
-				logger.Warn("header has wrong format: %s", header)
+			if parts := strings.SplitN(header, ":", 2); len(parts) != 2 || strings.Contains(parts[0], " ") {
+				logger.Warn("header has wrong format: `%s`", header)
 			} else {
 				a.headers[parts[0]] = parts[1]
 			}
