@@ -46,7 +46,7 @@ func TestNew(t *testing.T) {
 	emptyString := ""
 	exempleDir := "../../example/"
 	examplePush := "index.js,index.css"
-	exampleHeader := "X-UA-Compatible:ie=edge~content-language:fr~invalidformat"
+	exampleHeader := "= X-UA-Compatible:ie=edge~X-UA-Compatible:ie=edge~content-language:fr~invalidformat"
 
 	var cases = []struct {
 		intention string
