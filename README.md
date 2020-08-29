@@ -31,6 +31,7 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 - Serve static content, with Single Page App handling
 - HTTP/2 Server push
 - Serve environment variables for easier-config
+- Configurable logger with JSON support
 
 ## Single Page Application
 
@@ -108,6 +109,16 @@ Usage of viws:
         [owasp] Indicate Strict Transport Security {VIWS_HSTS} (default true)
   -key string
         [http] Key file {VIWS_KEY}
+  -loggerJson
+        [logger] Log format as JSON {VIWS_LOGGER_JSON}
+  -loggerLevel string
+        [logger] Logger level {VIWS_LOGGER_LEVEL} (default "INFO")
+  -loggerLevelKey string
+        [logger] Key for level in JSON {VIWS_LOGGER_LEVEL_KEY} (default "level")
+  -loggerMessageKey string
+        [logger] Key for message in JSON {VIWS_LOGGER_MESSAGE_KEY} (default "message")
+  -loggerTimeKey string
+        [logger] Key for timestam in JSON {VIWS_LOGGER_TIME_KEY} (default "time")
   -okStatus int
         [http] Healthy HTTP Status code {VIWS_OK_STATUS} (default 204)
   -port uint
