@@ -118,7 +118,7 @@ Usage of viws:
   -loggerMessageKey string
         [logger] Key for message in JSON {VIWS_LOGGER_MESSAGE_KEY} (default "message")
   -loggerTimeKey string
-        [logger] Key for timestam in JSON {VIWS_LOGGER_TIME_KEY} (default "time")
+        [logger] Key for timestamp in JSON {VIWS_LOGGER_TIME_KEY} (default "time")
   -okStatus int
         [http] Healthy HTTP Status code {VIWS_OK_STATUS} (default 204)
   -port uint
