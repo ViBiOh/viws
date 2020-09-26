@@ -102,7 +102,7 @@ Usage of viws:
   -frameOptions string
         [owasp] X-Frame-Options {VIWS_FRAME_OPTIONS} (default "deny")
   -graceDuration string
-        [http] Grace duration when SIGTERM received {VIWS_GRACE_DURATION} (default "15s")
+        [http] Grace duration when SIGTERM received {VIWS_GRACE_DURATION} (default "30s")
   -headers string
         [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {VIWS_HEADERS}
   -hsts
