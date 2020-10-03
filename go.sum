@@ -7,8 +7,11 @@ github.com/NYTimes/gziphandler v1.1.1 h1:ZUDjpQae29j0ryrS0u/B8HZfJBtBQHjqw2rQ2cq
 github.com/NYTimes/gziphandler v1.1.1/go.mod h1:n/CVRwUEOgIxrgPvAQhUUr9oeUtvrhMomdKFjzJNB0c=
 github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWXgklEdEo=
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
+github.com/ViBiOh/httputils v1.8.2 h1:ulvdhtq8/Ww4QihYJ5uf0WDTG42yPuwojUCbfv/9W2E=
 github.com/ViBiOh/httputils/v3 v3.27.0 h1:X8Q5UgtIEaSolxFzmO/owrBRV6pR55zyp+v6JEtyBtQ=
 github.com/ViBiOh/httputils/v3 v3.27.0/go.mod h1:b5q1Bnx3e6wCVL1A0Gl5SPGOgZpyY6KQiFcFTOJtaiw=
+github.com/ViBiOh/httputils/v3 v3.28.0 h1:dhUccl/A5VfK3ECrX5lSELNpoUuKqidF8KDITPflIt8=
+github.com/ViBiOh/httputils/v3 v3.28.0/go.mod h1:b5q1Bnx3e6wCVL1A0Gl5SPGOgZpyY6KQiFcFTOJtaiw=
 github.com/VividCortex/gohistogram v1.0.0/go.mod h1:Pf5mBqqDxYaXu3hDrrU+w6nw50o/4+TcAqDqk/vUH7g=
 github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5/go.mod h1:SkGFH1ia65gfNATL8TAiHDNxPzPdmEL5uirI2Uyuz6c=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
