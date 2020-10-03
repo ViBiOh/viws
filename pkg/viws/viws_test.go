@@ -170,7 +170,9 @@ func TestHandler(t *testing.T) {
 </html>
 `,
 			http.StatusOK,
-			nil,
+			http.Header{
+				"Cache-Control": {"no-cache"},
+			},
 		},
 		{
 			"get index push",
@@ -192,7 +194,9 @@ func TestHandler(t *testing.T) {
 </html>
 `,
 			http.StatusOK,
-			nil,
+			http.Header{
+				"Cache-Control": {"no-cache"},
+			},
 		},
 		{
 			"get file with header",
@@ -207,7 +211,8 @@ func TestHandler(t *testing.T) {
 `,
 			http.StatusOK,
 			http.Header{
-				"Etag": []string{"test"},
+				"Etag":          []string{"test"},
+				"Cache-Control": {"public, max-age=864000"},
 			},
 		},
 		{
@@ -218,7 +223,9 @@ func TestHandler(t *testing.T) {
 			httptest.NewRequest(http.MethodHead, "/404.html", nil),
 			"",
 			http.StatusNotFound,
-			nil,
+			http.Header{
+				"Cache-Control": {""},
+			},
 		},
 		{
 			"get not found",
@@ -229,7 +236,9 @@ func TestHandler(t *testing.T) {
 			`¯\_(ツ)_/¯
 `,
 			http.StatusNotFound,
-			nil,
+			http.Header{
+				"Cache-Control": {"no-cache"},
+			},
 		},
 		{
 			"get not found with file",
@@ -248,7 +257,9 @@ func TestHandler(t *testing.T) {
 </html>
 `,
 			http.StatusNotFound,
-			nil,
+			http.Header{
+				"Cache-Control": {"no-cache"},
+			},
 		},
 		{
 			"get not found with spa",
