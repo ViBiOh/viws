@@ -33,6 +33,7 @@ func main() {
 
 	alcotest.DoAndExit(alcotestConfig)
 	logger.Global(logger.New(loggerConfig))
+	defer logger.Close()
 
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)
