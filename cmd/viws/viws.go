@@ -10,6 +10,7 @@ import (
 	"github.com/ViBiOh/httputils/v3/pkg/cors"
 	"github.com/ViBiOh/httputils/v3/pkg/httputils"
 	"github.com/ViBiOh/httputils/v3/pkg/logger"
+	"github.com/ViBiOh/httputils/v3/pkg/model"
 	"github.com/ViBiOh/httputils/v3/pkg/owasp"
 	"github.com/ViBiOh/httputils/v3/pkg/prometheus"
 	"github.com/ViBiOh/viws/pkg/env"
@@ -51,8 +52,8 @@ func main() {
 		}
 	})
 
-	server := httputils.New(serverConfig)
-	server.Middleware(prometheus.New(prometheusConfig).Middleware)
-	server.Middleware(gziphandler.GzipHandler)
-	server.ListenServeWait(requestHandler)
+	httputils.New(serverConfig).ListenAndServe(requestHandler, []model.Middleware{
+		prometheus.New(prometheusConfig).Middleware,
+		gziphandler.GzipHandler,
+	})
 }

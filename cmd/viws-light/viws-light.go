@@ -48,6 +48,5 @@ func main() {
 		}
 	})
 
-	server := httputils.New(serverConfig)
-	server.ListenServeWait(requestHandler)
+	httputils.New(serverConfig).ListenAndServe(requestHandler, nil)
 }
