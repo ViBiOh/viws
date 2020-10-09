@@ -107,6 +107,8 @@ Usage of viws:
         [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {VIWS_HEADERS}
   -hsts
         [owasp] Indicate Strict Transport Security {VIWS_HSTS} (default true)
+  -idleTimeout string
+        [http] Idle Timeout {VIWS_IDLE_TIMEOUT} (default "2m")
   -key string
         [http] Key file {VIWS_KEY}
   -loggerJson
@@ -127,12 +129,18 @@ Usage of viws:
         [prometheus] Path for exposing metrics {VIWS_PROMETHEUS_PATH} (default "/metrics")
   -push string
         [viws] Paths for HTTP/2 Server Push on index, comma separated {VIWS_PUSH}
+  -readTimeout string
+        [http] Read Timeout {VIWS_READ_TIMEOUT} (default "5s")
+  -shutdownTimeout string
+        [http] Shutdown Timeout {VIWS_SHUTDOWN_TIMEOUT} (default "10s")
   -spa
         [viws] Indicate Single Page Application mode {VIWS_SPA}
   -url string
         [alcotest] URL to check {VIWS_URL}
   -userAgent string
         [alcotest] User-Agent for check {VIWS_USER_AGENT} (default "Alcotest")
+  -writeTimeout string
+        [http] Write Timeout {VIWS_WRITE_TIMEOUT} (default "10s")
 ```
 
 ## Docker
