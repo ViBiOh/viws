@@ -5,7 +5,8 @@ updates:
   - package-ecosystem: gomod
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+      day: saturday
     commit-message:
       prefix: chore
       include: scope
