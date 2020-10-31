@@ -13,5 +13,5 @@ ARG TARGETOS
 ARG TARGETARCH
 
 COPY mime.types /etc/mime.types
-COPY cacert.pem /etc/ssl/certs/ca-certificates.crt
+COPY ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY release/viws_${TARGETOS}_${TARGETARCH} /viws
