@@ -2,7 +2,7 @@
 
 A superlight HTTP fileserver with customizable behavior.
 
-[![Build Status](https://travis-ci.com/ViBiOh/viws.svg?branch=master)](https://travis-ci.com/ViBiOh/viws)
+[![Build](https://github.com/ViBiOh/viws/workflows/Build/badge.svg)](https://github.com/ViBiOh/viws/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ViBiOh/viws)](https://goreportcard.com/report/github.com/ViBiOh/viws)
 [![codecov](https://codecov.io/gh/ViBiOh/viws/branch/master/graph/badge.svg)](https://codecov.io/gh/ViBiOh/viws)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FViBiOh%2Fviws.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FViBiOh%2Fviws?ref=badge_shield)
