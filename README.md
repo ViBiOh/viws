@@ -125,6 +125,8 @@ Usage of viws:
         [http] Healthy HTTP Status code {VIWS_OK_STATUS} (default 204)
   -port uint
         [http] Listen port {VIWS_PORT} (default 1080)
+  -prometheusIgnore string
+        [prometheus] Ignored path prefixes for metrics, comma separated {VIWS_PROMETHEUS_IGNORE}
   -prometheusPath string
         [prometheus] Path for exposing metrics {VIWS_PROMETHEUS_PATH} (default "/metrics")
   -push string
