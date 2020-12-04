@@ -34,10 +34,10 @@ type App interface {
 }
 
 type app struct {
-	spa       bool
+	headers   map[string]string
 	directory string
 	pushPaths []string
-	headers   map[string]string
+	spa       bool
 }
 
 // Flags adds flags for configuring package
