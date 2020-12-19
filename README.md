@@ -46,6 +46,7 @@ curl myWebsite.com/users/vibioh/
 
 - `GET /health`: healthcheck of server, respond [`okStatus (default 204)`](#usage) or `503` during [`graceDuration`](#usage) when SIGTERM is received
 - `GET /version`: value of `VERSION` environment variable
+- `GET /metrics`: Prometheus metrics values
 - `GET /env`: values of [specified environments variables](#environment-variables)
 
 ## Environment variables
