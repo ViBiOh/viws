@@ -18,6 +18,7 @@ import (
 const (
 	notFoundFilename   = "404.html"
 	cacheControlHeader = "Cache-Control"
+	noCacheValue       = "no-cache"
 )
 
 // Config of package
@@ -104,7 +105,7 @@ func (a app) handlePush(w http.ResponseWriter, _ *http.Request) {
 func setCacheHeader(w http.ResponseWriter, r *http.Request) {
 	if len(w.Header().Get(cacheControlHeader)) == 0 {
 		if query.IsRoot(r) {
-			w.Header().Set(cacheControlHeader, "no-cache")
+			w.Header().Set(cacheControlHeader, noCacheValue)
 		} else {
 			w.Header().Set(cacheControlHeader, "public, max-age=864000")
 		}
@@ -135,7 +136,7 @@ func (a app) serveNotFound(w http.ResponseWriter) {
 		return
 	}
 
-	w.Header().Set(cacheControlHeader, "no-cache")
+	w.Header().Set(cacheControlHeader, noCacheValue)
 	w.Header().Set("Content-Type", mime.TypeByExtension(notFoundPath))
 	w.WriteHeader(http.StatusNotFound)
 	if _, err = io.Copy(w, file); err != nil {
@@ -168,7 +169,7 @@ func (a app) Handler() http.Handler {
 		}
 
 		if a.spa {
-			w.Header().Set(cacheControlHeader, "no-cache")
+			w.Header().Set(cacheControlHeader, noCacheValue)
 			a.serveFile(w, r, path.Join(a.directory, "index.html"))
 			return
 		}

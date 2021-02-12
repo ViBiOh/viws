@@ -11,6 +11,10 @@ import (
 	"github.com/ViBiOh/httputils/v3/pkg/request"
 )
 
+var (
+	exempleDir = "../../example/"
+)
+
 func TestFlags(t *testing.T) {
 	var cases = []struct {
 		intention string
@@ -44,7 +48,6 @@ func TestNew(t *testing.T) {
 	falseVar := false
 	trueVar := true
 	emptyString := ""
-	exempleDir := "../../example/"
 	examplePush := "index.js,index.css"
 	exampleHeader := "= X-UA-Compatible:ie=edge~X-UA-Compatible:ie=edge~content-language:fr~invalidformat"
 
@@ -63,7 +66,7 @@ func TestNew(t *testing.T) {
 			},
 			app{
 				spa:       false,
-				directory: "../../example/",
+				directory: exempleDir,
 			},
 		},
 		{
@@ -76,7 +79,7 @@ func TestNew(t *testing.T) {
 			},
 			app{
 				spa:       true,
-				directory: "../../example/",
+				directory: exempleDir,
 			},
 		},
 		{
@@ -89,7 +92,7 @@ func TestNew(t *testing.T) {
 			},
 			app{
 				spa:       false,
-				directory: "../../example/",
+				directory: exempleDir,
 				pushPaths: []string{
 					"index.js",
 					"index.css",
@@ -106,7 +109,7 @@ func TestNew(t *testing.T) {
 			},
 			app{
 				spa:       false,
-				directory: "../../example/",
+				directory: exempleDir,
 				headers: map[string]string{
 					"X-UA-Compatible":  "ie=edge",
 					"content-language": "fr",
@@ -144,7 +147,7 @@ func TestHandler(t *testing.T) {
 		{
 			"head index",
 			app{
-				directory: "../../example/",
+				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodHead, "/", nil),
 			"",
@@ -154,7 +157,7 @@ func TestHandler(t *testing.T) {
 		{
 			"get index",
 			app{
-				directory: "../../example/",
+				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			`<!DOCTYPE HTML>
@@ -177,7 +180,7 @@ func TestHandler(t *testing.T) {
 		{
 			"get index push",
 			app{
-				directory: "../../example/",
+				directory: exempleDir,
 				pushPaths: []string{"index.js", "index.css"},
 			},
 			httptest.NewRequest(http.MethodGet, "/", nil),
@@ -201,7 +204,7 @@ func TestHandler(t *testing.T) {
 		{
 			"get file with header",
 			app{
-				directory: "../../example/",
+				directory: exempleDir,
 				headers: map[string]string{
 					"Etag": "test",
 				},
@@ -218,7 +221,7 @@ func TestHandler(t *testing.T) {
 		{
 			"head not found",
 			app{
-				directory: "../../example/",
+				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodHead, "/404.html", nil),
 			"",
@@ -230,7 +233,7 @@ func TestHandler(t *testing.T) {
 		{
 			"get not found",
 			app{
-				directory: "../../example/",
+				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodGet, "/404.html", nil),
 			`¯\_(ツ)_/¯
@@ -264,7 +267,7 @@ func TestHandler(t *testing.T) {
 		{
 			"get not found with spa",
 			app{
-				directory: "../../example/",
+				directory: exempleDir,
 				spa:       true,
 			},
 			httptest.NewRequest(http.MethodGet, "/user/1234", nil),
