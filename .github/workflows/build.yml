@@ -19,7 +19,7 @@ defaults:
 jobs:
   build:
     name: Golang
-    if: "! contains(toJSON(github.event.commits.*.message), '[skip-ci]')"
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -33,7 +33,7 @@ jobs:
 
   package:
     name: Docker
-    if: "! contains(toJSON(github.event.commits.*.message), '[skip-ci]')"
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
@@ -57,7 +57,7 @@ jobs:
 
   publish:
     name: Publish
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(toJSON(github.event.commits.*.message), '[skip-ci]')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(toJSON(github.event.commits.*.message), '[skip ci]')
     runs-on: ubuntu-latest
     needs: package
     steps:
