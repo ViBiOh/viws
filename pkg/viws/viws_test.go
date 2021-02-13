@@ -174,7 +174,7 @@ func TestHandler(t *testing.T) {
 `,
 			http.StatusOK,
 			http.Header{
-				"Cache-Control": {"no-cache"},
+				cacheControlHeader: {noCacheValue},
 			},
 		},
 		{
@@ -198,7 +198,7 @@ func TestHandler(t *testing.T) {
 `,
 			http.StatusOK,
 			http.Header{
-				"Cache-Control": {"no-cache"},
+				cacheControlHeader: {noCacheValue},
 			},
 		},
 		{
@@ -214,8 +214,8 @@ func TestHandler(t *testing.T) {
 `,
 			http.StatusOK,
 			http.Header{
-				"Etag":          []string{"test"},
-				"Cache-Control": {"public, max-age=864000"},
+				"Etag":             []string{"test"},
+				cacheControlHeader: {"public, max-age=864000"},
 			},
 		},
 		{
@@ -227,7 +227,7 @@ func TestHandler(t *testing.T) {
 			"",
 			http.StatusNotFound,
 			http.Header{
-				"Cache-Control": {""},
+				cacheControlHeader: {""},
 			},
 		},
 		{
@@ -240,7 +240,7 @@ func TestHandler(t *testing.T) {
 `,
 			http.StatusNotFound,
 			http.Header{
-				"Cache-Control": {"no-cache"},
+				cacheControlHeader: {noCacheValue},
 			},
 		},
 		{
@@ -261,7 +261,7 @@ func TestHandler(t *testing.T) {
 `,
 			http.StatusNotFound,
 			http.Header{
-				"Cache-Control": {"no-cache"},
+				cacheControlHeader: {noCacheValue},
 			},
 		},
 		{
@@ -285,7 +285,7 @@ func TestHandler(t *testing.T) {
 `,
 			http.StatusOK,
 			http.Header{
-				"Cache-Control": {"no-cache"},
+				cacheControlHeader: {noCacheValue},
 			},
 		},
 	}
