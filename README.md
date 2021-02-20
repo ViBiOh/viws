@@ -26,7 +26,7 @@ go get github.com/ViBiOh/viws/cmd/viws-light
 
 - Full TLS support
 - GZIP Compression
-- Prometheus monitoring
+- Prometheus monitoring on dedicated port
 - Read-only container
 - Serve static content, with Single Page App handling
 - HTTP/2 Server push
@@ -46,8 +46,8 @@ curl myWebsite.com/users/vibioh/
 
 - `GET /health`: healthcheck of server, respond [`okStatus (default 204)`](#usage) or `503` during [`graceDuration`](#usage) when SIGTERM is received
 - `GET /version`: value of `VERSION` environment variable
-- `GET /metrics`: Prometheus metrics values
 - `GET /env`: values of [specified environments variables](#environment-variables)
+- `GET /metrics`: Prometheus metrics values (on a dedicated port)
 
 ## Environment variables
 
@@ -81,9 +81,9 @@ By default, server is listening on the `1080` port and serve content for GET req
 ```bash
 Usage of viws:
   -address string
-        [http] Listen address {VIWS_ADDRESS}
+        [server] Listen address {VIWS_ADDRESS}
   -cert string
-        [http] Certificate file {VIWS_CERT}
+        [server] Certificate file {VIWS_CERT}
   -corsCredentials
         [cors] Access-Control-Allow-Credentials {VIWS_CORS_CREDENTIALS}
   -corsExpose string
@@ -109,9 +109,9 @@ Usage of viws:
   -hsts
         [owasp] Indicate Strict Transport Security {VIWS_HSTS} (default true)
   -idleTimeout string
-        [http] Idle Timeout {VIWS_IDLE_TIMEOUT} (default "2m")
+        [server] Idle Timeout {VIWS_IDLE_TIMEOUT} (default "2m")
   -key string
-        [http] Key file {VIWS_KEY}
+        [server] Key file {VIWS_KEY}
   -loggerJson
         [logger] Log format as JSON {VIWS_LOGGER_JSON}
   -loggerLevel string
@@ -125,17 +125,31 @@ Usage of viws:
   -okStatus int
         [http] Healthy HTTP Status code {VIWS_OK_STATUS} (default 204)
   -port uint
-        [http] Listen port {VIWS_PORT} (default 1080)
+        [server] Listen port {VIWS_PORT} (default 1080)
+  -prometheusAddress string
+        [prometheus] Listen address {VIWS_PROMETHEUS_ADDRESS}
+  -prometheusCert string
+        [prometheus] Certificate file {VIWS_PROMETHEUS_CERT}
+  -prometheusIdleTimeout string
+        [prometheus] Idle Timeout {VIWS_PROMETHEUS_IDLE_TIMEOUT} (default "10s")
   -prometheusIgnore string
         [prometheus] Ignored path prefixes for metrics, comma separated {VIWS_PROMETHEUS_IGNORE}
-  -prometheusPath string
-        [prometheus] Path for exposing metrics {VIWS_PROMETHEUS_PATH} (default "/metrics")
+  -prometheusKey string
+        [prometheus] Key file {VIWS_PROMETHEUS_KEY}
+  -prometheusPort uint
+        [prometheus] Listen port {VIWS_PROMETHEUS_PORT} (default 9090)
+  -prometheusReadTimeout string
+        [prometheus] Read Timeout {VIWS_PROMETHEUS_READ_TIMEOUT} (default "5s")
+  -prometheusShutdownTimeout string
+        [prometheus] Shutdown Timeout {VIWS_PROMETHEUS_SHUTDOWN_TIMEOUT} (default "5s")
+  -prometheusWriteTimeout string
+        [prometheus] Write Timeout {VIWS_PROMETHEUS_WRITE_TIMEOUT} (default "10s")
   -push string
         [viws] Paths for HTTP/2 Server Push on index, comma separated {VIWS_PUSH}
   -readTimeout string
-        [http] Read Timeout {VIWS_READ_TIMEOUT} (default "5s")
+        [server] Read Timeout {VIWS_READ_TIMEOUT} (default "5s")
   -shutdownTimeout string
-        [http] Shutdown Timeout {VIWS_SHUTDOWN_TIMEOUT} (default "10s")
+        [server] Shutdown Timeout {VIWS_SHUTDOWN_TIMEOUT} (default "10s")
   -spa
         [viws] Indicate Single Page Application mode {VIWS_SPA}
   -url string
@@ -143,7 +157,7 @@ Usage of viws:
   -userAgent string
         [alcotest] User-Agent for check {VIWS_USER_AGENT} (default "Alcotest")
   -writeTimeout string
-        [http] Write Timeout {VIWS_WRITE_TIMEOUT} (default "10s")
+        [server] Write Timeout {VIWS_WRITE_TIMEOUT} (default "10s")
 ```
 
 ## Docker
