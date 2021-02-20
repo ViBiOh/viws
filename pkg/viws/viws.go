@@ -9,10 +9,10 @@ import (
 	"path"
 	"strings"
 
-	"github.com/ViBiOh/httputils/v3/pkg/flags"
-	"github.com/ViBiOh/httputils/v3/pkg/httperror"
-	"github.com/ViBiOh/httputils/v3/pkg/logger"
-	"github.com/ViBiOh/httputils/v3/pkg/query"
+	"github.com/ViBiOh/httputils/v4/pkg/flags"
+	"github.com/ViBiOh/httputils/v4/pkg/httperror"
+	"github.com/ViBiOh/httputils/v4/pkg/logger"
+	"github.com/ViBiOh/httputils/v4/pkg/query"
 )
 
 const (
@@ -136,8 +136,13 @@ func (a app) serveNotFound(w http.ResponseWriter) {
 		return
 	}
 
+	contentType := mime.TypeByExtension(notFoundPath)
+	if len(contentType) == 0 {
+		contentType = "text/html; charset=utf-8"
+	}
+
+	w.Header().Set("Content-Type", contentType)
 	w.Header().Set(cacheControlHeader, noCacheValue)
-	w.Header().Set("Content-Type", mime.TypeByExtension(notFoundPath))
 	w.WriteHeader(http.StatusNotFound)
 	if _, err = io.Copy(w, file); err != nil {
 		logger.Error("unable to copy content to writer: %s", err)

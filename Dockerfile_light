@@ -1,6 +1,8 @@
 FROM vibioh/scratch
 
 EXPOSE 1080
+EXPOSE 9090
+
 ENV VIWS_PORT 1080
 
 HEALTHCHECK --retries=5 CMD [ "/viws", "-url", "http://localhost:1080/health" ]
