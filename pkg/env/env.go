@@ -64,6 +64,6 @@ func (a app) Handler() http.Handler {
 			env[key] = os.Getenv(key)
 		}
 
-		httpjson.ResponseJSON(w, http.StatusOK, env, httpjson.IsPretty(r))
+		httpjson.Write(w, http.StatusOK, env, httpjson.IsPretty(r))
 	})
 }
