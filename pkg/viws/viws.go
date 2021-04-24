@@ -58,7 +58,7 @@ func New(config Config) App {
 		directory: strings.TrimSpace(*config.directory),
 	}
 
-	logger.Info("Serving file from %s", a.directory)
+	logger.WithField("dir", a.directory).Info("Serving file")
 
 	if a.spa {
 		logger.Info("Single Page Application mode enabled")
@@ -76,7 +76,7 @@ func New(config Config) App {
 
 		for _, header := range strings.Split(rawHeaders, "~") {
 			if parts := strings.SplitN(header, ":", 2); len(parts) != 2 || strings.Contains(parts[0], " ") {
-				logger.Warn("header has wrong format: `%s`", header)
+				logger.WithField("header", header).Warn("header has wrong format")
 			} else {
 				a.headers[parts[0]] = parts[1]
 			}
@@ -96,7 +96,7 @@ func (a app) handlePush(w http.ResponseWriter, _ *http.Request) {
 	if pusher, ok := w.(http.Pusher); ok {
 		for _, pushPath := range a.pushPaths {
 			if err := pusher.Push(pushPath, nil); err != nil {
-				logger.Error("failed to push %s: %s", pushPath, err)
+				logger.WithField("path", pushPath).Error("failed to push: %s", err)
 			}
 		}
 	}
