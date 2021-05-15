@@ -12,6 +12,7 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/logger"
 	"github.com/ViBiOh/httputils/v4/pkg/model"
 	"github.com/ViBiOh/httputils/v4/pkg/owasp"
+	"github.com/ViBiOh/httputils/v4/pkg/recoverer"
 	"github.com/ViBiOh/httputils/v4/pkg/server"
 	"github.com/ViBiOh/viws/pkg/env"
 	"github.com/ViBiOh/viws/pkg/viws"
@@ -56,7 +57,7 @@ func main() {
 		}
 	})
 
-	go appServer.Start("http", healthApp.End(), httputils.Handler(appHandler, healthApp))
+	go appServer.Start("http", healthApp.End(), httputils.Handler(appHandler, healthApp, recoverer.Middleware))
 	healthApp.WaitForTermination(appServer.Done())
 	server.GracefulWait(appServer.Done())
 }

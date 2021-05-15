@@ -15,6 +15,7 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/model"
 	"github.com/ViBiOh/httputils/v4/pkg/owasp"
 	"github.com/ViBiOh/httputils/v4/pkg/prometheus"
+	"github.com/ViBiOh/httputils/v4/pkg/recoverer"
 	"github.com/ViBiOh/httputils/v4/pkg/server"
 	"github.com/ViBiOh/viws/pkg/env"
 	"github.com/ViBiOh/viws/pkg/viws"
@@ -64,7 +65,7 @@ func main() {
 	})
 
 	go promServer.Start("prometheus", healthApp.End(), prometheusApp.Handler())
-	go appServer.Start("http", healthApp.End(), httputils.Handler(appHandler, healthApp, prometheusApp.Middleware, gziphandler.GzipHandler))
+	go appServer.Start("http", healthApp.End(), httputils.Handler(appHandler, healthApp, recoverer.Middleware, prometheusApp.Middleware, gziphandler.GzipHandler))
 
 	healthApp.WaitForTermination(appServer.Done())
 	server.GracefulWait(appServer.Done(), promServer.Done())
