@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"net/http"
-	_ "net/http/pprof"
 	"os"
 
 	"github.com/NYTimes/gziphandler"
@@ -27,7 +26,6 @@ func main() {
 
 	appServerConfig := server.Flags(fs, "")
 	promServerConfig := server.Flags(fs, "prometheus", flags.NewOverride("Port", 9090), flags.NewOverride("IdleTimeout", "10s"), flags.NewOverride("ShutdownTimeout", "5s"))
-	pprofServerConfig := server.Flags(fs, "pprof", flags.NewOverride("Port", 9999))
 	healthConfig := health.Flags(fs, "")
 
 	alcotestConfig := alcotest.Flags(fs, "")
@@ -47,7 +45,6 @@ func main() {
 
 	appServer := server.New(appServerConfig)
 	promServer := server.New(promServerConfig)
-	pprofServer := server.New(pprofServerConfig)
 	prometheusApp := prometheus.New(prometheusConfig)
 	healthApp := health.New(healthConfig)
 
@@ -67,7 +64,6 @@ func main() {
 		}
 	})
 
-	go pprofServer.Start("pprof", healthApp.End(), http.DefaultServeMux)
 	go promServer.Start("prometheus", healthApp.End(), prometheusApp.Handler())
 	go appServer.Start("http", healthApp.End(), httputils.Handler(appHandler, healthApp, recoverer.Middleware, prometheusApp.Middleware, gziphandler.GzipHandler))
 
