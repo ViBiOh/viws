@@ -1,6 +1,7 @@
 package viws
 
 import (
+	"bytes"
 	"flag"
 	"io"
 	"mime"
@@ -8,6 +9,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"sync"
 
 	"github.com/ViBiOh/httputils/v4/pkg/flags"
 	"github.com/ViBiOh/httputils/v4/pkg/httperror"
@@ -19,6 +21,14 @@ const (
 	notFoundFilename   = "404.html"
 	cacheControlHeader = "Cache-Control"
 	noCacheValue       = "no-cache"
+)
+
+var (
+	bufferPool = sync.Pool{
+		New: func() interface{} {
+			return bytes.NewBuffer(make([]byte, 32*1024))
+		},
+	}
 )
 
 // Config of package
@@ -144,7 +154,11 @@ func (a app) serveNotFound(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", contentType)
 	w.Header().Set(cacheControlHeader, noCacheValue)
 	w.WriteHeader(http.StatusNotFound)
-	if _, err = io.Copy(w, file); err != nil {
+
+	buffer := bufferPool.Get().(*bytes.Buffer)
+	defer bufferPool.Put(buffer)
+
+	if _, err = io.CopyBuffer(w, file, buffer.Bytes()); err != nil {
 		logger.Error("unable to copy content to writer: %s", err)
 	}
 }
