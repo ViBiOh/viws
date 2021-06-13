@@ -2,8 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
+
+	_ "net/http/pprof"
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/httputils/v4/pkg/alcotest"
@@ -33,6 +36,8 @@ func main() {
 	prometheusConfig := prometheus.Flags(fs, "prometheus")
 	owaspConfig := owasp.Flags(fs, "")
 	corsConfig := cors.Flags(fs, "cors")
+
+	gzip := flags.New("", "gzip").Name("Gzip").Default(true).Label("Enable gzip compression").ToBool(fs)
 
 	viwsConfig := viws.Flags(fs, "")
 	envConfig := env.Flags(fs, "")
@@ -64,8 +69,17 @@ func main() {
 		}
 	})
 
+	middlewares := []model.Middleware{recoverer.Middleware, prometheusApp.Middleware}
+	if *gzip {
+		middlewares = append(middlewares, gziphandler.GzipHandler)
+	}
+
 	go promServer.Start("prometheus", healthApp.End(), prometheusApp.Handler())
-	go appServer.Start("http", healthApp.End(), httputils.Handler(appHandler, healthApp, recoverer.Middleware, prometheusApp.Middleware, gziphandler.GzipHandler))
+	go appServer.Start("http", healthApp.End(), httputils.Handler(appHandler, healthApp, middlewares...))
+
+	go func() {
+		fmt.Println(http.ListenAndServe("localhost:9999", http.DefaultServeMux))
+	}()
 
 	healthApp.WaitForTermination(appServer.Done())
 	server.GracefulWait(appServer.Done(), promServer.Done())

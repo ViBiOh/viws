@@ -82,4 +82,5 @@ build:
 .PHONY: run
 run:
 	$(MAIN_RUNNER) \
-		-directory $(PWD)/example/404/
+		-directory $(PWD)/example/404/ \
+		-gzip=false

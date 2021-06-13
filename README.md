@@ -104,6 +104,8 @@ Usage of viws:
         [owasp] X-Frame-Options {VIWS_FRAME_OPTIONS} (default "deny")
   -graceDuration string
         [http] Grace duration when SIGTERM received {VIWS_GRACE_DURATION} (default "30s")
+  -gzip
+        [gzip] Enable gzip compression {VIWS_GZIP} (default true)
   -headers string
         [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {VIWS_HEADERS}
   -hsts
