@@ -141,6 +141,13 @@ func (a app) serveNotFound(w http.ResponseWriter) {
 	}
 
 	file, err := os.Open(notFoundPath)
+	if file != nil {
+		defer func() {
+			if err := file.Close(); err != nil {
+				logger.Error("unable to close file: %s", err)
+			}
+		}()
+	}
 	if err != nil {
 		httperror.InternalServerError(w, err)
 		return
