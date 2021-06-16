@@ -2,11 +2,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"net/http"
 	"os"
-
-	_ "net/http/pprof"
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/httputils/v4/pkg/alcotest"
@@ -76,10 +73,6 @@ func main() {
 
 	go promServer.Start("prometheus", healthApp.End(), prometheusApp.Handler())
 	go appServer.Start("http", healthApp.End(), httputils.Handler(appHandler, healthApp, middlewares...))
-
-	go func() {
-		fmt.Println(http.ListenAndServe("localhost:9999", http.DefaultServeMux))
-	}()
 
 	healthApp.WaitForTermination(appServer.Done())
 	server.GracefulWait(appServer.Done(), promServer.Done())
