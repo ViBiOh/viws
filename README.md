@@ -10,7 +10,7 @@ A superlight HTTP fileserver with customizable behavior.
 ## Installation
 
 ```bash
-go get github.com/ViBiOh/viws/cmd/viws
+go install github.com/ViBiOh/viws/cmd/viws@latest
 ```
 
 ### Light version
@@ -18,7 +18,7 @@ go get github.com/ViBiOh/viws/cmd/viws
 Light version (without GZIP and Prometheus) is also available, for a smaller binary.
 
 ```bash
-go get github.com/ViBiOh/viws/cmd/viws-light
+go install github.com/ViBiOh/viws/cmd/viws-light@latest
 ```
 
 ## Features
