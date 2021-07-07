@@ -36,7 +36,6 @@ type Config struct {
 	directory *string
 	headers   *string
 	spa       *bool
-	push      *string
 }
 
 // App of package
@@ -47,7 +46,6 @@ type App interface {
 type app struct {
 	headers   map[string]string
 	directory string
-	pushPaths []string
 	spa       bool
 }
 
@@ -57,7 +55,6 @@ func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config 
 		directory: flags.New(prefix, "viws").Name("Directory").Default(flags.Default("Directory", "/www/", overrides)).Label("Directory to serve").ToString(fs),
 		headers:   flags.New(prefix, "viws").Name("Headers").Default(flags.Default("Headers", "", overrides)).Label("Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)").ToString(fs),
 		spa:       flags.New(prefix, "viws").Name("Spa").Default(flags.Default("Spa", false, overrides)).Label("Indicate Single Page Application mode").ToBool(fs),
-		push:      flags.New(prefix, "viws").Name("Push").Default(flags.Default("Push", "", overrides)).Label("Paths for HTTP/2 Server Push on index, comma separated").ToString(fs),
 	}
 }
 
@@ -72,12 +69,6 @@ func New(config Config) App {
 
 	if a.spa {
 		logger.Info("Single Page Application mode enabled")
-	}
-
-	push := strings.TrimSpace(*config.push)
-	if len(push) != 0 {
-		a.pushPaths = strings.Split(push, ",")
-		logger.Info("HTTP/2 Push of %s", strings.Join(a.pushPaths, ", "))
 	}
 
 	rawHeaders := strings.TrimSpace(*config.headers)
@@ -99,16 +90,6 @@ func New(config Config) App {
 func (a app) addCustomHeaders(w http.ResponseWriter) {
 	for key, value := range a.headers {
 		w.Header().Add(key, value)
-	}
-}
-
-func (a app) handlePush(w http.ResponseWriter, _ *http.Request) {
-	if pusher, ok := w.(http.Pusher); ok {
-		for _, pushPath := range a.pushPaths {
-			if err := pusher.Push(pushPath, nil); err != nil {
-				logger.WithField("path", pushPath).Error("failed to push: %s", err)
-			}
-		}
 	}
 }
 
@@ -172,16 +153,10 @@ func (a app) serveNotFound(w http.ResponseWriter) {
 
 // Handler serve file given configuration
 func (a app) Handler() http.Handler {
-	hasPush := len(a.pushPaths) != 0
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet && r.Method != http.MethodHead {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
-		}
-
-		if hasPush && r.Method == http.MethodGet && query.IsRoot(r) {
-			a.handlePush(w, r)
 		}
 
 		if filename, err := getFileToServe(a.directory, r.URL.Path); err == nil {

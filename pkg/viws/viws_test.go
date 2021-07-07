@@ -22,7 +22,7 @@ func TestFlags(t *testing.T) {
 	}{
 		{
 			"simple",
-			"Usage of simple:\n  -directory string\n    \t[viws] Directory to serve {SIMPLE_DIRECTORY} (default \"/www/\")\n  -headers string\n    \t[viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {SIMPLE_HEADERS}\n  -push string\n    \t[viws] Paths for HTTP/2 Server Push on index, comma separated {SIMPLE_PUSH}\n  -spa\n    \t[viws] Indicate Single Page Application mode {SIMPLE_SPA}\n",
+			"Usage of simple:\n  -directory string\n    \t[viws] Directory to serve {SIMPLE_DIRECTORY} (default \"/www/\")\n  -headers string\n    \t[viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {SIMPLE_HEADERS}\n  -spa\n    \t[viws] Indicate Single Page Application mode {SIMPLE_SPA}\n",
 		},
 	}
 
@@ -48,7 +48,6 @@ func TestNew(t *testing.T) {
 	falseVar := false
 	trueVar := true
 	emptyString := ""
-	examplePush := "index.js,index.css"
 	exampleHeader := "= X-UA-Compatible:ie=edge~X-UA-Compatible:ie=edge~content-language:fr~invalidformat"
 
 	var cases = []struct {
@@ -62,7 +61,6 @@ func TestNew(t *testing.T) {
 				directory: &exempleDir,
 				headers:   &emptyString,
 				spa:       &falseVar,
-				push:      &emptyString,
 			},
 			app{
 				spa:       false,
@@ -75,28 +73,10 @@ func TestNew(t *testing.T) {
 				directory: &exempleDir,
 				headers:   &emptyString,
 				spa:       &trueVar,
-				push:      &emptyString,
 			},
 			app{
 				spa:       true,
 				directory: exempleDir,
-			},
-		},
-		{
-			"pushPaths",
-			Config{
-				directory: &exempleDir,
-				headers:   &emptyString,
-				spa:       &falseVar,
-				push:      &examplePush,
-			},
-			app{
-				spa:       false,
-				directory: exempleDir,
-				pushPaths: []string{
-					"index.js",
-					"index.css",
-				},
 			},
 		},
 		{
@@ -105,7 +85,6 @@ func TestNew(t *testing.T) {
 				directory: &exempleDir,
 				headers:   &exampleHeader,
 				spa:       &falseVar,
-				push:      &emptyString,
 			},
 			app{
 				spa:       false,
@@ -158,30 +137,6 @@ func TestHandler(t *testing.T) {
 			"get index",
 			app{
 				directory: exempleDir,
-			},
-			httptest.NewRequest(http.MethodGet, "/", nil),
-			`<!DOCTYPE HTML>
-<html lang="en">
-  <head>
-    <title>viws</title>
-    <link rel="stylesheet" href="/index.css">
-    <script src="/index.js"></script>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-  </body>
-</html>
-`,
-			http.StatusOK,
-			http.Header{
-				cacheControlHeader: {noCacheValue},
-			},
-		},
-		{
-			"get index push",
-			app{
-				directory: exempleDir,
-				pushPaths: []string{"index.js", "index.css"},
 			},
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			`<!DOCTYPE HTML>

@@ -28,7 +28,6 @@ go install github.com/ViBiOh/viws/cmd/viws-light@latest
 - Prometheus monitoring on dedicated port
 - Read-only container
 - Serve static content, with Single Page App handling
-- HTTP/2 Server push
 - Serve environment variables for easier-config
 - Configurable logger with JSON support
 
@@ -148,8 +147,6 @@ Usage of viws:
         [prometheus] Shutdown Timeout {VIWS_PROMETHEUS_SHUTDOWN_TIMEOUT} (default "5s")
   -prometheusWriteTimeout string
         [prometheus] Write Timeout {VIWS_PROMETHEUS_WRITE_TIMEOUT} (default "10s")
-  -push string
-        [viws] Paths for HTTP/2 Server Push on index, comma separated {VIWS_PUSH}
   -readTimeout string
         [server] Read Timeout {VIWS_READ_TIMEOUT} (default "5s")
   -shutdownTimeout string
