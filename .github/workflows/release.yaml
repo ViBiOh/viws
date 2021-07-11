@@ -1,10 +1,10 @@
 ---
-name: Tag
+name: Release
 
 on:
-  push:
-    tags:
-      - "*"
+  release:
+    types:
+      - released
 
 env:
   SCRIPTS_NO_INTERACTIVE: "true"
@@ -15,12 +15,25 @@ defaults:
 
 jobs:
   tag:
-    name: Tag
+    name: Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Tag
+      - name: Setup Golang
+        uses: actions/setup-go@v2
+        with:
+          go-version: "^1.16"
+      - name: Build
+        run: make init
+      - name: Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl --disable --silent --show-error --location --max-time 30 "https://raw.githubusercontent.com/ViBiOh/scripts/main/bootstrap" | bash -s -- "-c" "release"
+          export GIT_TAG="$(basename ${{ github.ref }})"
+          scripts/release build assets clean
+      - name: Docker
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
