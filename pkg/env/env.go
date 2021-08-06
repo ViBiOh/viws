@@ -47,6 +47,11 @@ func New(config Config) App {
 
 // Handler for net/http package returning environment variables in JSON
 func (a app) Handler() http.Handler {
+	env := make(map[string]string)
+	for _, key := range a.keys {
+		env[key] = os.Getenv(key)
+	}
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusOK)
@@ -56,12 +61,6 @@ func (a app) Handler() http.Handler {
 		if r.Method != http.MethodGet {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
-		}
-
-		env := make(map[string]string)
-
-		for _, key := range a.keys {
-			env[key] = os.Getenv(key)
 		}
 
 		httpjson.Write(w, http.StatusOK, env, httpjson.IsPretty(r))

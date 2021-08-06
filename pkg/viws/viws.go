@@ -96,9 +96,9 @@ func (a app) addCustomHeaders(w http.ResponseWriter) {
 func setCacheHeader(w http.ResponseWriter, r *http.Request) {
 	if len(w.Header().Get(cacheControlHeader)) == 0 {
 		if query.IsRoot(r) {
-			w.Header().Set(cacheControlHeader, noCacheValue)
+			w.Header().Add(cacheControlHeader, noCacheValue)
 		} else {
-			w.Header().Set(cacheControlHeader, "public, max-age=864000")
+			w.Header().Add(cacheControlHeader, "public, max-age=864000")
 		}
 	}
 }
@@ -139,8 +139,8 @@ func (a app) serveNotFound(w http.ResponseWriter) {
 		contentType = "text/html; charset=utf-8"
 	}
 
-	w.Header().Set("Content-Type", contentType)
-	w.Header().Set(cacheControlHeader, noCacheValue)
+	w.Header().Add("Content-Type", contentType)
+	w.Header().Add(cacheControlHeader, noCacheValue)
 	w.WriteHeader(http.StatusNotFound)
 
 	buffer := bufferPool.Get().(*bytes.Buffer)
@@ -170,7 +170,7 @@ func (a app) Handler() http.Handler {
 		}
 
 		if a.spa {
-			w.Header().Set(cacheControlHeader, noCacheValue)
+			w.Header().Add(cacheControlHeader, noCacheValue)
 			a.serveFile(w, r, path.Join(a.directory, "index.html"))
 			return
 		}
