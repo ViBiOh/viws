@@ -73,7 +73,7 @@ func TestNew(t *testing.T) {
 
 	for _, testCase := range cases {
 		t.Run(testCase.intention, func(t *testing.T) {
-			if result := New(testCase.input).(app); !reflect.DeepEqual(result.keys, testCase.want) {
+			if result := New(testCase.input); !reflect.DeepEqual(result.keys, testCase.want) {
 				t.Errorf("New() = %+v, want %+v", result.keys, testCase.want)
 			}
 		})

@@ -62,7 +62,7 @@ func TestNew(t *testing.T) {
 				headers:   &emptyString,
 				spa:       &falseVar,
 			},
-			app{
+			App{
 				spa:       false,
 				directory: exempleDir,
 			},
@@ -74,7 +74,7 @@ func TestNew(t *testing.T) {
 				headers:   &emptyString,
 				spa:       &trueVar,
 			},
-			app{
+			App{
 				spa:       true,
 				directory: exempleDir,
 			},
@@ -86,7 +86,7 @@ func TestNew(t *testing.T) {
 				headers:   &exampleHeader,
 				spa:       &falseVar,
 			},
-			app{
+			App{
 				spa:       false,
 				directory: exempleDir,
 				headers: map[string]string{
@@ -109,7 +109,7 @@ func TestNew(t *testing.T) {
 func TestHandler(t *testing.T) {
 	var cases = []struct {
 		intention  string
-		app        app
+		app        App
 		request    *http.Request
 		want       string
 		wantStatus int
@@ -117,7 +117,7 @@ func TestHandler(t *testing.T) {
 	}{
 		{
 			"invalid method",
-			app{},
+			App{},
 			httptest.NewRequest(http.MethodOptions, "/", nil),
 			"",
 			http.StatusMethodNotAllowed,
@@ -125,7 +125,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"head index",
-			app{
+			App{
 				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodHead, "/", nil),
@@ -135,7 +135,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get index",
-			app{
+			App{
 				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodGet, "/", nil),
@@ -158,7 +158,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get file with header",
-			app{
+			App{
 				directory: exempleDir,
 				headers: map[string]string{
 					"Etag": "test",
@@ -175,7 +175,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"head not found",
-			app{
+			App{
 				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodHead, "/404.html", nil),
@@ -187,7 +187,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get not found",
-			app{
+			App{
 				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodGet, "/404.html", nil),
@@ -200,7 +200,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get not found with file",
-			app{
+			App{
 				directory: "../../example/404/",
 			},
 			httptest.NewRequest(http.MethodGet, "/nowhere", nil),
@@ -221,7 +221,7 @@ func TestHandler(t *testing.T) {
 		},
 		{
 			"get not found with spa",
-			app{
+			App{
 				directory: exempleDir,
 				spa:       true,
 			},

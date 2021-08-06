@@ -10,18 +10,14 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/httpjson"
 )
 
+// App of package
+type App struct {
+	keys []string
+}
+
 // Config of package
 type Config struct {
 	env *string
-}
-
-// App of package
-type App interface {
-	Handler() http.Handler
-}
-
-type app struct {
-	keys []string
 }
 
 // Flags adds flags for configuring package
@@ -40,13 +36,13 @@ func New(config Config) App {
 		keys = strings.Split(env, ",")
 	}
 
-	return app{
+	return App{
 		keys: keys,
 	}
 }
 
 // Handler for net/http package returning environment variables in JSON
-func (a app) Handler() http.Handler {
+func (a App) Handler() http.Handler {
 	env := make(map[string]string)
 	for _, key := range a.keys {
 		env[key] = os.Getenv(key)

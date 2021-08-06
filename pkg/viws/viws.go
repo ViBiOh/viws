@@ -31,22 +31,18 @@ var (
 	}
 )
 
+// App of package
+type App struct {
+	headers   map[string]string
+	directory string
+	spa       bool
+}
+
 // Config of package
 type Config struct {
 	directory *string
 	headers   *string
 	spa       *bool
-}
-
-// App of package
-type App interface {
-	Handler() http.Handler
-}
-
-type app struct {
-	headers   map[string]string
-	directory string
-	spa       bool
 }
 
 // Flags adds flags for configuring package
@@ -60,7 +56,7 @@ func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config 
 
 // New creates new App from Config
 func New(config Config) App {
-	a := app{
+	a := App{
 		spa:       *config.spa,
 		directory: strings.TrimSpace(*config.directory),
 	}
@@ -87,7 +83,7 @@ func New(config Config) App {
 	return a
 }
 
-func (a app) addCustomHeaders(w http.ResponseWriter) {
+func (a App) addCustomHeaders(w http.ResponseWriter) {
 	for key, value := range a.headers {
 		w.Header().Add(key, value)
 	}
@@ -103,7 +99,7 @@ func setCacheHeader(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (a app) serveFile(w http.ResponseWriter, r *http.Request, filepath string) {
+func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string) {
 	a.addCustomHeaders(w)
 
 	if r.Method == http.MethodGet {
@@ -114,7 +110,7 @@ func (a app) serveFile(w http.ResponseWriter, r *http.Request, filepath string) 
 	}
 }
 
-func (a app) serveNotFound(w http.ResponseWriter) {
+func (a App) serveNotFound(w http.ResponseWriter) {
 	notFoundPath, err := getFileToServe(a.directory, notFoundFilename)
 	if os.IsNotExist(err) {
 		httperror.NotFound(w)
@@ -152,7 +148,7 @@ func (a app) serveNotFound(w http.ResponseWriter) {
 }
 
 // Handler serve file given configuration
-func (a app) Handler() http.Handler {
+func (a App) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet && r.Method != http.MethodHead {
 			w.WriteHeader(http.StatusMethodNotAllowed)
