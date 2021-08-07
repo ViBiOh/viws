@@ -4,5 +4,5 @@ go 1.16
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/ViBiOh/httputils/v4 v4.19.2
+	github.com/ViBiOh/httputils/v4 v4.19.3
 )
