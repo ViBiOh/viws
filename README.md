@@ -77,7 +77,7 @@ ReactDOM.render(<App config={config} />, document.getElementById("root"));
 
 By default, server is listening on the `1080` port and serve content for GET requests from the `/www/` directory. It assumes that HTTPS is done, somewhere between browser and server (e.g. CloudFlare, ReverseProxy, Traefik, ...) so it sets HSTS flag by default.
 
-App can be configured by passing CLI args described below or their equivalent as environment variable. CLI values take precedence over environments variables.
+The application can be configured by passing CLI args described below or their equivalent as environment variable. CLI values take precedence over environments variables.
 
 Be careful when using the CLI values, if someone list the processes on the system, they will appear in plain-text. Pass secrets by environment variables: it's less easily visible.
 
