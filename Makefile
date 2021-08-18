@@ -83,4 +83,4 @@ build:
 run:
 	$(MAIN_RUNNER) \
 		-directory $(PWD)/example/404/ \
-		-gzip=false
+		-gzip=true

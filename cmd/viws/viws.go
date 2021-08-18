@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/NYTimes/gziphandler"
 	"github.com/ViBiOh/httputils/v4/pkg/alcotest"
 	"github.com/ViBiOh/httputils/v4/pkg/cors"
 	"github.com/ViBiOh/httputils/v4/pkg/flags"
@@ -19,6 +18,7 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/server"
 	"github.com/ViBiOh/viws/pkg/env"
 	"github.com/ViBiOh/viws/pkg/viws"
+	"github.com/klauspost/compress/gzhttp"
 )
 
 func main() {
@@ -68,7 +68,9 @@ func main() {
 
 	middlewares := []model.Middleware{recoverer.Middleware, prometheusApp.Middleware}
 	if *gzip {
-		middlewares = append(middlewares, gziphandler.GzipHandler)
+		middlewares = append(middlewares, func(next http.Handler) http.Handler {
+			return gzhttp.GzipHandler(next)
+		})
 	}
 
 	go promServer.Start("prometheus", healthApp.End(), prometheusApp.Handler())
