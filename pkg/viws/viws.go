@@ -48,9 +48,9 @@ type Config struct {
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config {
 	return Config{
-		directory: flags.New(prefix, "viws").Name("Directory").Default(flags.Default("Directory", "/www/", overrides)).Label("Directory to serve").ToString(fs),
-		headers:   flags.New(prefix, "viws").Name("Headers").Default(flags.Default("Headers", "", overrides)).Label("Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)").ToString(fs),
-		spa:       flags.New(prefix, "viws").Name("Spa").Default(flags.Default("Spa", false, overrides)).Label("Indicate Single Page Application mode").ToBool(fs),
+		directory: flags.New(prefix, "viws", "Directory").Default("/www/", overrides).Label("Directory to serve").ToString(fs),
+		headers:   flags.New(prefix, "viws", "Headers").Default("", overrides).Label("Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)").ToString(fs),
+		spa:       flags.New(prefix, "viws", "Spa").Default(false, overrides).Label("Indicate Single Page Application mode").ToBool(fs),
 	}
 }
 

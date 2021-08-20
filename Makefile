@@ -46,7 +46,7 @@ init:
 	go install github.com/kisielk/errcheck@latest
 	go install golang.org/x/lint/golint@latest
 	go install golang.org/x/tools/cmd/goimports@latest
-	go mod tidy
+	go mod tidy -compat=1.17
 
 ## format: Format code. e.g Prettier (js), format (golang)
 .PHONY: format

@@ -34,7 +34,7 @@ func main() {
 	owaspConfig := owasp.Flags(fs, "")
 	corsConfig := cors.Flags(fs, "cors")
 
-	gzip := flags.New("", "gzip").Name("Gzip").Default(true).Label("Enable gzip compression").ToBool(fs)
+	gzip := flags.New("", "gzip", "Gzip").Default(true, nil).Label("Enable gzip compression").ToBool(fs)
 
 	viwsConfig := viws.Flags(fs, "")
 	envConfig := env.Flags(fs, "")
