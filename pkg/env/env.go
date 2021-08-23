@@ -31,9 +31,8 @@ func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config 
 func New(config Config) App {
 	var keys []string
 
-	env := strings.TrimSpace(*config.env)
-	if env != "" {
-		keys = strings.Split(env, ",")
+	if *config.env != "" {
+		keys = strings.Split(*config.env, ",")
 	}
 
 	return App{

@@ -6,50 +6,59 @@ import (
 )
 
 func TestGetFileToServe(t *testing.T) {
+	type args struct {
+		directory string
+		path      string
+	}
 	var cases = []struct {
 		intention string
-		input     []string
+		args      args
 		want      string
 		wantErr   error
 	}{
 		{
-			"nil call",
-			nil,
+			"empty call",
+			args{},
 			"",
 			errors.New("stat : no such file or directory"),
 		},
 		{
 			"local file",
-			[]string{"file.go"},
+			args{
+				path: "file.go",
+			},
 			"file.go",
 			nil,
 		},
 		{
 			"concatenared dir path",
-			[]string{"..", "..", "example"},
+			args{
+				directory: "../..",
+				path:      "example",
+			},
 			"../../example/index.html",
 			nil,
 		},
 	}
 
-	for _, testCase := range cases {
-		t.Run(testCase.intention, func(t *testing.T) {
-			result, err := getFileToServe(testCase.input...)
+	for _, tc := range cases {
+		t.Run(tc.intention, func(t *testing.T) {
+			result, err := getFileToServe(tc.args.directory, tc.args.path)
 
 			failed := false
 
-			if err == nil && testCase.wantErr != nil {
+			if err == nil && tc.wantErr != nil {
 				failed = true
-			} else if err != nil && testCase.wantErr == nil {
+			} else if err != nil && tc.wantErr == nil {
 				failed = true
-			} else if err != nil && err.Error() != testCase.wantErr.Error() {
+			} else if err != nil && err.Error() != tc.wantErr.Error() {
 				failed = true
-			} else if result != testCase.want {
+			} else if result != tc.want {
 				failed = true
 			}
 
 			if failed {
-				t.Errorf("getFileToServe() = (`%s`, `%s`), want (`%s`, `%s`)", result, err, testCase.want, testCase.wantErr)
+				t.Errorf("getFileToServe() = (`%s`, `%s`), want (`%s`, `%s`)", result, err, tc.want, tc.wantErr)
 			}
 		})
 	}

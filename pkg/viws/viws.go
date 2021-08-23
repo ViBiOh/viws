@@ -2,11 +2,9 @@ package viws
 
 import (
 	"bytes"
+	"errors"
 	"flag"
-	"io"
-	"mime"
 	"net/http"
-	"os"
 	"path"
 	"strings"
 	"sync"
@@ -14,10 +12,10 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/flags"
 	"github.com/ViBiOh/httputils/v4/pkg/httperror"
 	"github.com/ViBiOh/httputils/v4/pkg/logger"
-	"github.com/ViBiOh/httputils/v4/pkg/query"
 )
 
 const (
+	indexFilename      = "index.html"
 	notFoundFilename   = "404.html"
 	cacheControlHeader = "Cache-Control"
 	noCacheValue       = "no-cache"
@@ -33,7 +31,7 @@ var (
 
 // App of package
 type App struct {
-	headers   map[string]string
+	headers   http.Header
 	directory string
 	spa       bool
 }
@@ -58,92 +56,27 @@ func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config 
 func New(config Config) App {
 	a := App{
 		spa:       *config.spa,
-		directory: strings.TrimSpace(*config.directory),
+		directory: *config.directory,
+		headers:   http.Header{},
 	}
 
 	logger.WithField("dir", a.directory).Info("Serving file")
 
 	if a.spa {
-		logger.Info("Single Page Application mode enabled")
+		logger.WithField("dir", a.directory).Info("Single Page Application mode enabled")
 	}
 
-	rawHeaders := strings.TrimSpace(*config.headers)
-	if len(rawHeaders) != 0 {
-		a.headers = make(map[string]string)
-
-		for _, header := range strings.Split(rawHeaders, "~") {
+	if len(*config.headers) != 0 {
+		for _, header := range strings.Split(*config.headers, "~") {
 			if parts := strings.SplitN(header, ":", 2); len(parts) != 2 || strings.Contains(parts[0], " ") {
-				logger.WithField("header", header).Warn("header has wrong format")
+				logger.WithField("dir", a.directory).WithField("header", header).Warn("header has wrong format")
 			} else {
-				a.headers[parts[0]] = parts[1]
+				a.headers.Add(parts[0], parts[1])
 			}
 		}
 	}
 
 	return a
-}
-
-func (a App) addCustomHeaders(w http.ResponseWriter) {
-	for key, value := range a.headers {
-		w.Header().Add(key, value)
-	}
-}
-
-func setCacheHeader(w http.ResponseWriter, r *http.Request) {
-	if len(w.Header().Get(cacheControlHeader)) == 0 {
-		if query.IsRoot(r) {
-			w.Header().Add(cacheControlHeader, noCacheValue)
-		} else {
-			w.Header().Add(cacheControlHeader, "public, max-age=864000")
-		}
-	}
-}
-
-func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string) {
-	a.addCustomHeaders(w)
-
-	if r.Method == http.MethodGet {
-		setCacheHeader(w, r)
-		http.ServeFile(w, r, filepath)
-	} else {
-		w.WriteHeader(http.StatusNoContent)
-	}
-}
-
-func (a App) serveNotFound(w http.ResponseWriter) {
-	notFoundPath, err := getFileToServe(a.directory, notFoundFilename)
-	if os.IsNotExist(err) {
-		httperror.NotFound(w)
-		return
-	}
-
-	file, err := os.Open(notFoundPath)
-	if err != nil {
-		httperror.InternalServerError(w, err)
-		return
-	}
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			logger.Error("unable to close file: %s", err)
-		}
-	}()
-
-	contentType := mime.TypeByExtension(notFoundPath)
-	if len(contentType) == 0 {
-		contentType = "text/html; charset=utf-8"
-	}
-
-	w.Header().Add("Content-Type", contentType)
-	w.Header().Add(cacheControlHeader, noCacheValue)
-	w.WriteHeader(http.StatusNotFound)
-
-	buffer := bufferPool.Get().(*bytes.Buffer)
-	defer bufferPool.Put(buffer)
-
-	if _, err = io.CopyBuffer(w, file, buffer.Bytes()); err != nil {
-		logger.Error("unable to copy content to writer: %s", err)
-	}
 }
 
 // Handler serve file given configuration
@@ -152,6 +85,10 @@ func (a App) Handler() http.Handler {
 		if r.Method != http.MethodGet && r.Method != http.MethodHead {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
+		}
+
+		if strings.Contains(r.URL.Path, "..") {
+			httperror.BadRequest(w, errors.New("path with dots are not allowed"))
 		}
 
 		if filename, err := getFileToServe(a.directory, r.URL.Path); err == nil {
@@ -166,10 +103,37 @@ func (a App) Handler() http.Handler {
 
 		if a.spa {
 			w.Header().Add(cacheControlHeader, noCacheValue)
-			a.serveFile(w, r, path.Join(a.directory, "index.html"))
+			a.serveFile(w, r, path.Join(a.directory, indexFilename))
 			return
 		}
 
 		a.serveNotFound(w)
 	})
+}
+
+func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string) {
+	a.addCustomHeaders(w)
+
+	if r.Method == http.MethodGet {
+		setCacheHeader(w, r)
+		http.ServeFile(w, r, filepath)
+	} else {
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+func (a App) addCustomHeaders(w http.ResponseWriter) {
+	for key, value := range a.headers {
+		w.Header()[key] = value
+	}
+}
+
+func setCacheHeader(w http.ResponseWriter, r *http.Request) {
+	if len(w.Header().Get(cacheControlHeader)) == 0 {
+		if r.URL.Path == "/" {
+			w.Header().Add(cacheControlHeader, noCacheValue)
+		} else {
+			w.Header().Add(cacheControlHeader, "public, max-age=864000")
+		}
+	}
 }

@@ -65,6 +65,7 @@ func TestNew(t *testing.T) {
 			App{
 				spa:       false,
 				directory: exempleDir,
+				headers:   http.Header{},
 			},
 		},
 		{
@@ -77,10 +78,11 @@ func TestNew(t *testing.T) {
 			App{
 				spa:       true,
 				directory: exempleDir,
+				headers:   http.Header{},
 			},
 		},
 		{
-			"header",
+			"headers",
 			Config{
 				directory: &exempleDir,
 				headers:   &exampleHeader,
@@ -89,9 +91,9 @@ func TestNew(t *testing.T) {
 			App{
 				spa:       false,
 				directory: exempleDir,
-				headers: map[string]string{
-					"X-UA-Compatible":  "ie=edge",
-					"content-language": "fr",
+				headers: http.Header{
+					"X-Ua-Compatible":  []string{"ie=edge"},
+					"Content-Language": []string{"fr"},
 				},
 			},
 		},
@@ -134,6 +136,16 @@ func TestHandler(t *testing.T) {
 			nil,
 		},
 		{
+			"path with dots",
+			App{
+				directory: exempleDir,
+			},
+			httptest.NewRequest(http.MethodHead, "/../index.html", nil),
+			"path with dots are not allowed\n",
+			http.StatusBadRequest,
+			nil,
+		},
+		{
 			"get index",
 			App{
 				directory: exempleDir,
@@ -160,8 +172,8 @@ func TestHandler(t *testing.T) {
 			"get file with header",
 			App{
 				directory: exempleDir,
-				headers: map[string]string{
-					"Etag": "test",
+				headers: http.Header{
+					"Etag": []string{"test"},
 				},
 			},
 			httptest.NewRequest(http.MethodGet, "/index.js", nil),
@@ -266,5 +278,44 @@ func TestHandler(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+type discardResponseWriter struct {
+	h http.Header
+}
+
+func newDiscardResponseWriter() discardResponseWriter {
+	return discardResponseWriter{
+		h: http.Header{},
+	}
+}
+
+func (drw discardResponseWriter) Header() http.Header {
+	return drw.h
+}
+
+func (drw discardResponseWriter) Write(p []byte) (int, error) {
+	return len(p), nil
+}
+
+func (drw discardResponseWriter) WriteHeader(_ int) {
+}
+
+func BenchmarkServeFile(b *testing.B) {
+	headers := http.Header{}
+	headers.Add("X-UA-Compatible", "ie=edge")
+	headers.Add("content-language", "fr")
+
+	instance := App{
+		directory: exempleDir,
+		headers:   headers,
+	}
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	recorder := newDiscardResponseWriter()
+
+	for i := 0; i < b.N; i++ {
+		instance.serveFile(recorder, req, "../../example/404/index.html")
 	}
 }

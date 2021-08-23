@@ -17,5 +17,5 @@ func getFileToServe(parts ...string) (string, error) {
 		return filepath, nil
 	}
 
-	return getFileToServe(append(parts, "index.html")...)
+	return getFileToServe(filepath, indexFilename)
 }
