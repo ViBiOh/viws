@@ -26,7 +26,7 @@ const (
 var (
 	bufferPool = sync.Pool{
 		New: func() interface{} {
-			return bytes.NewBuffer(make([]byte, 32*1024))
+			return bytes.NewBuffer(make([]byte, 1024))
 		},
 	}
 )
@@ -118,17 +118,16 @@ func (a App) serveNotFound(w http.ResponseWriter) {
 	}
 
 	file, err := os.Open(notFoundPath)
-	if file != nil {
-		defer func() {
-			if err := file.Close(); err != nil {
-				logger.Error("unable to close file: %s", err)
-			}
-		}()
-	}
 	if err != nil {
 		httperror.InternalServerError(w, err)
 		return
 	}
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			logger.Error("unable to close file: %s", err)
+		}
+	}()
 
 	contentType := mime.TypeByExtension(notFoundPath)
 	if len(contentType) == 0 {
