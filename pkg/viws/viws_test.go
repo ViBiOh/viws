@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/ViBiOh/httputils/v4/pkg/request"
 )
@@ -314,8 +315,9 @@ func BenchmarkServeFile(b *testing.B) {
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	recorder := newDiscardResponseWriter()
+	now := time.Now()
 
 	for i := 0; i < b.N; i++ {
-		instance.serveFile(recorder, req, "../../example/404/index.html")
+		instance.serveFile(recorder, req, "../../example/404/index.html", now)
 	}
 }

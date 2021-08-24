@@ -43,7 +43,7 @@ func TestGetFileToServe(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.intention, func(t *testing.T) {
-			result, err := getFileToServe(tc.args.directory, tc.args.path)
+			result, _, err := getFileToServe(tc.args.directory, tc.args.path)
 
 			failed := false
 

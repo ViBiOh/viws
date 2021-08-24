@@ -12,7 +12,7 @@ import (
 )
 
 func (a App) serveNotFound(w http.ResponseWriter) {
-	notFoundPath, err := getFileToServe(a.directory, notFoundFilename)
+	notFoundPath, _, err := getFileToServe(a.directory, notFoundFilename)
 	if err != nil {
 		httperror.NotFound(w)
 		return

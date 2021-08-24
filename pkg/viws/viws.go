@@ -5,9 +5,10 @@ import (
 	"errors"
 	"flag"
 	"net/http"
-	"path"
+	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/ViBiOh/httputils/v4/pkg/flags"
 	"github.com/ViBiOh/httputils/v4/pkg/httperror"
@@ -91,8 +92,8 @@ func (a App) Handler() http.Handler {
 			httperror.BadRequest(w, errors.New("path with dots are not allowed"))
 		}
 
-		if filename, err := getFileToServe(a.directory, r.URL.Path); err == nil {
-			a.serveFile(w, r, filename)
+		if filename, modTime, err := getFileToServe(a.directory, r.URL.Path); err == nil {
+			a.serveFile(w, r, filename, modTime)
 			return
 		}
 
@@ -102,24 +103,39 @@ func (a App) Handler() http.Handler {
 		}
 
 		if a.spa {
-			w.Header().Add(cacheControlHeader, noCacheValue)
-			a.serveFile(w, r, path.Join(a.directory, indexFilename))
-			return
+			if filename, modTime, err := getFileToServe(a.directory, indexFilename); err == nil {
+				w.Header().Add(cacheControlHeader, noCacheValue)
+				a.serveFile(w, r, filename, modTime)
+				return
+			}
 		}
 
 		a.serveNotFound(w)
 	})
 }
 
-func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string) {
+func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string, modTime time.Time) {
 	a.addCustomHeaders(w)
 
-	if r.Method == http.MethodGet {
-		setCacheHeader(w, r)
-		http.ServeFile(w, r, filepath)
-	} else {
+	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusNoContent)
+		return
 	}
+
+	file, err := os.OpenFile(filepath, os.O_RDONLY, 0600)
+	if err != nil {
+		httperror.InternalServerError(w, err)
+		return
+	}
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			logger.Error("unable to close file: %s", err)
+		}
+	}()
+
+	setCacheHeader(w, r)
+	http.ServeContent(w, r, filepath, modTime, file)
 }
 
 func (a App) addCustomHeaders(w http.ResponseWriter) {
