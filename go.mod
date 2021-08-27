@@ -3,7 +3,7 @@ module github.com/ViBiOh/viws
 go 1.17
 
 require (
-	github.com/ViBiOh/httputils/v4 v4.21.2
+	github.com/ViBiOh/httputils/v4 v4.22.1
 	github.com/klauspost/compress v1.13.4
 )
 

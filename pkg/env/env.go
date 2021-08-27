@@ -58,6 +58,6 @@ func (a App) Handler() http.Handler {
 			return
 		}
 
-		httpjson.Write(w, http.StatusOK, env, httpjson.IsPretty(r))
+		httpjson.Write(w, http.StatusOK, env)
 	})
 }
