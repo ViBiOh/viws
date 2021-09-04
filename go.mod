@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/ViBiOh/httputils/v4 v4.22.4
-	github.com/klauspost/compress v1.13.4
+	github.com/klauspost/compress v1.13.5
 )
 
 require (
