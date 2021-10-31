@@ -22,13 +22,11 @@ const (
 	noCacheValue       = "no-cache"
 )
 
-var (
-	bufferPool = sync.Pool{
-		New: func() interface{} {
-			return bytes.NewBuffer(make([]byte, 1024))
-		},
-	}
-)
+var bufferPool = sync.Pool{
+	New: func() interface{} {
+		return bytes.NewBuffer(make([]byte, 1024))
+	},
+}
 
 // App of package
 type App struct {
@@ -122,7 +120,7 @@ func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string, 
 		return
 	}
 
-	file, err := os.OpenFile(filepath, os.O_RDONLY, 0600)
+	file, err := os.OpenFile(filepath, os.O_RDONLY, 0o600)
 	if err != nil {
 		httperror.InternalServerError(w, err)
 		return

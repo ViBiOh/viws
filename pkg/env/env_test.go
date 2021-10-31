@@ -14,7 +14,7 @@ import (
 )
 
 func TestFlags(t *testing.T) {
-	var cases = []struct {
+	cases := []struct {
 		intention string
 		want      string
 	}{
@@ -46,7 +46,7 @@ func TestNew(t *testing.T) {
 	emptyString := ""
 	envValue := "PATH,BASH,VERSION"
 
-	var cases = []struct {
+	cases := []struct {
 		intention string
 		input     Config
 		want      []string
@@ -84,7 +84,7 @@ func TestHandler(t *testing.T) {
 	user := os.Getenv("USER")
 	os.Setenv("ESCAPE", `it's a "test"`)
 
-	var cases = []struct {
+	cases := []struct {
 		intention  string
 		request    *http.Request
 		env        string

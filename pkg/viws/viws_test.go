@@ -12,12 +12,10 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/request"
 )
 
-var (
-	exempleDir = "../../example/"
-)
+var exempleDir = "../../example/"
 
 func TestFlags(t *testing.T) {
-	var cases = []struct {
+	cases := []struct {
 		intention string
 		want      string
 	}{
@@ -51,7 +49,7 @@ func TestNew(t *testing.T) {
 	emptyString := ""
 	exampleHeader := "= X-UA-Compatible:ie=edge~X-UA-Compatible:ie=edge~content-language:fr~invalidformat"
 
-	var cases = []struct {
+	cases := []struct {
 		intention string
 		input     Config
 		want      App
@@ -110,7 +108,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestHandler(t *testing.T) {
-	var cases = []struct {
+	cases := []struct {
 		intention  string
 		app        App
 		request    *http.Request

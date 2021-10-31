@@ -10,7 +10,7 @@ func TestGetFileToServe(t *testing.T) {
 		directory string
 		path      string
 	}
-	var cases = []struct {
+	cases := []struct {
 		intention string
 		args      args
 		want      string
