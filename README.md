@@ -157,6 +157,10 @@ Usage of viws:
         [server] Shutdown Timeout {VIWS_SHUTDOWN_TIMEOUT} (default "10s")
   -spa
         [viws] Indicate Single Page Application mode {VIWS_SPA}
+  -tracerRate string
+        [tracer] Jaeger sample rate, 'always', 'never' or a float value {VIWS_TRACER_RATE} (default "always")
+  -tracerURL string
+        [tracer] Jaeger endpoint URL (e.g. http://jaeger:14268/api/traces) {VIWS_TRACER_URL}
   -url string
         [alcotest] URL to check {VIWS_URL}
   -userAgent string

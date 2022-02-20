@@ -18,7 +18,9 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/owasp"
 	"github.com/ViBiOh/httputils/v4/pkg/prometheus"
 	"github.com/ViBiOh/httputils/v4/pkg/recoverer"
+	"github.com/ViBiOh/httputils/v4/pkg/request"
 	"github.com/ViBiOh/httputils/v4/pkg/server"
+	"github.com/ViBiOh/httputils/v4/pkg/tracer"
 	"github.com/ViBiOh/viws/pkg/env"
 	"github.com/ViBiOh/viws/pkg/viws"
 	"github.com/klauspost/compress/gzhttp"
@@ -33,6 +35,7 @@ func main() {
 
 	alcotestConfig := alcotest.Flags(fs, "")
 	loggerConfig := logger.Flags(fs, "logger")
+	tracerConfig := tracer.Flags(fs, "tracer")
 	prometheusConfig := prometheus.Flags(fs, "prometheus")
 	owaspConfig := owasp.Flags(fs, "")
 	corsConfig := cors.Flags(fs, "cors")
@@ -47,6 +50,11 @@ func main() {
 	alcotest.DoAndExit(alcotestConfig)
 	logger.Global(logger.New(loggerConfig))
 	defer logger.Close()
+
+	tracerApp, err := tracer.New(tracerConfig)
+	logger.Fatal(err)
+	defer tracerApp.Close()
+	request.AddTracerToDefaultClient(tracerApp.GetProvider())
 
 	go func() {
 		fmt.Println(http.ListenAndServe("localhost:9999", http.DefaultServeMux))
@@ -73,7 +81,7 @@ func main() {
 		}
 	})
 
-	middlewares := []model.Middleware{recoverer.Middleware, prometheusApp.Middleware}
+	middlewares := []model.Middleware{recoverer.Middleware, prometheusApp.Middleware, tracerApp.Middleware}
 	if *gzip {
 		middlewares = append(middlewares, func(next http.Handler) http.Handler {
 			return gzhttp.GzipHandler(next)
