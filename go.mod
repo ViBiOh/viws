@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/ViBiOh/flags v0.0.1
-	github.com/ViBiOh/httputils/v4 v4.37.1
+	github.com/ViBiOh/httputils/v4 v4.37.2
 	github.com/klauspost/compress v1.15.1
 )
 
@@ -27,6 +27,6 @@ require (
 	go.opentelemetry.io/otel/metric v0.27.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.4.1 // indirect
 	go.opentelemetry.io/otel/trace v1.4.1 // indirect
-	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
+	golang.org/x/sys v0.0.0-20220310020820-b874c991c1a5 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 )
