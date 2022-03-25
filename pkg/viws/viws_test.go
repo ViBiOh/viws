@@ -15,19 +15,17 @@ import (
 var exempleDir = "../../example/"
 
 func TestFlags(t *testing.T) {
-	cases := []struct {
-		intention string
-		want      string
+	cases := map[string]struct {
+		want string
 	}{
-		{
-			"simple",
+		"simple": {
 			"Usage of simple:\n  -directory string\n    \t[viws] Directory to serve {SIMPLE_DIRECTORY} (default \"/www/\")\n  -headers string\n    \t[viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {SIMPLE_HEADERS}\n  -spa\n    \t[viws] Indicate Single Page Application mode {SIMPLE_SPA}\n",
 		},
 	}
 
-	for _, testCase := range cases {
-		t.Run(testCase.intention, func(t *testing.T) {
-			fs := flag.NewFlagSet(testCase.intention, flag.ContinueOnError)
+	for intention, tc := range cases {
+		t.Run(intention, func(t *testing.T) {
+			fs := flag.NewFlagSet(intention, flag.ContinueOnError)
 			Flags(fs, "")
 
 			var writer strings.Builder
@@ -36,8 +34,8 @@ func TestFlags(t *testing.T) {
 
 			result := writer.String()
 
-			if result != testCase.want {
-				t.Errorf("Flags() = `%s`, want `%s`", result, testCase.want)
+			if result != tc.want {
+				t.Errorf("Flags() = `%s`, want `%s`", result, tc.want)
 			}
 		})
 	}
@@ -49,13 +47,11 @@ func TestNew(t *testing.T) {
 	emptyString := ""
 	exampleHeader := "= X-UA-Compatible:ie=edge~X-UA-Compatible:ie=edge~content-language:fr~invalidformat"
 
-	cases := []struct {
-		intention string
-		input     Config
-		want      App
+	cases := map[string]struct {
+		input Config
+		want  App
 	}{
-		{
-			"minimal config",
+		"minimal config": {
 			Config{
 				directory: &exempleDir,
 				headers:   &emptyString,
@@ -67,8 +63,7 @@ func TestNew(t *testing.T) {
 				headers:   http.Header{},
 			},
 		},
-		{
-			"spa config",
+		"spa config": {
 			Config{
 				directory: &exempleDir,
 				headers:   &emptyString,
@@ -80,8 +75,7 @@ func TestNew(t *testing.T) {
 				headers:   http.Header{},
 			},
 		},
-		{
-			"headers",
+		"headers": {
 			Config{
 				directory: &exempleDir,
 				headers:   &exampleHeader,
@@ -98,34 +92,31 @@ func TestNew(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range cases {
-		t.Run(testCase.intention, func(t *testing.T) {
-			if result := New(testCase.input); !reflect.DeepEqual(result, testCase.want) {
-				t.Errorf("New() = %+v, want %+v", result, testCase.want)
+	for intention, tc := range cases {
+		t.Run(intention, func(t *testing.T) {
+			if result := New(tc.input); !reflect.DeepEqual(result, tc.want) {
+				t.Errorf("New() = %+v, want %+v", result, tc.want)
 			}
 		})
 	}
 }
 
 func TestHandler(t *testing.T) {
-	cases := []struct {
-		intention  string
+	cases := map[string]struct {
 		app        App
 		request    *http.Request
 		want       string
 		wantStatus int
 		wantHeader http.Header
 	}{
-		{
-			"invalid method",
+		"invalid method": {
 			App{},
 			httptest.NewRequest(http.MethodOptions, "/", nil),
 			"",
 			http.StatusMethodNotAllowed,
 			nil,
 		},
-		{
-			"head index",
+		"head index": {
 			App{
 				directory: exempleDir,
 			},
@@ -134,8 +125,7 @@ func TestHandler(t *testing.T) {
 			http.StatusNoContent,
 			nil,
 		},
-		{
-			"path with dots",
+		"path with dots": {
 			App{
 				directory: exempleDir,
 			},
@@ -144,8 +134,7 @@ func TestHandler(t *testing.T) {
 			http.StatusBadRequest,
 			nil,
 		},
-		{
-			"get index",
+		"get index": {
 			App{
 				directory: exempleDir,
 			},
@@ -167,8 +156,7 @@ func TestHandler(t *testing.T) {
 				cacheControlHeader: {noCacheValue},
 			},
 		},
-		{
-			"get file with header",
+		"get file with header": {
 			App{
 				directory: exempleDir,
 				headers: http.Header{
@@ -184,8 +172,7 @@ func TestHandler(t *testing.T) {
 				cacheControlHeader: {"public, max-age=864000"},
 			},
 		},
-		{
-			"head not found",
+		"head not found": {
 			App{
 				directory: exempleDir,
 			},
@@ -196,8 +183,7 @@ func TestHandler(t *testing.T) {
 				cacheControlHeader: {""},
 			},
 		},
-		{
-			"get not found",
+		"get not found": {
 			App{
 				directory: exempleDir,
 			},
@@ -209,8 +195,7 @@ func TestHandler(t *testing.T) {
 				cacheControlHeader: {noCacheValue},
 			},
 		},
-		{
-			"get not found with file",
+		"get not found with file": {
 			App{
 				directory: "../../example/404/",
 			},
@@ -230,8 +215,7 @@ func TestHandler(t *testing.T) {
 				cacheControlHeader: {noCacheValue},
 			},
 		},
-		{
-			"get not found with spa",
+		"get not found with spa": {
 			App{
 				directory: exempleDir,
 				spa:       true,
@@ -256,22 +240,22 @@ func TestHandler(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range cases {
-		t.Run(testCase.intention, func(t *testing.T) {
+	for intention, tc := range cases {
+		t.Run(intention, func(t *testing.T) {
 			writer := httptest.NewRecorder()
 
-			testCase.app.Handler().ServeHTTP(writer, testCase.request)
+			tc.app.Handler().ServeHTTP(writer, tc.request)
 
-			if result := writer.Code; result != testCase.wantStatus {
-				t.Errorf("Status %d, want %d", result, testCase.wantStatus)
+			if result := writer.Code; result != tc.wantStatus {
+				t.Errorf("Status %d, want %d", result, tc.wantStatus)
 			}
 
-			if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
-				t.Errorf("Body `%s`, want `%s`", string(result), testCase.want)
+			if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != tc.want {
+				t.Errorf("Body `%s`, want `%s`", string(result), tc.want)
 			}
 
-			for key := range testCase.wantHeader {
-				want := testCase.wantHeader.Get(key)
+			for key := range tc.wantHeader {
+				want := tc.wantHeader.Get(key)
 				if result := writer.Header().Get(key); result != want {
 					t.Errorf("%s Header = `%s`, want `%s`", key, result, want)
 				}

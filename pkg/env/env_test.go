@@ -14,19 +14,17 @@ import (
 )
 
 func TestFlags(t *testing.T) {
-	cases := []struct {
-		intention string
-		want      string
+	cases := map[string]struct {
+		want string
 	}{
-		{
-			"simple",
+		"simple": {
 			"Usage of simple:\n  -env string\n    \t[env] Environments key variables to expose, comma separated {SIMPLE_ENV}\n",
 		},
 	}
 
-	for _, testCase := range cases {
-		t.Run(testCase.intention, func(t *testing.T) {
-			fs := flag.NewFlagSet(testCase.intention, flag.ContinueOnError)
+	for intention, tc := range cases {
+		t.Run(intention, func(t *testing.T) {
+			fs := flag.NewFlagSet(intention, flag.ContinueOnError)
 			Flags(fs, "")
 
 			var writer strings.Builder
@@ -35,8 +33,8 @@ func TestFlags(t *testing.T) {
 
 			result := writer.String()
 
-			if result != testCase.want {
-				t.Errorf("Flags() = `%s`, want `%s`", result, testCase.want)
+			if result != tc.want {
+				t.Errorf("Flags() = `%s`, want `%s`", result, tc.want)
 			}
 		})
 	}
@@ -46,20 +44,17 @@ func TestNew(t *testing.T) {
 	emptyString := ""
 	envValue := "PATH,BASH,VERSION"
 
-	cases := []struct {
-		intention string
-		input     Config
-		want      []string
+	cases := map[string]struct {
+		input Config
+		want  []string
 	}{
-		{
-			"should work with empty values",
+		"should work with empty values": {
 			Config{
 				env: &emptyString,
 			},
 			nil,
 		},
-		{
-			"should work with env value",
+		"should work with env value": {
 			Config{
 				env: &envValue,
 			},
@@ -71,10 +66,10 @@ func TestNew(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range cases {
-		t.Run(testCase.intention, func(t *testing.T) {
-			if result := New(testCase.input); !reflect.DeepEqual(result.keys, testCase.want) {
-				t.Errorf("New() = %+v, want %+v", result.keys, testCase.want)
+	for intention, tc := range cases {
+		t.Run(intention, func(t *testing.T) {
+			if result := New(tc.input); !reflect.DeepEqual(result.keys, tc.want) {
+				t.Errorf("New() = %+v, want %+v", result.keys, tc.want)
 			}
 		})
 	}
@@ -84,43 +79,37 @@ func TestHandler(t *testing.T) {
 	user := os.Getenv("USER")
 	os.Setenv("ESCAPE", `it's a "test"`)
 
-	cases := []struct {
-		intention  string
+	cases := map[string]struct {
 		request    *http.Request
 		env        string
 		want       string
 		wantStatus int
 	}{
-		{
-			"should respond to OPTIONS request",
+		"should respond to OPTIONS request": {
 			httptest.NewRequest(http.MethodOptions, "/", nil),
 			"",
 			"",
 			http.StatusOK,
 		},
-		{
-			"should reject non GET/OPTIONS request",
+		"should reject non GET/OPTIONS request": {
 			httptest.NewRequest(http.MethodPost, "/", nil),
 			"",
 			"",
 			http.StatusMethodNotAllowed,
 		},
-		{
-			"should return empty JSON if no key",
+		"should return empty JSON if no key": {
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			"",
 			"{}\n",
 			http.StatusOK,
 		},
-		{
-			"should return asked keys",
+		"should return asked keys": {
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			"USER,ESCAPE",
 			fmt.Sprintf("{\"ESCAPE\":\"it's a \\\"test\\\"\",\"USER\":\"%s\"}\n", user),
 			http.StatusOK,
 		},
-		{
-			"should return empty value for not found keys",
+		"should return empty value for not found keys": {
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			"USER,UNKNOWN_ENV_VAR",
 			fmt.Sprintf("{\"UNKNOWN_ENV_VAR\":\"\",\"USER\":\"%s\"}\n", user),
@@ -128,21 +117,21 @@ func TestHandler(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range cases {
-		t.Run(testCase.intention, func(t *testing.T) {
+	for intention, tc := range cases {
+		t.Run(intention, func(t *testing.T) {
 			writer := httptest.NewRecorder()
 
 			a := New(Config{
-				env: &testCase.env,
+				env: &tc.env,
 			})
-			a.Handler().ServeHTTP(writer, testCase.request)
+			a.Handler().ServeHTTP(writer, tc.request)
 
-			if result := writer.Code; result != testCase.wantStatus {
-				t.Errorf("Handler() = %d, want status %d", result, testCase.wantStatus)
+			if result := writer.Code; result != tc.wantStatus {
+				t.Errorf("Handler() = %d, want status %d", result, tc.wantStatus)
 			}
 
-			if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != testCase.want {
-				t.Errorf("Handler() = `%s`, want `%s`", string(result), testCase.want)
+			if result, _ := request.ReadBodyResponse(writer.Result()); string(result) != tc.want {
+				t.Errorf("Handler() = `%s`, want `%s`", string(result), tc.want)
 			}
 		})
 	}

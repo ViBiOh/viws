@@ -10,28 +10,24 @@ func TestGetFileToServe(t *testing.T) {
 		directory string
 		path      string
 	}
-	cases := []struct {
-		intention string
-		args      args
-		want      string
-		wantErr   error
+	cases := map[string]struct {
+		args    args
+		want    string
+		wantErr error
 	}{
-		{
-			"empty call",
+		"empty call": {
 			args{},
 			"",
 			errors.New("stat : no such file or directory"),
 		},
-		{
-			"local file",
+		"local file": {
 			args{
 				path: "file.go",
 			},
 			"file.go",
 			nil,
 		},
-		{
-			"concatenared dir path",
+		"concatenared dir path": {
 			args{
 				directory: "../..",
 				path:      "example",
@@ -41,8 +37,8 @@ func TestGetFileToServe(t *testing.T) {
 		},
 	}
 
-	for _, tc := range cases {
-		t.Run(tc.intention, func(t *testing.T) {
+	for intention, tc := range cases {
+		t.Run(intention, func(t *testing.T) {
 			result, _, err := getFileToServe(tc.args.directory, tc.args.path)
 
 			failed := false
