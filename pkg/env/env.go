@@ -23,7 +23,7 @@ type Config struct {
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config {
 	return Config{
-		env: flags.New(prefix, "env", "Env").Default("", overrides).Label("Environments key variables to expose, comma separated").ToString(fs),
+		env: flags.String(fs, prefix, "env", "Env", "Environments key variables to expose, comma separated", "", overrides),
 	}
 }
 
