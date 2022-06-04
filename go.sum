@@ -35,8 +35,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/ViBiOh/flags v1.0.0 h1:ECiQMH2tK04PaCkPRuziWAtxYGtx2Ej8O15ZZ2Jx4Ww=
 github.com/ViBiOh/flags v1.0.0/go.mod h1:W0YgB4Nqou2j/2vevgO3kyrcS2f+ci/+w+jDGzVZilk=
-github.com/ViBiOh/httputils/v4 v4.42.1 h1:AMmZg34uugnti74PdfZl6771uS7ogJEAYSGz1Qv/e9k=
-github.com/ViBiOh/httputils/v4 v4.42.1/go.mod h1:cocXQOmu1AwFP9MH9V51uE7k4gJpzTh/VqfsHx0e9u0=
+github.com/ViBiOh/httputils/v4 v4.42.2 h1:HJWjCFmhJUX/17AVErX9LspIedrfPw6TKdUvIrq1TiQ=
+github.com/ViBiOh/httputils/v4 v4.42.2/go.mod h1:JClFms9PvTnR/owI18t6uhgMsFuvzRTWk7kpPN7xmoc=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
