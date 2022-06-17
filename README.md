@@ -105,16 +105,16 @@ Usage of viws:
         [env] Environments key variables to expose, comma separated {VIWS_ENV}
   -frameOptions string
         [owasp] X-Frame-Options {VIWS_FRAME_OPTIONS} (default "deny")
-  -graceDuration string
-        [http] Grace duration when SIGTERM received {VIWS_GRACE_DURATION} (default "30s")
+  -graceDuration duration
+        [http] Grace duration when SIGTERM received {VIWS_GRACE_DURATION} (default 30s)
   -gzip
         [gzip] Enable gzip compression {VIWS_GZIP} (default true)
   -headers string
         [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {VIWS_HEADERS}
   -hsts
         [owasp] Indicate Strict Transport Security {VIWS_HSTS} (default true)
-  -idleTimeout string
-        [server] Idle Timeout {VIWS_IDLE_TIMEOUT} (default "2m")
+  -idleTimeout duration
+        [server] Idle Timeout {VIWS_IDLE_TIMEOUT} (default 2m0s)
   -key string
         [server] Key file {VIWS_KEY}
   -loggerJson
@@ -137,24 +137,24 @@ Usage of viws:
         [prometheus] Certificate file {VIWS_PROMETHEUS_CERT}
   -prometheusGzip
         [prometheus] Enable gzip compression of metrics output {VIWS_PROMETHEUS_GZIP} (default true)
-  -prometheusIdleTimeout string
-        [prometheus] Idle Timeout {VIWS_PROMETHEUS_IDLE_TIMEOUT} (default "10s")
+  -prometheusIdleTimeout duration
+        [prometheus] Idle Timeout {VIWS_PROMETHEUS_IDLE_TIMEOUT} (default 10s)
   -prometheusIgnore string
         [prometheus] Ignored path prefixes for metrics, comma separated {VIWS_PROMETHEUS_IGNORE}
   -prometheusKey string
         [prometheus] Key file {VIWS_PROMETHEUS_KEY}
   -prometheusPort uint
         [prometheus] Listen port (0 to disable) {VIWS_PROMETHEUS_PORT} (default 9090)
-  -prometheusReadTimeout string
-        [prometheus] Read Timeout {VIWS_PROMETHEUS_READ_TIMEOUT} (default "5s")
-  -prometheusShutdownTimeout string
-        [prometheus] Shutdown Timeout {VIWS_PROMETHEUS_SHUTDOWN_TIMEOUT} (default "5s")
-  -prometheusWriteTimeout string
-        [prometheus] Write Timeout {VIWS_PROMETHEUS_WRITE_TIMEOUT} (default "10s")
-  -readTimeout string
-        [server] Read Timeout {VIWS_READ_TIMEOUT} (default "5s")
-  -shutdownTimeout string
-        [server] Shutdown Timeout {VIWS_SHUTDOWN_TIMEOUT} (default "10s")
+  -prometheusReadTimeout duration
+        [prometheus] Read Timeout {VIWS_PROMETHEUS_READ_TIMEOUT} (default 5s)
+  -prometheusShutdownTimeout duration
+        [prometheus] Shutdown Timeout {VIWS_PROMETHEUS_SHUTDOWN_TIMEOUT} (default 5s)
+  -prometheusWriteTimeout duration
+        [prometheus] Write Timeout {VIWS_PROMETHEUS_WRITE_TIMEOUT} (default 10s)
+  -readTimeout duration
+        [server] Read Timeout {VIWS_READ_TIMEOUT} (default 5s)
+  -shutdownTimeout duration
+        [server] Shutdown Timeout {VIWS_SHUTDOWN_TIMEOUT} (default 10s)
   -spa
         [viws] Indicate Single Page Application mode {VIWS_SPA}
   -tracerRate string
@@ -165,8 +165,8 @@ Usage of viws:
         [alcotest] URL to check {VIWS_URL}
   -userAgent string
         [alcotest] User-Agent for check {VIWS_USER_AGENT} (default "Alcotest")
-  -writeTimeout string
-        [server] Write Timeout {VIWS_WRITE_TIMEOUT} (default "10s")
+  -writeTimeout duration
+        [server] Write Timeout {VIWS_WRITE_TIMEOUT} (default 10s)
 ```
 
 ## Docker
