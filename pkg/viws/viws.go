@@ -128,7 +128,7 @@ func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string, 
 
 	defer func() {
 		if err := file.Close(); err != nil {
-			logger.Error("unable to close file: %s", err)
+			logger.Error("close file: %s", err)
 		}
 	}()
 
