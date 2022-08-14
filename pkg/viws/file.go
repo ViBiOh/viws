@@ -7,16 +7,16 @@ import (
 )
 
 func getFileToServe(parts ...string) (string, time.Time, error) {
-	filepath := filepath.Join(parts...)
+	filename := filepath.Join(parts...)
 
-	info, err := os.Stat(filepath)
+	info, err := os.Stat(filename)
 	if err != nil {
 		return "", time.Time{}, err
 	}
 
 	if !info.IsDir() {
-		return filepath, info.ModTime(), nil
+		return filename, info.ModTime(), nil
 	}
 
-	return getFileToServe(filepath, indexFilename)
+	return getFileToServe(filename, indexFilename)
 }
