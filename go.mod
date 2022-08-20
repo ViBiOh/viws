@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/ViBiOh/flags v1.2.0
-	github.com/ViBiOh/httputils/v4 v4.46.1
+	github.com/ViBiOh/httputils/v4 v4.46.2
 	github.com/klauspost/compress v1.15.9
 )
 
