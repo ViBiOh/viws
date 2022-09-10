@@ -3,19 +3,18 @@ package viws
 import (
 	"os"
 	"path/filepath"
-	"time"
 )
 
-func getFileToServe(parts ...string) (string, time.Time, error) {
+func getFileToServe(parts ...string) (string, os.FileInfo, error) {
 	filename := filepath.Join(parts...)
 
 	info, err := os.Stat(filename)
 	if err != nil {
-		return "", time.Time{}, err
+		return "", nil, err
 	}
 
 	if !info.IsDir() {
-		return filename, info.ModTime(), nil
+		return filename, info, nil
 	}
 
 	return getFileToServe(filename, indexFilename)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -13,6 +14,7 @@ import (
 	"github.com/ViBiOh/flags"
 	"github.com/ViBiOh/httputils/v4/pkg/httperror"
 	"github.com/ViBiOh/httputils/v4/pkg/logger"
+	"github.com/ViBiOh/httputils/v4/pkg/sha"
 )
 
 const (
@@ -90,8 +92,8 @@ func (a App) Handler() http.Handler {
 			httperror.BadRequest(w, errors.New("path with dots are not allowed"))
 		}
 
-		if filename, modTime, err := getFileToServe(a.directory, r.URL.Path); err == nil {
-			a.serveFile(w, r, filename, modTime)
+		if filename, info, err := getFileToServe(a.directory, r.URL.Path); err == nil {
+			a.serveFile(w, r, filename, sha.New(info), info.ModTime())
 			return
 		}
 
@@ -101,9 +103,9 @@ func (a App) Handler() http.Handler {
 		}
 
 		if a.spa {
-			if filename, modTime, err := getFileToServe(a.directory, indexFilename); err == nil {
+			if filename, info, err := getFileToServe(a.directory, indexFilename); err == nil {
 				w.Header().Add(cacheControlHeader, noCacheValue)
-				a.serveFile(w, r, filename, modTime)
+				a.serveFile(w, r, filename, sha.New(info), info.ModTime())
 				return
 			}
 		}
@@ -112,11 +114,16 @@ func (a App) Handler() http.Handler {
 	})
 }
 
-func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string, modTime time.Time) {
+func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath, hash string, modTime time.Time) {
 	a.addCustomHeaders(w)
 
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	etag, ok := etagMatch(w, r, hash)
+	if ok {
 		return
 	}
 
@@ -133,6 +140,7 @@ func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath string, 
 	}()
 
 	setCacheHeader(w, r)
+	w.Header().Add("Etag", etag)
 	http.ServeContent(w, r, filepath, modTime, file)
 }
 
@@ -150,4 +158,15 @@ func setCacheHeader(w http.ResponseWriter, r *http.Request) {
 			w.Header().Add(cacheControlHeader, "public, max-age=864000")
 		}
 	}
+}
+
+func etagMatch(w http.ResponseWriter, r *http.Request, hash string) (etag string, match bool) {
+	etag = fmt.Sprintf(`W/"%s"`, hash)
+
+	if r.Header.Get("If-None-Match") == etag {
+		w.WriteHeader(http.StatusNotModified)
+		match = true
+	}
+
+	return
 }

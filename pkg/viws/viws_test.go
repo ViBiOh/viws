@@ -4,12 +4,13 @@ import (
 	"flag"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/ViBiOh/httputils/v4/pkg/request"
+	"github.com/ViBiOh/httputils/v4/pkg/sha"
 )
 
 var exempleDir = "../../example/"
@@ -297,9 +298,10 @@ func BenchmarkServeFile(b *testing.B) {
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	recorder := newDiscardResponseWriter()
-	now := time.Now()
+	info, _ := os.Stat("../../example/404/index.html")
+	hash := sha.New(info)
 
 	for i := 0; i < b.N; i++ {
-		instance.serveFile(recorder, req, "../../example/404/index.html", now)
+		instance.serveFile(recorder, req, "../../example/404/index.html", hash, info.ModTime())
 	}
 }
