@@ -45,6 +45,7 @@ jobs:
         if: ${{ env.gpg_private_key != '' }}
         uses: crazy-max/ghaction-import-gpg@v4
         with:
+          gpg_private_key: ${{ env.gpg_private_key }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
       - name: Assets
         env:
