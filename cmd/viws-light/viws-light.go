@@ -57,7 +57,7 @@ func main() {
 		}
 	})
 
-	go appServer.Start("http", healthApp.End(), httputils.Handler(appHandler, healthApp, recoverer.Middleware))
+	go appServer.Start(healthApp.ContextEnd(), "http", httputils.Handler(appHandler, healthApp, recoverer.Middleware))
 	healthApp.WaitForTermination(appServer.Done())
 	server.GracefulWait(appServer.Done())
 }
