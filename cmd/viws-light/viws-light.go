@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"net/http"
 	"os"
@@ -38,6 +39,8 @@ func main() {
 	logger.Global(logger.New(loggerConfig))
 	defer logger.Close()
 
+	ctx := context.Background()
+
 	appServer := server.New(appServerConfig)
 	healthApp := health.New(healthConfig)
 
@@ -57,7 +60,9 @@ func main() {
 		}
 	})
 
-	go appServer.Start(healthApp.ContextEnd(), "http", httputils.Handler(appHandler, healthApp, recoverer.Middleware))
+	endCtx := healthApp.End(ctx)
+
+	go appServer.Start(endCtx, "http", httputils.Handler(appHandler, healthApp, recoverer.Middleware))
 	healthApp.WaitForTermination(appServer.Done())
 	server.GracefulWait(appServer.Done())
 }

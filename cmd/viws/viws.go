@@ -92,8 +92,10 @@ func main() {
 		})
 	}
 
-	go promServer.Start(healthApp.ContextEnd(), "prometheus", prometheusApp.Handler())
-	go appServer.Start(healthApp.ContextEnd(), "http", httputils.Handler(appHandler, healthApp, middlewares...))
+	endCtx := healthApp.End(ctx)
+
+	go promServer.Start(endCtx, "prometheus", prometheusApp.Handler())
+	go appServer.Start(endCtx, "http", httputils.Handler(appHandler, healthApp, middlewares...))
 
 	healthApp.WaitForTermination(appServer.Done())
 	server.GracefulWait(appServer.Done(), promServer.Done())
