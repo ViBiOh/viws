@@ -90,6 +90,7 @@ func (a App) Handler() http.Handler {
 
 		if strings.Contains(r.URL.Path, "..") {
 			httperror.BadRequest(w, errors.New("path with dots are not allowed"))
+			return
 		}
 
 		if filename, info, err := getFileToServe(a.directory, r.URL.Path); err == nil {
