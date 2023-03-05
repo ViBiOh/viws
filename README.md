@@ -158,9 +158,9 @@ Usage of viws:
   -spa
         [viws] Indicate Single Page Application mode {VIWS_SPA}
   -tracerRate string
-        [tracer] Jaeger sample rate, 'always', 'never' or a float value {VIWS_TRACER_RATE} (default "always")
+        [tracer] OpenTracing sample rate, 'always', 'never' or a float value {VIWS_TRACER_RATE} (default "always")
   -tracerURL string
-        [tracer] Jaeger endpoint URL (e.g. http://jaeger:14268/api/traces) {VIWS_TRACER_URL}
+        [tracer] OpenTracing gRPC endpoint (e.g. otel-exporter:4317) {VIWS_TRACER_URL}
   -url string
         [alcotest] URL to check {VIWS_URL}
   -userAgent string
