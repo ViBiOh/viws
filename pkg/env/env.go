@@ -4,7 +4,6 @@ import (
 	"flag"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/ViBiOh/flags"
 	"github.com/ViBiOh/httputils/v4/pkg/httpjson"
@@ -17,26 +16,20 @@ type App struct {
 
 // Config of package
 type Config struct {
-	env *string
+	env *[]string
 }
 
 // Flags adds flags for configuring package
 func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config {
 	return Config{
-		env: flags.String(fs, prefix, "env", "Env", "Environments key variables to expose, comma separated", "", overrides),
+		env: flags.StringSlice(fs, prefix, "env", "Env", "Environments key variable to expose", nil, overrides),
 	}
 }
 
 // New creates new App from Config
 func New(config Config) App {
-	var keys []string
-
-	if *config.env != "" {
-		keys = strings.Split(*config.env, ",")
-	}
-
 	return App{
-		keys: keys,
+		keys: *config.env,
 	}
 }
 

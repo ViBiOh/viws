@@ -18,7 +18,7 @@ func TestFlags(t *testing.T) {
 		want string
 	}{
 		"simple": {
-			"Usage of simple:\n  -env string\n    \t[env] Environments key variables to expose, comma separated {SIMPLE_ENV}\n",
+			"Usage of simple:\n  -env value\n    \t[env] Environments key variable to expose {SIMPLE_ENV}\n",
 		},
 	}
 
@@ -41,8 +41,8 @@ func TestFlags(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	emptyString := ""
-	envValue := "PATH,BASH,VERSION"
+	var emptySlice []string
+	envValue := []string{"PATH", "BASH", "VERSION"}
 
 	cases := map[string]struct {
 		input Config
@@ -50,7 +50,7 @@ func TestNew(t *testing.T) {
 	}{
 		"should work with empty values": {
 			Config{
-				env: &emptyString,
+				env: &emptySlice,
 			},
 			nil,
 		},
@@ -81,37 +81,37 @@ func TestHandler(t *testing.T) {
 
 	cases := map[string]struct {
 		request    *http.Request
-		env        string
+		env        []string
 		want       string
 		wantStatus int
 	}{
 		"should respond to OPTIONS request": {
 			httptest.NewRequest(http.MethodOptions, "/", nil),
-			"",
+			nil,
 			"",
 			http.StatusOK,
 		},
 		"should reject non GET/OPTIONS request": {
 			httptest.NewRequest(http.MethodPost, "/", nil),
-			"",
+			nil,
 			"",
 			http.StatusMethodNotAllowed,
 		},
 		"should return empty JSON if no key": {
 			httptest.NewRequest(http.MethodGet, "/", nil),
-			"",
+			nil,
 			"{}\n",
 			http.StatusOK,
 		},
 		"should return asked keys": {
 			httptest.NewRequest(http.MethodGet, "/", nil),
-			"USER,ESCAPE",
+			[]string{"USER", "ESCAPE"},
 			fmt.Sprintf("{\"ESCAPE\":\"it's a \\\"test\\\"\",\"USER\":\"%s\"}\n", user),
 			http.StatusOK,
 		},
 		"should return empty value for not found keys": {
 			httptest.NewRequest(http.MethodGet, "/", nil),
-			"USER,UNKNOWN_ENV_VAR",
+			[]string{"USER", "UNKNOWN_ENV_VAR"},
 			fmt.Sprintf("{\"UNKNOWN_ENV_VAR\":\"\",\"USER\":\"%s\"}\n", user),
 			http.StatusOK,
 		},

@@ -101,16 +101,16 @@ Usage of viws:
         [owasp] Content-Security-Policy {VIWS_CSP} (default "default-src 'self'; base-uri 'self'")
   -directory string
         [viws] Directory to serve {VIWS_DIRECTORY} (default "/www/")
-  -env string
-        [env] Environments key variables to expose, comma separated {VIWS_ENV}
+  -env value
+        [env] Environments key variable to expose {VIWS_ENV}
   -frameOptions string
         [owasp] X-Frame-Options {VIWS_FRAME_OPTIONS} (default "deny")
   -graceDuration duration
         [http] Grace duration when SIGTERM received {VIWS_GRACE_DURATION} (default 30s)
   -gzip
         [gzip] Enable gzip compression {VIWS_GZIP} (default true)
-  -headers string
-        [viws] Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test) {VIWS_HEADERS}
+  -header value
+        [viws] Custom header e.g. content-language:fr {VIWS_HEADER}
   -hsts
         [owasp] Indicate Strict Transport Security {VIWS_HSTS} (default true)
   -idleTimeout duration

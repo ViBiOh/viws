@@ -40,7 +40,7 @@ type App struct {
 // Config of package
 type Config struct {
 	directory *string
-	headers   *string
+	headers   *[]string
 	spa       *bool
 }
 
@@ -48,7 +48,7 @@ type Config struct {
 func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config {
 	return Config{
 		directory: flags.String(fs, prefix, "viws", "Directory", "Directory to serve", "/www/", overrides),
-		headers:   flags.String(fs, prefix, "viws", "Headers", "Custom headers, tilde separated (e.g. content-language:fr~X-UA-Compatible:test)", "", overrides),
+		headers:   flags.StringSlice(fs, prefix, "viws", "Header", "Custom header e.g. content-language:fr", nil, overrides),
 		spa:       flags.Bool(fs, prefix, "viws", "Spa", "Indicate Single Page Application mode", false, overrides),
 	}
 }
@@ -68,7 +68,7 @@ func New(config Config) App {
 	}
 
 	if len(*config.headers) != 0 {
-		for _, header := range strings.Split(*config.headers, "~") {
+		for _, header := range *config.headers {
 			if parts := strings.SplitN(header, ":", 2); len(parts) != 2 || strings.Contains(parts[0], " ") {
 				logger.WithField("dir", a.directory).WithField("header", header).Warn("header has wrong format")
 			} else {
