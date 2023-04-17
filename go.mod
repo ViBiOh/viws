@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/ViBiOh/flags v1.3.0
 	github.com/ViBiOh/httputils/v4 v4.56.2
-	github.com/klauspost/compress v1.16.4
+	github.com/klauspost/compress v1.16.5
 )
 
 require (
