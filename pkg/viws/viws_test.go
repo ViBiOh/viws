@@ -20,7 +20,7 @@ func TestFlags(t *testing.T) {
 		want string
 	}{
 		"simple": {
-			"Usage of simple:\n  -directory string\n    \t[viws] Directory to serve {SIMPLE_DIRECTORY} (default \"/www/\")\n  -header value\n    \t[viws] Custom header e.g. content-language:fr {SIMPLE_HEADER}\n  -spa\n    \t[viws] Indicate Single Page Application mode {SIMPLE_SPA}\n",
+			"Usage of simple:\n  -directory string\n    \t[viws] Directory to serve ${SIMPLE_DIRECTORY} (default \"/www/\")\n  -header string slice\n    \t[viws] Custom header e.g. content-language:fr ${SIMPLE_HEADER}, as a string slice, environment variable separated by \",\"\n  -spa\n    \t[viws] Indicate Single Page Application mode ${SIMPLE_SPA}\n",
 		},
 	}
 

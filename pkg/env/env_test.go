@@ -18,7 +18,7 @@ func TestFlags(t *testing.T) {
 		want string
 	}{
 		"simple": {
-			"Usage of simple:\n  -env value\n    \t[env] Environments key variable to expose {SIMPLE_ENV}\n",
+			"Usage of simple:\n  -env string slice\n    \t[env] Environments key variable to expose ${SIMPLE_ENV}, as a string slice, environment variable separated by \",\"\n",
 		},
 	}
 

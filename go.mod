@@ -3,8 +3,8 @@ module github.com/ViBiOh/viws
 go 1.20
 
 require (
-	github.com/ViBiOh/flags v1.3.0
-	github.com/ViBiOh/httputils/v4 v4.57.0
+	github.com/ViBiOh/flags v1.3.1
+	github.com/ViBiOh/httputils/v4 v4.57.1
 	github.com/klauspost/compress v1.16.5
 )
 
