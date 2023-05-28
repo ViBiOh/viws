@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ViBiOh/flags"
 	"github.com/ViBiOh/httputils/v4/pkg/alcotest"
 	"github.com/ViBiOh/httputils/v4/pkg/cors"
 	"github.com/ViBiOh/httputils/v4/pkg/health"
@@ -21,6 +22,7 @@ import (
 
 func main() {
 	fs := flag.NewFlagSet("viws", flag.ExitOnError)
+	fs.Usage = flags.Usage(fs)
 
 	appServerConfig := server.Flags(fs, "")
 	healthConfig := health.Flags(fs, "")
