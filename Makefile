@@ -63,8 +63,8 @@ format:
 ## style: Check lint, code styling rules. e.g. pylint, phpcs, eslint, style (java) etc ...
 .PHONY: style
 style:
-	fieldalignment -test=false $(PACKAGES)
-	golangci-lint run
+	fieldalignment -fix -test=false $(PACKAGES)
+	golangci-lint run --fix
 
 ## test: Shortcut to launch all the test tasks (unit, functional and integration).
 .PHONY: test
