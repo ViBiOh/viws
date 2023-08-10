@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/ViBiOh/flags"
+	"github.com/ViBiOh/httputils/v4/pkg/hash"
 	"github.com/ViBiOh/httputils/v4/pkg/httperror"
 	"github.com/ViBiOh/httputils/v4/pkg/logger"
-	"github.com/ViBiOh/httputils/v4/pkg/sha"
 )
 
 const (
@@ -94,7 +94,7 @@ func (a App) Handler() http.Handler {
 		}
 
 		if filename, info, err := getFileToServe(a.directory, r.URL.Path); err == nil {
-			a.serveFile(w, r, filename, sha.New(info), info.ModTime())
+			a.serveFile(w, r, filename, hash.Hash(info), info.ModTime())
 			return
 		}
 
@@ -106,7 +106,7 @@ func (a App) Handler() http.Handler {
 		if a.spa {
 			if filename, info, err := getFileToServe(a.directory, indexFilename); err == nil {
 				w.Header().Add(cacheControlHeader, noCacheValue)
-				a.serveFile(w, r, filename, sha.New(info), info.ModTime())
+				a.serveFile(w, r, filename, hash.Hash(info), info.ModTime())
 				return
 			}
 		}
