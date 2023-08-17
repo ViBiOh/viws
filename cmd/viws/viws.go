@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
@@ -23,7 +24,7 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/recoverer"
 	"github.com/ViBiOh/httputils/v4/pkg/request"
 	"github.com/ViBiOh/httputils/v4/pkg/server"
-	"github.com/ViBiOh/httputils/v4/pkg/tracer"
+	"github.com/ViBiOh/httputils/v4/pkg/telemetry"
 	"github.com/ViBiOh/viws/pkg/env"
 	"github.com/ViBiOh/viws/pkg/viws"
 	"github.com/klauspost/compress/gzhttp"
@@ -39,7 +40,7 @@ func main() {
 
 	alcotestConfig := alcotest.Flags(fs, "")
 	loggerConfig := logger.Flags(fs, "logger")
-	tracerConfig := tracer.Flags(fs, "tracer")
+	tracerConfig := telemetry.Flags(fs, "tracer")
 	prometheusConfig := prometheus.Flags(fs, "prometheus")
 	owaspConfig := owasp.Flags(fs, "")
 	corsConfig := cors.Flags(fs, "cors")
@@ -54,15 +55,19 @@ func main() {
 	}
 
 	alcotest.DoAndExit(alcotestConfig)
-	logger.Global(logger.New(loggerConfig))
-	defer logger.Close()
+
+	logger.Init(loggerConfig)
 
 	ctx := context.Background()
 
-	tracerApp, err := tracer.New(ctx, tracerConfig)
-	logger.Fatal(err)
-	defer tracerApp.Close(ctx)
-	request.AddTracerToDefaultClient(tracerApp.GetProvider())
+	telemetryApp, err := telemetry.New(ctx, tracerConfig)
+	if err != nil {
+		slog.Error("create telemetry", "err", err)
+		os.Exit(1)
+	}
+
+	defer telemetryApp.Close(ctx)
+	request.AddTracerToDefaultClient(telemetryApp.GetMeterProvider(), telemetryApp.GetTraceProvider())
 
 	go func() {
 		fmt.Println(http.ListenAndServe("localhost:9999", http.DefaultServeMux))
@@ -89,7 +94,7 @@ func main() {
 		}
 	})
 
-	middlewares := []model.Middleware{recoverer.Middleware, prometheusApp.Middleware, tracerApp.Middleware}
+	middlewares := []model.Middleware{recoverer.Middleware, prometheusApp.Middleware, telemetryApp.Middleware("http")}
 	if *gzip {
 		middlewares = append(middlewares, func(next http.Handler) http.Handler {
 			return gzhttp.GzipHandler(next)
