@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -14,7 +15,6 @@ import (
 	"github.com/ViBiOh/flags"
 	"github.com/ViBiOh/httputils/v4/pkg/hash"
 	"github.com/ViBiOh/httputils/v4/pkg/httperror"
-	"github.com/ViBiOh/httputils/v4/pkg/logger"
 )
 
 const (
@@ -61,16 +61,18 @@ func New(config Config) App {
 		headers:   http.Header{},
 	}
 
-	logger.WithField("dir", a.directory).Info("Serving file")
+	logger := slog.With("dir", a.directory)
+
+	logger.Info("Serving file")
 
 	if a.spa {
-		logger.WithField("dir", a.directory).Info("Single Page Application mode enabled")
+		logger.Info("Single Page Application mode enabled")
 	}
 
 	if len(*config.headers) != 0 {
 		for _, header := range *config.headers {
 			if parts := strings.SplitN(header, ":", 2); len(parts) != 2 || strings.Contains(parts[0], " ") {
-				logger.WithField("dir", a.directory).WithField("header", header).Warn("header has wrong format")
+				logger.Warn("header has wrong format", "header", header)
 			} else {
 				a.headers.Add(parts[0], parts[1])
 			}
@@ -136,7 +138,7 @@ func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath, hash st
 
 	defer func() {
 		if err := file.Close(); err != nil {
-			logger.Error("close file: %s", err)
+			slog.Error("close file", "err", err)
 		}
 	}()
 

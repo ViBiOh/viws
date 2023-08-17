@@ -3,12 +3,12 @@ package viws
 import (
 	"bytes"
 	"io"
+	"log/slog"
 	"mime"
 	"net/http"
 	"os"
 
 	"github.com/ViBiOh/httputils/v4/pkg/httperror"
-	"github.com/ViBiOh/httputils/v4/pkg/logger"
 )
 
 func (a App) serveNotFound(w http.ResponseWriter) {
@@ -30,7 +30,7 @@ func (a App) serve(w http.ResponseWriter, status int, filename string) {
 
 	defer func() {
 		if err := file.Close(); err != nil {
-			logger.WithField("dir", a.directory).Error("close file: %s", err)
+			slog.Error("close file", "err", err, "dir", a.directory)
 		}
 	}()
 
@@ -47,6 +47,6 @@ func (a App) serve(w http.ResponseWriter, status int, filename string) {
 	defer bufferPool.Put(buffer)
 
 	if _, err = io.CopyBuffer(w, file, buffer.Bytes()); err != nil {
-		logger.WithField("dir", a.directory).Error("copy content to writer: %s", err)
+		slog.Error("copy content to writer", "err", err, "dir", a.directory)
 	}
 }

@@ -40,9 +40,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	if err := fs.Parse(os.Args[1:]); err != nil {
+		log.Fatal(err)
+	}
+
 	alcotest.DoAndExit(alcotestConfig)
-	logger.Global(logger.New(loggerConfig))
-	defer logger.Close()
+
+	logger.Init(loggerConfig)
 
 	ctx := context.Background()
 
