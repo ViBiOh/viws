@@ -8,7 +8,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 
 	_ "net/http/pprof"
 
@@ -20,7 +19,6 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/logger"
 	"github.com/ViBiOh/httputils/v4/pkg/model"
 	"github.com/ViBiOh/httputils/v4/pkg/owasp"
-	"github.com/ViBiOh/httputils/v4/pkg/prometheus"
 	"github.com/ViBiOh/httputils/v4/pkg/recoverer"
 	"github.com/ViBiOh/httputils/v4/pkg/request"
 	"github.com/ViBiOh/httputils/v4/pkg/server"
@@ -35,13 +33,11 @@ func main() {
 	fs.Usage = flags.Usage(fs)
 
 	appServerConfig := server.Flags(fs, "")
-	promServerConfig := server.Flags(fs, "prometheus", flags.NewOverride("Port", uint(9090)), flags.NewOverride("IdleTimeout", 10*time.Second), flags.NewOverride("ShutdownTimeout", 5*time.Second))
 	healthConfig := health.Flags(fs, "")
 
 	alcotestConfig := alcotest.Flags(fs, "")
 	loggerConfig := logger.Flags(fs, "logger")
 	tracerConfig := telemetry.Flags(fs, "tracer")
-	prometheusConfig := prometheus.Flags(fs, "prometheus")
 	owaspConfig := owasp.Flags(fs, "")
 	corsConfig := cors.Flags(fs, "cors")
 
@@ -74,8 +70,6 @@ func main() {
 	}()
 
 	appServer := server.New(appServerConfig)
-	promServer := server.New(promServerConfig)
-	prometheusApp := prometheus.New(prometheusConfig)
 	healthApp := health.New(healthConfig)
 
 	owaspApp := owasp.New(owaspConfig)
@@ -94,7 +88,7 @@ func main() {
 		}
 	})
 
-	middlewares := []model.Middleware{recoverer.Middleware, prometheusApp.Middleware, telemetryApp.Middleware("http")}
+	middlewares := []model.Middleware{recoverer.Middleware, telemetryApp.Middleware("http")}
 	if *gzip {
 		middlewares = append(middlewares, func(next http.Handler) http.Handler {
 			return gzhttp.GzipHandler(next)
@@ -103,9 +97,8 @@ func main() {
 
 	endCtx := healthApp.End(ctx)
 
-	go promServer.Start(endCtx, "prometheus", prometheusApp.Handler())
 	go appServer.Start(endCtx, "http", httputils.Handler(appHandler, healthApp, middlewares...))
 
 	healthApp.WaitForTermination(appServer.Done())
-	server.GracefulWait(appServer.Done(), promServer.Done())
+	server.GracefulWait(appServer.Done())
 }

@@ -15,7 +15,7 @@ go install github.com/ViBiOh/viws/cmd/viws@latest
 
 ### Light version
 
-Light version (without GZIP and Prometheus) is also available, for a smaller binary.
+Light version (without GZIP and Open Telemetry) is also available, for a smaller binary.
 
 ```bash
 go install github.com/ViBiOh/viws/cmd/viws-light@latest
@@ -25,7 +25,7 @@ go install github.com/ViBiOh/viws/cmd/viws-light@latest
 
 - Full TLS support
 - GZIP Compression
-- Prometheus monitoring on dedicated port
+- Open Telemetry observability
 - Read-only container
 - Serve static content, with Single Page App handling
 - Serve environment variables for easier-config
@@ -45,7 +45,6 @@ curl myWebsite.com/users/vibioh/
 - `GET /health`: healthcheck of server, always respond [`okStatus (default 204)`](#usage)
 - `GET /ready`: checks external dependencies availability and then respond [`okStatus (default 204)`](#usage) or `503` during [`graceDuration`](#usage) when `SIGTERM` is received
 - `GET /version`: value of `VERSION` environment variable
-- `GET /metrics`: Prometheus metrics, on a dedicated port [`prometheusPort (default 9090)`](#usage)
 - `GET /env`: values of [specified environments variables](#environment-variables)
 
 ## Environment variables
@@ -83,90 +82,38 @@ Be careful when using the CLI values, if someone list the processes on the syste
 
 ```bash
 Usage of viws:
-  -address string
-        [server] Listen address {VIWS_ADDRESS}
-  -cert string
-        [server] Certificate file {VIWS_CERT}
-  -corsCredentials
-        [cors] Access-Control-Allow-Credentials {VIWS_CORS_CREDENTIALS}
-  -corsExpose string
-        [cors] Access-Control-Expose-Headers {VIWS_CORS_EXPOSE}
-  -corsHeaders string
-        [cors] Access-Control-Allow-Headers {VIWS_CORS_HEADERS} (default "Content-Type")
-  -corsMethods string
-        [cors] Access-Control-Allow-Methods {VIWS_CORS_METHODS} (default "GET")
-  -corsOrigin string
-        [cors] Access-Control-Allow-Origin {VIWS_CORS_ORIGIN} (default "*")
-  -csp string
-        [owasp] Content-Security-Policy {VIWS_CSP} (default "default-src 'self'; base-uri 'self'")
-  -directory string
-        [viws] Directory to serve {VIWS_DIRECTORY} (default "/www/")
-  -env value
-        [env] Environments key variable to expose {VIWS_ENV}
-  -frameOptions string
-        [owasp] X-Frame-Options {VIWS_FRAME_OPTIONS} (default "deny")
-  -graceDuration duration
-        [http] Grace duration when SIGTERM received {VIWS_GRACE_DURATION} (default 30s)
-  -gzip
-        [gzip] Enable gzip compression {VIWS_GZIP} (default true)
-  -header value
-        [viws] Custom header e.g. content-language:fr {VIWS_HEADER}
-  -hsts
-        [owasp] Indicate Strict Transport Security {VIWS_HSTS} (default true)
-  -idleTimeout duration
-        [server] Idle Timeout {VIWS_IDLE_TIMEOUT} (default 2m0s)
-  -key string
-        [server] Key file {VIWS_KEY}
-  -loggerJson
-        [logger] Log format as JSON {VIWS_LOGGER_JSON}
-  -loggerLevel string
-        [logger] Logger level {VIWS_LOGGER_LEVEL} (default "INFO")
-  -loggerLevelKey string
-        [logger] Key for level in JSON {VIWS_LOGGER_LEVEL_KEY} (default "level")
-  -loggerMessageKey string
-        [logger] Key for message in JSON {VIWS_LOGGER_MESSAGE_KEY} (default "message")
-  -loggerTimeKey string
-        [logger] Key for timestamp in JSON {VIWS_LOGGER_TIME_KEY} (default "time")
-  -okStatus int
-        [http] Healthy HTTP Status code {VIWS_OK_STATUS} (default 204)
-  -port uint
-        [server] Listen port (0 to disable) {VIWS_PORT} (default 1080)
-  -prometheusAddress string
-        [prometheus] Listen address {VIWS_PROMETHEUS_ADDRESS}
-  -prometheusCert string
-        [prometheus] Certificate file {VIWS_PROMETHEUS_CERT}
-  -prometheusGzip
-        [prometheus] Enable gzip compression of metrics output {VIWS_PROMETHEUS_GZIP} (default true)
-  -prometheusIdleTimeout duration
-        [prometheus] Idle Timeout {VIWS_PROMETHEUS_IDLE_TIMEOUT} (default 10s)
-  -prometheusIgnore string
-        [prometheus] Ignored path prefixes for metrics, comma separated {VIWS_PROMETHEUS_IGNORE}
-  -prometheusKey string
-        [prometheus] Key file {VIWS_PROMETHEUS_KEY}
-  -prometheusPort uint
-        [prometheus] Listen port (0 to disable) {VIWS_PROMETHEUS_PORT} (default 9090)
-  -prometheusReadTimeout duration
-        [prometheus] Read Timeout {VIWS_PROMETHEUS_READ_TIMEOUT} (default 5s)
-  -prometheusShutdownTimeout duration
-        [prometheus] Shutdown Timeout {VIWS_PROMETHEUS_SHUTDOWN_TIMEOUT} (default 5s)
-  -prometheusWriteTimeout duration
-        [prometheus] Write Timeout {VIWS_PROMETHEUS_WRITE_TIMEOUT} (default 10s)
-  -readTimeout duration
-        [server] Read Timeout {VIWS_READ_TIMEOUT} (default 5s)
-  -shutdownTimeout duration
-        [server] Shutdown Timeout {VIWS_SHUTDOWN_TIMEOUT} (default 10s)
-  -spa
-        [viws] Indicate Single Page Application mode {VIWS_SPA}
-  -tracerRate string
-        [tracer] OpenTracing sample rate, 'always', 'never' or a float value {VIWS_TRACER_RATE} (default "always")
-  -tracerURL string
-        [tracer] OpenTracing gRPC endpoint (e.g. otel-exporter:4317) {VIWS_TRACER_URL}
-  -url string
-        [alcotest] URL to check {VIWS_URL}
-  -userAgent string
-        [alcotest] User-Agent for check {VIWS_USER_AGENT} (default "Alcotest")
-  -writeTimeout duration
-        [server] Write Timeout {VIWS_WRITE_TIMEOUT} (default 10s)
+  --address           string        [server] Listen address ${VIWS_ADDRESS}
+  --cert              string        [server] Certificate file ${VIWS_CERT}
+  --corsCredentials                 [cors] Access-Control-Allow-Credentials ${VIWS_CORS_CREDENTIALS} (default false)
+  --corsExpose        string        [cors] Access-Control-Expose-Headers ${VIWS_CORS_EXPOSE}
+  --corsHeaders       string        [cors] Access-Control-Allow-Headers ${VIWS_CORS_HEADERS} (default "Content-Type")
+  --corsMethods       string        [cors] Access-Control-Allow-Methods ${VIWS_CORS_METHODS} (default "GET")
+  --corsOrigin        string        [cors] Access-Control-Allow-Origin ${VIWS_CORS_ORIGIN} (default "*")
+  --csp               string        [owasp] Content-Security-Policy ${VIWS_CSP} (default "default-src 'self'; base-uri 'self'")
+  --directory         string        [viws] Directory to serve ${VIWS_DIRECTORY} (default "/www/")
+  --env               string slice  [env] Environments key variable to expose ${VIWS_ENV}, as a string slice, environment variable separated by ","
+  --frameOptions      string        [owasp] X-Frame-Options ${VIWS_FRAME_OPTIONS} (default "deny")
+  --graceDuration     duration      [http] Grace duration when SIGTERM received ${VIWS_GRACE_DURATION} (default 30s)
+  --gzip                            [gzip] Enable gzip compression ${VIWS_GZIP} (default true)
+  --header            string slice  [viws] Custom header e.g. content-language:fr ${VIWS_HEADER}, as a string slice, environment variable separated by ","
+  --hsts                            [owasp] Indicate Strict Transport Security ${VIWS_HSTS} (default true)
+  --idleTimeout       duration      [server] Idle Timeout ${VIWS_IDLE_TIMEOUT} (default 2m0s)
+  --key               string        [server] Key file ${VIWS_KEY}
+  --loggerJson                      [logger] Log format as JSON ${VIWS_LOGGER_JSON} (default false)
+  --loggerLevel       string        [logger] Logger level ${VIWS_LOGGER_LEVEL} (default "INFO")
+  --loggerLevelKey    string        [logger] Key for level in JSON ${VIWS_LOGGER_LEVEL_KEY} (default "level")
+  --loggerMessageKey  string        [logger] Key for message in JSON ${VIWS_LOGGER_MESSAGE_KEY} (default "msg")
+  --loggerTimeKey     string        [logger] Key for timestamp in JSON ${VIWS_LOGGER_TIME_KEY} (default "time")
+  --okStatus          int           [http] Healthy HTTP Status code ${VIWS_OK_STATUS} (default 204)
+  --port              uint          [server] Listen port (0 to disable) ${VIWS_PORT} (default 1080)
+  --readTimeout       duration      [server] Read Timeout ${VIWS_READ_TIMEOUT} (default 5s)
+  --shutdownTimeout   duration      [server] Shutdown Timeout ${VIWS_SHUTDOWN_TIMEOUT} (default 10s)
+  --spa                             [viws] Indicate Single Page Application mode ${VIWS_SPA} (default false)
+  --tracerRate        string        [tracer] OpenTelemetry sample rate, 'always', 'never' or a float value ${VIWS_TRACER_RATE} (default "always")
+  --tracerURL         string        [tracer] OpenTelemetry gRPC endpoint (e.g. otel-exporter:4317) ${VIWS_TRACER_URL}
+  --url               string        [alcotest] URL to check ${VIWS_URL}
+  --userAgent         string        [alcotest] User-Agent for check ${VIWS_USER_AGENT} (default "Alcotest")
+  --writeTimeout      duration      [server] Write Timeout ${VIWS_WRITE_TIMEOUT} (default 10s)
 ```
 
 ## Docker
