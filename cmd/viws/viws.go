@@ -37,7 +37,7 @@ func main() {
 
 	alcotestConfig := alcotest.Flags(fs, "")
 	loggerConfig := logger.Flags(fs, "logger")
-	tracerConfig := telemetry.Flags(fs, "tracer")
+	telemetryConfig := telemetry.Flags(fs, "telemetry")
 	owaspConfig := owasp.Flags(fs, "")
 	corsConfig := cors.Flags(fs, "cors")
 
@@ -56,7 +56,7 @@ func main() {
 
 	ctx := context.Background()
 
-	telemetryApp, err := telemetry.New(ctx, tracerConfig)
+	telemetryApp, err := telemetry.New(ctx, telemetryConfig)
 	if err != nil {
 		slog.Error("create telemetry", "err", err)
 		os.Exit(1)

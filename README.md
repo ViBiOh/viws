@@ -109,8 +109,8 @@ Usage of viws:
   --readTimeout       duration      [server] Read Timeout ${VIWS_READ_TIMEOUT} (default 5s)
   --shutdownTimeout   duration      [server] Shutdown Timeout ${VIWS_SHUTDOWN_TIMEOUT} (default 10s)
   --spa                             [viws] Indicate Single Page Application mode ${VIWS_SPA} (default false)
-  --tracerRate        string        [tracer] OpenTelemetry sample rate, 'always', 'never' or a float value ${VIWS_TRACER_RATE} (default "always")
-  --tracerURL         string        [tracer] OpenTelemetry gRPC endpoint (e.g. otel-exporter:4317) ${VIWS_TRACER_URL}
+  --telemetryRate     string        [telemetry] OpenTelemetry sample rate, 'always', 'never' or a float value ${VIWS_TELEMETRY_RATE} (default "always")
+  --telemetryURL      string        [telemetry] OpenTelemetry gRPC endpoint (e.g. otel-exporter:4317) ${VIWS_TELEMETRY_URL}
   --url               string        [alcotest] URL to check ${VIWS_URL}
   --userAgent         string        [alcotest] User-Agent for check ${VIWS_USER_AGENT} (default "Alcotest")
   --writeTimeout      duration      [server] Write Timeout ${VIWS_WRITE_TIMEOUT} (default 10s)
