@@ -9,34 +9,31 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/httpjson"
 )
 
-// App of package
-type App struct {
+type Config struct {
+	Env []string
+}
+
+func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) *Config {
+	var config Config
+
+	flags.New("Env", "Environments key variable to expose").Prefix(prefix).DocPrefix("env").StringSliceVar(fs, &config.Env, nil, overrides)
+
+	return &config
+}
+
+type Service struct {
 	keys []string
 }
 
-// Config of package
-type Config struct {
-	env *[]string
-}
-
-// Flags adds flags for configuring package
-func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config {
-	return Config{
-		env: flags.New("Env", "Environments key variable to expose").Prefix(prefix).DocPrefix("env").StringSlice(fs, nil, overrides),
+func New(config *Config) Service {
+	return Service{
+		keys: config.Env,
 	}
 }
 
-// New creates new App from Config
-func New(config Config) App {
-	return App{
-		keys: *config.env,
-	}
-}
-
-// Handler for net/http package returning environment variables in JSON
-func (a App) Handler() http.Handler {
+func (s Service) Handler() http.Handler {
 	env := make(map[string]string)
-	for _, key := range a.keys {
+	for _, key := range s.keys {
 		env[key] = os.Getenv(key)
 	}
 

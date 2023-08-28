@@ -41,22 +41,17 @@ func TestFlags(t *testing.T) {
 }
 
 func TestNew(t *testing.T) {
-	var emptySlice []string
-	envValue := []string{"PATH", "BASH", "VERSION"}
-
 	cases := map[string]struct {
 		input Config
 		want  []string
 	}{
 		"should work with empty values": {
-			Config{
-				env: &emptySlice,
-			},
+			Config{},
 			nil,
 		},
 		"should work with env value": {
 			Config{
-				env: &envValue,
+				Env: []string{"PATH", "BASH", "VERSION"},
 			},
 			[]string{
 				"PATH",
@@ -68,7 +63,7 @@ func TestNew(t *testing.T) {
 
 	for intention, tc := range cases {
 		t.Run(intention, func(t *testing.T) {
-			if result := New(tc.input); !reflect.DeepEqual(result.keys, tc.want) {
+			if result := New(&tc.input); !reflect.DeepEqual(result.keys, tc.want) {
 				t.Errorf("New() = %+v, want %+v", result.keys, tc.want)
 			}
 		})
@@ -121,8 +116,8 @@ func TestHandler(t *testing.T) {
 		t.Run(intention, func(t *testing.T) {
 			writer := httptest.NewRecorder()
 
-			a := New(Config{
-				env: &tc.env,
+			a := New(&Config{
+				Env: tc.env,
 			})
 			a.Handler().ServeHTTP(writer, tc.request)
 
