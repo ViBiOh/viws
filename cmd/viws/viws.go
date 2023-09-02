@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"syscall"
 
 	_ "net/http/pprof"
 
@@ -97,6 +98,6 @@ func main() {
 
 	go appServer.Start(endCtx, "http", httputils.Handler(appHandler, healthApp, middlewares...))
 
-	healthApp.WaitForTermination(appServer.Done())
+	healthApp.WaitForTermination(appServer.Done(), syscall.SIGTERM)
 	server.GracefulWait(appServer.Done())
 }
