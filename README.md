@@ -93,7 +93,7 @@ Usage of viws:
   --directory         string        [viws] Directory to serve ${VIWS_DIRECTORY} (default "/www/")
   --env               string slice  [env] Environments key variable to expose ${VIWS_ENV}, as a string slice, environment variable separated by ","
   --frameOptions      string        [owasp] X-Frame-Options ${VIWS_FRAME_OPTIONS} (default "deny")
-  --graceDuration     duration      [http] Grace duration when SIGTERM received ${VIWS_GRACE_DURATION} (default 30s)
+  --graceDuration     duration      [http] Grace duration when signal received ${VIWS_GRACE_DURATION} (default 30s)
   --gzip                            [gzip] Enable gzip compression ${VIWS_GZIP} (default true)
   --header            string slice  [viws] Custom header e.g. content-language:fr ${VIWS_HEADER}, as a string slice, environment variable separated by ","
   --hsts                            [owasp] Indicate Strict Transport Security ${VIWS_HSTS} (default true)

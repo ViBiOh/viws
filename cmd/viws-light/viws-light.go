@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"syscall"
 
 	"github.com/ViBiOh/flags"
 	"github.com/ViBiOh/httputils/v4/pkg/alcotest"
@@ -73,6 +72,6 @@ func main() {
 	endCtx := healthApp.End(ctx)
 
 	go appServer.Start(endCtx, "http", httputils.Handler(appHandler, healthApp, recoverer.Middleware))
-	healthApp.WaitForTermination(appServer.Done(), syscall.SIGTERM)
+	healthApp.WaitForTermination(appServer.Done())
 	server.GracefulWait(appServer.Done())
 }
