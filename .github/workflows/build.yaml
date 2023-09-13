@@ -80,7 +80,7 @@ jobs:
           curl --disable --silent --show-error --location --max-time 30 "https://raw.githubusercontent.com/ViBiOh/scripts/main/bootstrap" | bash -s -- "-c" "release"
           ./scripts/release build
       - name: Setup Docker
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Setup DockerHub
         if: env.DOCKER_USER && env.DOCKER_PASS
         env:
