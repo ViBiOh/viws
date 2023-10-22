@@ -93,9 +93,9 @@ func main() {
 		})
 	}
 
-	go appServer.Start(healthApp.EndCtx(), "http", httputils.Handler(appHandler, healthApp, middlewares...))
+	go appServer.Start(healthApp.EndCtx(), httputils.Handler(appHandler, healthApp, middlewares...))
 
 	healthApp.WaitForTermination(appServer.Done())
 
-	appServer.Stop(ctx)
+	server.GracefulWait(appServer.Done())
 }
