@@ -68,7 +68,7 @@ func main() {
 	}()
 
 	appServer := server.New(appServerConfig)
-	healthApp := health.New(healthConfig)
+	healthApp := health.New(ctx, healthConfig)
 
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)
@@ -93,10 +93,9 @@ func main() {
 		})
 	}
 
-	endCtx := healthApp.End(ctx)
-
-	go appServer.Start(endCtx, "http", httputils.Handler(appHandler, healthApp, middlewares...))
+	go appServer.Start(healthApp.EndCtx(), "http", httputils.Handler(appHandler, healthApp, middlewares...))
 
 	healthApp.WaitForTermination(appServer.Done())
-	server.GracefulWait(appServer.Done())
+
+	appServer.Stop(ctx)
 }
