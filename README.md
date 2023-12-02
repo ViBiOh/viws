@@ -104,6 +104,7 @@ Usage of viws:
   --loggerLevelKey    string        [logger] Key for level in JSON ${VIWS_LOGGER_LEVEL_KEY} (default "level")
   --loggerMessageKey  string        [logger] Key for message in JSON ${VIWS_LOGGER_MESSAGE_KEY} (default "msg")
   --loggerTimeKey     string        [logger] Key for timestamp in JSON ${VIWS_LOGGER_TIME_KEY} (default "time")
+  --name              string        [server] Name ${VIWS_NAME} (default "http")
   --okStatus          int           [http] Healthy HTTP Status code ${VIWS_OK_STATUS} (default 204)
   --port              uint          [server] Listen port (0 to disable) ${VIWS_PORT} (default 1080)
   --readTimeout       duration      [server] Read Timeout ${VIWS_READ_TIMEOUT} (default 5s)
@@ -111,6 +112,7 @@ Usage of viws:
   --spa                             [viws] Indicate Single Page Application mode ${VIWS_SPA} (default false)
   --telemetryRate     string        [telemetry] OpenTelemetry sample rate, 'always', 'never' or a float value ${VIWS_TELEMETRY_RATE} (default "always")
   --telemetryURL      string        [telemetry] OpenTelemetry gRPC endpoint (e.g. otel-exporter:4317) ${VIWS_TELEMETRY_URL}
+  --telemetryUint64                 [telemetry] Change OpenTelemetry Trace ID format to an unsigned int 64 ${VIWS_TELEMETRY_UINT64} (default true)
   --url               string        [alcotest] URL to check ${VIWS_URL}
   --userAgent         string        [alcotest] User-Agent for check ${VIWS_USER_AGENT} (default "Alcotest")
   --writeTimeout      duration      [server] Write Timeout ${VIWS_WRITE_TIMEOUT} (default 10s)

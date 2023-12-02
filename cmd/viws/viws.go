@@ -63,7 +63,7 @@ func main() {
 
 	defer telemetryApp.Close(ctx)
 
-	logger.AddOpenTelemetryToDefaultLogger()
+	logger.AddOpenTelemetryToDefaultLogger(telemetryApp)
 
 	go func() {
 		fmt.Println(http.ListenAndServe("localhost:9999", http.DefaultServeMux))
