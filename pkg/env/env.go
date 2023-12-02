@@ -48,6 +48,6 @@ func (s Service) Handler() http.Handler {
 			return
 		}
 
-		httpjson.Write(w, http.StatusOK, env)
+		httpjson.Write(r.Context(), w, http.StatusOK, env)
 	})
 }

@@ -91,7 +91,7 @@ func (a App) Handler() http.Handler {
 		}
 
 		if strings.Contains(r.URL.Path, "..") {
-			httperror.BadRequest(w, errors.New("path with dots are not allowed"))
+			httperror.BadRequest(r.Context(), w, errors.New("path with dots are not allowed"))
 			return
 		}
 
@@ -113,7 +113,7 @@ func (a App) Handler() http.Handler {
 			}
 		}
 
-		a.serveNotFound(w)
+		a.serveNotFound(r.Context(), w)
 	})
 }
 
@@ -132,7 +132,7 @@ func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath, hash st
 
 	file, err := os.OpenFile(filepath, os.O_RDONLY, 0o600)
 	if err != nil {
-		httperror.InternalServerError(w, err)
+		httperror.InternalServerError(r.Context(), w, err)
 		return
 	}
 

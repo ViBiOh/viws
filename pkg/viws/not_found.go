@@ -2,6 +2,7 @@ package viws
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"log/slog"
 	"mime"
@@ -11,20 +12,20 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/httperror"
 )
 
-func (a App) serveNotFound(w http.ResponseWriter) {
+func (a App) serveNotFound(ctx context.Context, w http.ResponseWriter) {
 	notFoundPath, _, err := getFileToServe(a.directory, notFoundFilename)
 	if err != nil {
-		httperror.NotFound(w)
+		httperror.NotFound(ctx, w)
 		return
 	}
 
-	a.serve(w, http.StatusNotFound, notFoundPath)
+	a.serve(ctx, w, http.StatusNotFound, notFoundPath)
 }
 
-func (a App) serve(w http.ResponseWriter, status int, filename string) {
+func (a App) serve(ctx context.Context, w http.ResponseWriter, status int, filename string) {
 	file, err := os.Open(filename)
 	if err != nil {
-		httperror.InternalServerError(w, err)
+		httperror.InternalServerError(ctx, w, err)
 		return
 	}
 
