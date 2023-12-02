@@ -31,7 +31,7 @@ func (a App) serve(ctx context.Context, w http.ResponseWriter, status int, filen
 
 	defer func() {
 		if err := file.Close(); err != nil {
-			slog.Error("close file", "err", err, "dir", a.directory)
+			slog.ErrorContext(ctx, "close file", "err", err, "dir", a.directory)
 		}
 	}()
 
@@ -48,6 +48,6 @@ func (a App) serve(ctx context.Context, w http.ResponseWriter, status int, filen
 	defer bufferPool.Put(buffer)
 
 	if _, err = io.CopyBuffer(w, file, buffer.Bytes()); err != nil {
-		slog.Error("copy content to writer", "err", err, "dir", a.directory)
+		slog.ErrorContext(ctx, "copy content to writer", "err", err, "dir", a.directory)
 	}
 }
