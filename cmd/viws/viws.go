@@ -57,7 +57,7 @@ func main() {
 
 	telemetryApp, err := telemetry.New(ctx, telemetryConfig)
 	if err != nil {
-		slog.Error("create telemetry", "err", err)
+		slog.Error("create telemetry", "error", err)
 		os.Exit(1)
 	}
 
