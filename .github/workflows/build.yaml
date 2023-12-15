@@ -96,8 +96,8 @@ jobs:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
         run: |
-          DOCKER_IMAGE="${{ secrets.DOCKER_USER }}/$(make name)" IMAGE_VERSION="$(make version)" ./scripts/release docker
-          DOCKER_IMAGE="${{ secrets.DOCKER_USER }}/$(make name)" IMAGE_VERSION="$(make version)-light" DOCKERFILE=Dockerfile_light ./scripts/release docker
+          DOCKER_IMAGE="${{ secrets.DOCKER_USER }}/$(make name)" IMAGE_VERSION="$(make version)" GIT_SHA="$(make version-full)" ./scripts/release docker
+          DOCKER_IMAGE="${{ secrets.DOCKER_USER }}/$(make name)" IMAGE_VERSION="$(make version)-light" GIT_SHA="$(make version-full)" DOCKERFILE=Dockerfile_light ./scripts/release docker
 
   publish:
     name: Publish

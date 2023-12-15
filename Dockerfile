@@ -9,7 +9,10 @@ HEALTHCHECK --retries=5 CMD [ "/viws", "-url", "http://localhost:1080/health" ]
 ENTRYPOINT [ "/viws" ]
 
 ARG VERSION
-ENV VERSION=${VERSION}
+ENV VERSION ${VERSION}
+
+ARG GIT_SHA
+ENV GIT_SHA ${GIT_SHA}
 
 ARG TARGETOS
 ARG TARGETARCH
