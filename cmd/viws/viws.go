@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"log/slog"
 	"net/http"
 	"os"
 
@@ -56,10 +55,7 @@ func main() {
 	ctx := context.Background()
 
 	telemetryApp, err := telemetry.New(ctx, telemetryConfig)
-	if err != nil {
-		slog.Error("create telemetry", "error", err)
-		os.Exit(1)
-	}
+	logger.FatalfOnErr(ctx, err, "create telemetry")
 
 	defer telemetryApp.Close(ctx)
 
