@@ -1,7 +1,7 @@
 github.com/ViBiOh/flags v1.5.0 h1:nwuFS8tAwtV6rTPpv2pCB+r12WjZYLjluW7yT+SeVpQ=
 github.com/ViBiOh/flags v1.5.0/go.mod h1:39UMuTnKsIp6walgD8dK99KRCb4DJt9vPtbWehHh1T0=
-github.com/ViBiOh/httputils/v4 v4.70.3 h1:lG7PIg12/ID6+/7Yc0LGgDnG3KcPxYFJkWWiBB013c8=
-github.com/ViBiOh/httputils/v4 v4.70.3/go.mod h1:YQcY6qKO4SS5BSwkfpaA0xtTXlmuKOm7q4ie4UgKHMs=
+github.com/ViBiOh/httputils/v4 v4.71.0 h1:FKLqcFV/STEbS3MU3epO8wMfeiDTSMd8TIcbgqfBTYc=
+github.com/ViBiOh/httputils/v4 v4.71.0/go.mod h1:YQcY6qKO4SS5BSwkfpaA0xtTXlmuKOm7q4ie4UgKHMs=
 github.com/cenkalti/backoff/v4 v4.2.1 h1:y4OZtCnogmCPw98Zjyt5a6+QwPLGkiQsYW5oUqylYbM=
 github.com/cenkalti/backoff/v4 v4.2.1/go.mod h1:Y3VNntkOUPxTVeUxJ/G5vcM//AlwfmyYozVcomhLiZE=
 github.com/cespare/xxhash/v2 v2.2.0 h1:DC2CZ1Ep5Y4k3ZQ899DldepgrayRUGE6BBZ/cd9Cj44=
