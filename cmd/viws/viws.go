@@ -78,6 +78,7 @@ func main() {
 	envHandler := model.ChainMiddlewares(envApp.Handler(), owaspApp.Middleware, corsApp.Middleware)
 	appHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/env" {
+			telemetry.SetRouteTag(r.Context(), "/env")
 			envHandler.ServeHTTP(w, r)
 		} else {
 			viwsHandler.ServeHTTP(w, r)
