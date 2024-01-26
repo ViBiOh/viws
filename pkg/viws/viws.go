@@ -138,7 +138,7 @@ func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath, hash st
 
 	defer func() {
 		if err := file.Close(); err != nil {
-			slog.ErrorContext(r.Context(), "close file", "error", err)
+			slog.LogAttrs(r.Context(), slog.LevelError, "close file", slog.Any("error", err))
 		}
 	}()
 
