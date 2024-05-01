@@ -45,8 +45,6 @@ jobs:
         run: |
           make
           git --no-pager diff -- ':(exclude)go.sum' && git diff --quiet -- ':(exclude)go.sum'
-      - name: Codecov
-        uses: codecov/codecov-action@v4
 
   package:
     name: Docker
