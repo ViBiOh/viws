@@ -105,6 +105,7 @@ Usage of viws:
   --name              string        [server] Name ${VIWS_NAME} (default "http")
   --okStatus          int           [http] Healthy HTTP Status code ${VIWS_OK_STATUS} (default 204)
   --port              uint          [server] Listen port (0 to disable) ${VIWS_PORT} (default 1080)
+  --pprofAgent        string        [pprof] URL of the Datadog Trace Agent (e.g. http://datadog.observability:8126) ${VIWS_PPROF_AGENT}
   --readTimeout       duration      [server] Read Timeout ${VIWS_READ_TIMEOUT} (default 5s)
   --shutdownTimeout   duration      [server] Shutdown Timeout ${VIWS_SHUTDOWN_TIMEOUT} (default 10s)
   --spa                             [viws] Indicate Single Page Application mode ${VIWS_SPA} (default false)

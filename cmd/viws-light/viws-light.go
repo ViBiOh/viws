@@ -45,8 +45,9 @@ func main() {
 
 	ctx := context.Background()
 
-	appServer := server.New(appServerConfig)
 	healthApp := health.New(ctx, healthConfig)
+
+	appServer := server.New(appServerConfig)
 
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)

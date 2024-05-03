@@ -17,6 +17,7 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/logger"
 	"github.com/ViBiOh/httputils/v4/pkg/model"
 	"github.com/ViBiOh/httputils/v4/pkg/owasp"
+	"github.com/ViBiOh/httputils/v4/pkg/pprof"
 	"github.com/ViBiOh/httputils/v4/pkg/recoverer"
 	"github.com/ViBiOh/httputils/v4/pkg/server"
 	"github.com/ViBiOh/httputils/v4/pkg/telemetry"
@@ -35,6 +36,7 @@ func main() {
 	alcotestConfig := alcotest.Flags(fs, "")
 	loggerConfig := logger.Flags(fs, "logger")
 	telemetryConfig := telemetry.Flags(fs, "telemetry")
+	pprofConfig := pprof.Flags(fs, "pprof")
 	owaspConfig := owasp.Flags(fs, "")
 	corsConfig := cors.Flags(fs, "cors")
 
@@ -51,10 +53,15 @@ func main() {
 
 	ctx := context.Background()
 
+	healthApp := health.New(ctx, healthConfig)
+
 	telemetryApp, err := telemetry.New(ctx, telemetryConfig)
 	logger.FatalfOnErr(ctx, err, "create telemetry")
 
 	defer telemetryApp.Close(ctx)
+
+	service, version, envName := telemetryApp.GetServiceVersionAndEnv()
+	pprofApp := pprof.New(pprofConfig, service, version, envName)
 
 	logger.AddOpenTelemetryToDefaultLogger(telemetryApp)
 
@@ -62,8 +69,9 @@ func main() {
 		fmt.Println(http.ListenAndServe("localhost:9999", http.DefaultServeMux))
 	}()
 
+	go pprofApp.Start(healthApp.DoneCtx())
+
 	appServer := server.New(appServerConfig)
-	healthApp := health.New(ctx, healthConfig)
 
 	owaspApp := owasp.New(owaspConfig)
 	corsApp := cors.New(corsConfig)
