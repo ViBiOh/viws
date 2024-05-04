@@ -37,8 +37,6 @@ func main() {
 
 	_ = fs.Parse(os.Args[1:])
 
-	_ = fs.Parse(os.Args[1:])
-
 	alcotest.DoAndExit(alcotestConfig)
 
 	logger.Init(loggerConfig)

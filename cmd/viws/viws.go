@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	_ "net/http/pprof"
-
 	"github.com/ViBiOh/flags"
 	"github.com/ViBiOh/httputils/v4/pkg/alcotest"
 	"github.com/ViBiOh/httputils/v4/pkg/cors"
