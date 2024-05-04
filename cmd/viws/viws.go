@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"net/http"
 	"os"
 
@@ -66,9 +65,6 @@ func main() {
 	pprofApp := pprof.New(pprofConfig, service, version, envName)
 
 	go pprofApp.Start(healthService.DoneCtx())
-	go func() {
-		fmt.Println(http.ListenAndServe("localhost:9999", http.DefaultServeMux))
-	}()
 
 	appServer := server.New(appServerConfig)
 
