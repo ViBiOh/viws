@@ -53,23 +53,22 @@ func main() {
 
 	ctx := context.Background()
 
-	healthApp := health.New(ctx, healthConfig)
+	healthService := health.New(ctx, healthConfig)
 
 	telemetryApp, err := telemetry.New(ctx, telemetryConfig)
 	logger.FatalfOnErr(ctx, err, "create telemetry")
 
 	defer telemetryApp.Close(ctx)
 
+	logger.AddOpenTelemetryToDefaultLogger(telemetryApp)
+
 	service, version, envName := telemetryApp.GetServiceVersionAndEnv()
 	pprofApp := pprof.New(pprofConfig, service, version, envName)
 
-	logger.AddOpenTelemetryToDefaultLogger(telemetryApp)
-
+	go pprofApp.Start(healthService.DoneCtx())
 	go func() {
 		fmt.Println(http.ListenAndServe("localhost:9999", http.DefaultServeMux))
 	}()
-
-	go pprofApp.Start(healthApp.DoneCtx())
 
 	appServer := server.New(appServerConfig)
 
@@ -97,9 +96,9 @@ func main() {
 		})
 	}
 
-	go appServer.Start(healthApp.EndCtx(), httputils.Handler(appHandler, healthApp, middlewares...))
+	go appServer.Start(healthService.EndCtx(), httputils.Handler(appHandler, healthService, middlewares...))
 
-	healthApp.WaitForTermination(appServer.Done())
+	healthService.WaitForTermination(appServer.Done())
 
 	server.GracefulWait(appServer.Done())
 }
