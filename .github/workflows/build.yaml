@@ -58,6 +58,13 @@ jobs:
           go-version: "^1.22"
           cache: true
       - name: Build
+        env:
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_APP_KEY: ${{ secrets.DD_APP_KEY }}
+          DD_ENV: production
+          DD_SERVICE: about-me
+          DD_SITE: datadoghq.eu
+          PGO_NAME: viws
         run: |
           curl --disable --silent --show-error --location --max-time 30 -o mime.types "https://svn.apache.org/viewvc/httpd/httpd/trunk/docs/conf/mime.types?view=co"
           curl --disable --silent --show-error --location --max-time 30 "https://raw.githubusercontent.com/ViBiOh/scripts/main/bootstrap.sh" | bash -s -- "-c" "release.sh"
