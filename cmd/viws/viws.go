@@ -15,7 +15,6 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/model"
 	"github.com/ViBiOh/httputils/v4/pkg/owasp"
 	"github.com/ViBiOh/httputils/v4/pkg/pprof"
-	"github.com/ViBiOh/httputils/v4/pkg/recoverer"
 	"github.com/ViBiOh/httputils/v4/pkg/server"
 	"github.com/ViBiOh/httputils/v4/pkg/telemetry"
 	"github.com/ViBiOh/viws/pkg/env"
@@ -46,9 +45,9 @@ func main() {
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	logger.Init(loggerConfig)
-
 	ctx := context.Background()
+
+	logger.Init(ctx, loggerConfig)
 
 	healthService := health.New(ctx, healthConfig)
 
@@ -83,7 +82,7 @@ func main() {
 		}
 	})
 
-	middlewares := []model.Middleware{recoverer.Middleware, telemetryApp.Middleware("http")}
+	middlewares := []model.Middleware{telemetryApp.Middleware("http")}
 	if *gzip {
 		middlewares = append(middlewares, func(next http.Handler) http.Handler {
 			return gzhttp.GzipHandler(next)
