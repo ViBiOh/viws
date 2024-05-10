@@ -14,7 +14,6 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/logger"
 	"github.com/ViBiOh/httputils/v4/pkg/model"
 	"github.com/ViBiOh/httputils/v4/pkg/owasp"
-	"github.com/ViBiOh/httputils/v4/pkg/recoverer"
 	"github.com/ViBiOh/httputils/v4/pkg/server"
 	"github.com/ViBiOh/viws/pkg/env"
 	"github.com/ViBiOh/viws/pkg/viws"
@@ -39,9 +38,9 @@ func main() {
 
 	alcotest.DoAndExit(alcotestConfig)
 
-	logger.Init(loggerConfig)
-
 	ctx := context.Background()
+
+	logger.Init(ctx, loggerConfig)
 
 	healthApp := health.New(ctx, healthConfig)
 
@@ -63,7 +62,7 @@ func main() {
 		}
 	})
 
-	go appServer.Start(healthApp.EndCtx(), httputils.Handler(appHandler, healthApp, recoverer.Middleware))
+	go appServer.Start(healthApp.EndCtx(), httputils.Handler(appHandler, healthApp))
 
 	healthApp.WaitForTermination(appServer.Done())
 
