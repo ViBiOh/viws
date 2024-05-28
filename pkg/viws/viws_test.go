@@ -190,7 +190,7 @@ func TestHandler(t *testing.T) {
 				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodGet, "/404.html", nil),
-			`¯\_(ツ)_/¯
+			`🤷
 `,
 			http.StatusNotFound,
 			http.Header{
