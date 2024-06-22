@@ -30,34 +30,32 @@ var bufferPool = sync.Pool{
 	},
 }
 
-// App of package
 type App struct {
 	headers   http.Header
 	directory string
 	spa       bool
 }
 
-// Config of package
 type Config struct {
-	directory *string
-	headers   *[]string
-	spa       *bool
+	Directory string
+	Headers   []string
+	Spa       bool
 }
 
-// Flags adds flags for configuring package
-func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) Config {
-	return Config{
-		directory: flags.New("Directory", "Directory to serve").Prefix(prefix).DocPrefix("viws").String(fs, "/www/", overrides),
-		headers:   flags.New("Header", "Custom header e.g. content-language:fr").Prefix(prefix).DocPrefix("viws").StringSlice(fs, nil, overrides),
-		spa:       flags.New("Spa", "Indicate Single Page Application mode").Prefix(prefix).DocPrefix("viws").Bool(fs, false, overrides),
-	}
+func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) *Config {
+	var config Config
+
+	flags.New("Directory", "Directory to serve").Prefix(prefix).DocPrefix("viws").StringVar(fs, &config.Directory, "/www/", overrides)
+	flags.New("Header", "Custom header e.g. content-language:fr").Prefix(prefix).DocPrefix("viws").StringSliceVar(fs, &config.Headers, nil, overrides)
+	flags.New("Spa", "Indicate Single Page Application mode").Prefix(prefix).DocPrefix("viws").BoolVar(fs, &config.Spa, false, overrides)
+
+	return &config
 }
 
-// New creates new App from Config
-func New(config Config) App {
+func New(config *Config) App {
 	a := App{
-		spa:       *config.spa,
-		directory: *config.directory,
+		spa:       config.Spa,
+		directory: config.Directory,
 		headers:   http.Header{},
 	}
 
@@ -69,8 +67,8 @@ func New(config Config) App {
 		logger.Info("Single Page Application mode enabled")
 	}
 
-	if len(*config.headers) != 0 {
-		for _, header := range *config.headers {
+	if len(config.Headers) != 0 {
+		for _, header := range config.Headers {
 			if parts := strings.SplitN(header, ":", 2); len(parts) != 2 || strings.Contains(parts[0], " ") {
 				logger.Warn("header has wrong format", "header", header)
 			} else {
@@ -82,14 +80,8 @@ func New(config Config) App {
 	return a
 }
 
-// Handler serve file given configuration
 func (a App) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet && r.Method != http.MethodHead {
-			w.WriteHeader(http.StatusMethodNotAllowed)
-			return
-		}
-
 		if strings.Contains(r.URL.Path, "..") {
 			httperror.BadRequest(r.Context(), w, errors.New("path with dots are not allowed"))
 			return

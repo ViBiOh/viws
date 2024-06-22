@@ -106,6 +106,7 @@ Usage of viws:
   --okStatus          int           [http] Healthy HTTP Status code ${VIWS_OK_STATUS} (default 204)
   --port              uint          [server] Listen port (0 to disable) ${VIWS_PORT} (default 1080)
   --pprofAgent        string        [pprof] URL of the Datadog Trace Agent (e.g. http://datadog.observability:8126) ${VIWS_PPROF_AGENT}
+  --pprofPort         int           [pprof] Port of the HTTP server (0 to disable) ${VIWS_PPROF_PORT} (default 0)
   --readTimeout       duration      [server] Read Timeout ${VIWS_READ_TIMEOUT} (default 5s)
   --shutdownTimeout   duration      [server] Shutdown Timeout ${VIWS_SHUTDOWN_TIMEOUT} (default 10s)
   --spa                             [viws] Indicate Single Page Application mode ${VIWS_SPA} (default false)
@@ -151,8 +152,6 @@ COPY dist/ /www/
 ```
 
 ## Compilation
-
-You need Go 1.12+ with go modules enabled in order to compile the project.
 
 ```bash
 make go

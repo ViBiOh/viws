@@ -8,7 +8,7 @@ endif
 APP_NAME = viws
 PACKAGES ?= ./...
 
-MAIN_SOURCE = cmd/viws/viws.go
+MAIN_SOURCE = ./cmd/viws/
 MAIN_RUNNER = go run $(MAIN_SOURCE)
 ifeq ($(DEBUG), true)
 	MAIN_RUNNER = dlv debug $(MAIN_SOURCE) --
@@ -86,7 +86,7 @@ bench:
 .PHONY: build
 build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/$(APP_NAME) $(MAIN_SOURCE)
-	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/$(APP_NAME)-light cmd/viws-light/viws-light.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix nocgo -o bin/$(APP_NAME)-light ./cmd/viws-light/
 
 ## run: Locally run the application, e.g. node index.js, python -m myapp, go run myapp etc ...
 .PHONY: run

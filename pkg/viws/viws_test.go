@@ -50,14 +50,14 @@ func TestNew(t *testing.T) {
 	exampleHeader := []string{"= X-UA-Compatible:ie=edge", "X-UA-Compatible:ie=edge", "content-language:fr", "invalidformat"}
 
 	cases := map[string]struct {
-		input Config
+		input *Config
 		want  App
 	}{
 		"minimal config": {
-			Config{
-				directory: &exempleDir,
-				headers:   &emptySlice,
-				spa:       &falseVar,
+			&Config{
+				Directory: exempleDir,
+				Headers:   emptySlice,
+				Spa:       falseVar,
 			},
 			App{
 				spa:       false,
@@ -66,10 +66,10 @@ func TestNew(t *testing.T) {
 			},
 		},
 		"spa config": {
-			Config{
-				directory: &exempleDir,
-				headers:   &emptySlice,
-				spa:       &trueVar,
+			&Config{
+				Directory: exempleDir,
+				Headers:   emptySlice,
+				Spa:       trueVar,
 			},
 			App{
 				spa:       true,
@@ -78,10 +78,10 @@ func TestNew(t *testing.T) {
 			},
 		},
 		"headers": {
-			Config{
-				directory: &exempleDir,
-				headers:   &exampleHeader,
-				spa:       &falseVar,
+			&Config{
+				Directory: exempleDir,
+				Headers:   exampleHeader,
+				Spa:       falseVar,
 			},
 			App{
 				spa:       false,
@@ -111,13 +111,6 @@ func TestHandler(t *testing.T) {
 		wantStatus int
 		wantHeader http.Header
 	}{
-		"invalid method": {
-			App{},
-			httptest.NewRequest(http.MethodOptions, "/", nil),
-			"",
-			http.StatusMethodNotAllowed,
-			nil,
-		},
 		"head index": {
 			App{
 				directory: exempleDir,
