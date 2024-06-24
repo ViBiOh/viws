@@ -7,9 +7,9 @@ import (
 )
 
 type services struct {
+	server *server.Server
 	env    env.Service
 	viws   viws.App
-	server server.Server
 }
 
 func newService(config configuration) *services {

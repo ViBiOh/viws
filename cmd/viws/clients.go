@@ -13,8 +13,8 @@ import (
 
 type clients struct {
 	health    *health.Service
-	telemetry telemetry.Service
-	pprof     pprof.Service
+	telemetry *telemetry.Service
+	pprof     *pprof.Service
 }
 
 func newClients(ctx context.Context, config configuration) (clients, error) {
