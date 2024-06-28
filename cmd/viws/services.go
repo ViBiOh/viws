@@ -17,7 +17,7 @@ type services struct {
 	viws viws.App
 }
 
-func newService(config configuration) services {
+func newServices(config configuration) services {
 	var output services
 
 	output.server = server.New(config.server)

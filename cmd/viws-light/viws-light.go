@@ -14,7 +14,7 @@ func main() {
 	ctx := context.Background()
 
 	clients := newClients(ctx, config)
-	services := newService(config)
+	services := newServices(config)
 	port := newPort(clients, services)
 
 	go services.server.Start(clients.health.EndCtx(), port)

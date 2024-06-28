@@ -20,7 +20,7 @@ func main() {
 	go clients.Start()
 	defer clients.Close(ctx)
 
-	services := newService(config)
+	services := newServices(config)
 	port := newPort(config, clients, services)
 
 	go services.server.Start(clients.health.EndCtx(), port)
