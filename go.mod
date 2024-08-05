@@ -6,7 +6,7 @@ toolchain go1.22.0
 
 require (
 	github.com/ViBiOh/flags v1.5.0
-	github.com/ViBiOh/httputils/v4 v4.78.4
+	github.com/ViBiOh/httputils/v4 v4.79.1
 	github.com/klauspost/compress v1.17.9
 )
 
@@ -16,7 +16,7 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.21.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.8 // indirect
 	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
@@ -34,8 +34,8 @@ require (
 	golang.org/x/net v0.27.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240723171418-e6d459c13d2a // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240723171418-e6d459c13d2a // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240730163845-b1a4ccb954bf // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240730163845-b1a4ccb954bf // indirect
 	google.golang.org/grpc v1.65.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
