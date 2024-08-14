@@ -1,8 +1,8 @@
 module github.com/ViBiOh/viws
 
-go 1.22
+go 1.23
 
-toolchain go1.22.0
+toolchain go1.23.0
 
 require (
 	github.com/ViBiOh/flags v1.5.0
