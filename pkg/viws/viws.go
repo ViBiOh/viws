@@ -2,7 +2,6 @@ package viws
 
 import (
 	"bytes"
-	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -83,7 +82,7 @@ func New(config *Config) App {
 func (a App) Handler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.Contains(r.URL.Path, "..") {
-			httperror.BadRequest(r.Context(), w, errors.New("path with dots are not allowed"))
+			httperror.BadRequest(r.Context(), w, fmt.Errorf("path with dots are not allowed: `%s`", r.URL.Path))
 			return
 		}
 

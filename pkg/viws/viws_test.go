@@ -125,7 +125,7 @@ func TestHandler(t *testing.T) {
 				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodHead, "/../index.html", nil),
-			"path with dots are not allowed\n",
+			"path with dots are not allowed: `/../index.html`\n",
 			http.StatusBadRequest,
 			nil,
 		},
