@@ -132,7 +132,7 @@ We recommend using a Dockerfile to ship your files inside it.
 e.g.
 
 ```
-FROM vibioh/viws
+FROM rg.fr-par.scw.cloud/vibioh/viws
 
 ENV VERSION 1.2.3-1234abcd
 COPY dist/ /www/
@@ -145,7 +145,7 @@ Image with tag `:light` is also available.
 e.g.
 
 ```
-FROM vibioh/viws:light
+FROM rg.fr-par.scw.cloud/vibioh/viws:light
 
 ENV VERSION 1.0.0-1234abcd
 COPY dist/ /www/
