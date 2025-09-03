@@ -162,5 +162,5 @@ func etagMatch(w http.ResponseWriter, r *http.Request, hash string) (etag string
 		match = true
 	}
 
-	return
+	return etag, match
 }

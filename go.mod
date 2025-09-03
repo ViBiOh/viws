@@ -5,7 +5,7 @@ go 1.25
 toolchain go1.25.0
 
 require (
-	github.com/ViBiOh/flags v1.6.0
+	github.com/ViBiOh/flags v1.6.1
 	github.com/ViBiOh/httputils/v4 v4.82.5
 	github.com/klauspost/compress v1.18.0
 )
