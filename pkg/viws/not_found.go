@@ -15,7 +15,7 @@ import (
 func (a App) serveNotFound(ctx context.Context, w http.ResponseWriter) {
 	notFoundPath, _, err := getFileToServe(a.directory, notFoundFilename)
 	if err != nil {
-		httperror.NotFound(ctx, w)
+		httperror.NotFound(ctx, w, err)
 		return
 	}
 
