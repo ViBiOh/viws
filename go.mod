@@ -7,7 +7,7 @@ toolchain go1.25.0
 require (
 	github.com/ViBiOh/flags v1.6.1
 	github.com/ViBiOh/httputils/v4 v4.83.0
-	github.com/klauspost/compress v1.18.0
+	github.com/klauspost/compress v1.18.1
 )
 
 require (
