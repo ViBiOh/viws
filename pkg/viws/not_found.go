@@ -3,7 +3,9 @@ package viws
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
+	"io/fs"
 	"log/slog"
 	"mime"
 	"net/http"
@@ -15,6 +17,10 @@ import (
 func (a App) serveNotFound(ctx context.Context, w http.ResponseWriter) {
 	notFoundPath, _, err := getFileToServe(a.directory, notFoundFilename)
 	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			err = nil
+		}
+
 		httperror.NotFound(ctx, w, err)
 		return
 	}
