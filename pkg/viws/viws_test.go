@@ -183,7 +183,7 @@ func TestHandler(t *testing.T) {
 				directory: exempleDir,
 			},
 			httptest.NewRequest(http.MethodGet, "/404.html", nil),
-			`stat ../../example/404.html: no such file or directory
+			`🤷
 `,
 			http.StatusNotFound,
 			http.Header{
