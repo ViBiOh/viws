@@ -56,7 +56,7 @@ This feature is useful for Single Page Application, you first request `/env` in 
 ```bash
 API_URL=https://api.vibioh.fr vibioh/viws --env API_URL
 
-> curl http://localhost:1080/env
+> curl http://127.0.0.1:1080/env
 {"API_URL":"https://api.vibioh.fr"}
 ```
 
