@@ -3,7 +3,6 @@
 A superlight HTTP fileserver with customizable behavior.
 
 [![Build](https://github.com/ViBiOh/viws/workflows/Build/badge.svg)](https://github.com/ViBiOh/viws/actions)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FViBiOh%2Fviws.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FViBiOh%2Fviws?ref=badge_shield)
 
 ## Installation
 
@@ -156,7 +155,3 @@ COPY dist/ /www/
 ```bash
 make go
 ```
-
-## License
-
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FViBiOh%2Fviws.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FViBiOh%2Fviws?ref=badge_large)
