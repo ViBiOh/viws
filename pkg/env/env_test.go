@@ -72,7 +72,7 @@ func TestNew(t *testing.T) {
 
 func TestHandler(t *testing.T) {
 	user := os.Getenv("USER")
-	os.Setenv("ESCAPE", `it's a "test"`)
+	_ = os.Setenv("ESCAPE", `it's a "test"`)
 
 	cases := map[string]struct {
 		request    *http.Request
