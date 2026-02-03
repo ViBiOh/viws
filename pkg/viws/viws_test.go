@@ -13,7 +13,7 @@ import (
 	"github.com/ViBiOh/httputils/v4/pkg/request"
 )
 
-var exempleDir = "../../example/"
+var exampleDir = "../../example/"
 
 func TestFlags(t *testing.T) {
 	cases := map[string]struct {
@@ -55,37 +55,37 @@ func TestNew(t *testing.T) {
 	}{
 		"minimal config": {
 			&Config{
-				Directory: exempleDir,
+				Directory: exampleDir,
 				Headers:   emptySlice,
 				Spa:       falseVar,
 			},
 			App{
 				spa:       false,
-				directory: exempleDir,
+				directory: exampleDir,
 				headers:   http.Header{},
 			},
 		},
 		"spa config": {
 			&Config{
-				Directory: exempleDir,
+				Directory: exampleDir,
 				Headers:   emptySlice,
 				Spa:       trueVar,
 			},
 			App{
 				spa:       true,
-				directory: exempleDir,
+				directory: exampleDir,
 				headers:   http.Header{},
 			},
 		},
 		"headers": {
 			&Config{
-				Directory: exempleDir,
+				Directory: exampleDir,
 				Headers:   exampleHeader,
 				Spa:       falseVar,
 			},
 			App{
 				spa:       false,
-				directory: exempleDir,
+				directory: exampleDir,
 				headers: http.Header{
 					"X-Ua-Compatible":  []string{"ie=edge"},
 					"Content-Language": []string{"fr"},
@@ -113,7 +113,7 @@ func TestHandler(t *testing.T) {
 	}{
 		"head index": {
 			App{
-				directory: exempleDir,
+				directory: exampleDir,
 			},
 			httptest.NewRequest(http.MethodHead, "/", nil),
 			"",
@@ -122,7 +122,7 @@ func TestHandler(t *testing.T) {
 		},
 		"path with dots": {
 			App{
-				directory: exempleDir,
+				directory: exampleDir,
 			},
 			httptest.NewRequest(http.MethodHead, "/../index.html", nil),
 			"path with dots are not allowed: `/../index.html`\n",
@@ -131,7 +131,7 @@ func TestHandler(t *testing.T) {
 		},
 		"get index": {
 			App{
-				directory: exempleDir,
+				directory: exampleDir,
 			},
 			httptest.NewRequest(http.MethodGet, "/", nil),
 			`<!DOCTYPE HTML>
@@ -153,7 +153,7 @@ func TestHandler(t *testing.T) {
 		},
 		"get file with header": {
 			App{
-				directory: exempleDir,
+				directory: exampleDir,
 				headers: http.Header{
 					"Etag": []string{"test"},
 				},
@@ -169,7 +169,7 @@ func TestHandler(t *testing.T) {
 		},
 		"head not found": {
 			App{
-				directory: exempleDir,
+				directory: exampleDir,
 			},
 			httptest.NewRequest(http.MethodHead, "/404.html", nil),
 			"",
@@ -180,7 +180,7 @@ func TestHandler(t *testing.T) {
 		},
 		"get not found": {
 			App{
-				directory: exempleDir,
+				directory: exampleDir,
 			},
 			httptest.NewRequest(http.MethodGet, "/404.html", nil),
 			`🤷
@@ -212,7 +212,7 @@ func TestHandler(t *testing.T) {
 		},
 		"get not found with spa": {
 			App{
-				directory: exempleDir,
+				directory: exampleDir,
 				spa:       true,
 			},
 			httptest.NewRequest(http.MethodGet, "/user/1234", nil),
@@ -286,7 +286,7 @@ func BenchmarkServeFile(b *testing.B) {
 	headers.Add("content-language", "fr")
 
 	instance := App{
-		directory: exempleDir,
+		directory: exampleDir,
 		headers:   headers,
 	}
 

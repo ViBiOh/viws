@@ -16,7 +16,7 @@ type Config struct {
 func Flags(fs *flag.FlagSet, prefix string, overrides ...flags.Override) *Config {
 	var config Config
 
-	flags.New("Env", "Environments key variable to expose").Prefix(prefix).DocPrefix("env").StringSliceVar(fs, &config.Env, nil, overrides)
+	flags.New("Env", "Environment variables to expose to expose").Prefix(prefix).DocPrefix("env").StringSliceVar(fs, &config.Env, nil, overrides)
 
 	return &config
 }

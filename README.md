@@ -12,7 +12,7 @@ go install github.com/ViBiOh/viws/cmd/viws@latest
 
 ### Light version
 
-Light version (without GZIP and Open Telemetry) is also available, for a smaller binary.
+Light version (without GZIP and OpenTelemetry) is also available, for a smaller binary.
 
 ```bash
 go install github.com/ViBiOh/viws/cmd/viws-light@latest
@@ -22,10 +22,10 @@ go install github.com/ViBiOh/viws/cmd/viws-light@latest
 
 - Full TLS support
 - GZIP Compression
-- Open Telemetry observability
+- OpenTelemetry observability
 - Read-only container
 - Serve static content, with Single Page App handling
-- Serve environment variables for easier-config
+- Serve environment variables for easier configuration
 - Configurable logger with JSON support
 
 ## Single Page Application
@@ -53,7 +53,7 @@ This feature is useful for Single Page Application, you first request `/env` in 
 ### Configuration example
 
 ```bash
-API_URL=https://api.vibioh.fr vibioh/viws --env API_URL
+API_URL=https://api.vibioh.fr rg.fr-par.scw.cloud/vibioh/viws --env API_URL
 
 > curl http://127.0.0.1:1080/env
 {"API_URL":"https://api.vibioh.fr"}
@@ -88,7 +88,7 @@ Usage of viws:
   --corsOrigin        string        [cors] Access-Control-Allow-Origin ${VIWS_CORS_ORIGIN} (default "*")
   --csp               string        [owasp] Content-Security-Policy ${VIWS_CSP} (default "default-src 'self'; base-uri 'self'")
   --directory         string        [viws] Directory to serve ${VIWS_DIRECTORY} (default "/www/")
-  --env               string slice  [env] Environments key variable to expose ${VIWS_ENV}, as a string slice, environment variable separated by ","
+  --env               string slice  [env] Environment variables to expose to expose ${VIWS_ENV}, as a string slice, environment variable separated by ","
   --frameOptions      string        [owasp] X-Frame-Options ${VIWS_FRAME_OPTIONS} (default "deny")
   --graceDuration     duration      [http] Grace duration when signal received ${VIWS_GRACE_DURATION} (default 30s)
   --gzip                            [gzip] Enable gzip compression ${VIWS_GZIP} (default true)
@@ -123,7 +123,7 @@ Usage of viws:
 docker run -d --name website \
   -p 1080:1080/tcp \
   -v "$(pwd):/www/:ro" \
-  vibioh/viws
+  rg.fr-par.scw.cloud/vibioh/viws
 ```
 
 We recommend using a Dockerfile to ship your files inside it.
@@ -153,5 +153,5 @@ COPY dist/ /www/
 ## Compilation
 
 ```bash
-make go
+make build
 ```

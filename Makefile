@@ -14,7 +14,7 @@ ifeq ($(DEBUG), true)
 	MAIN_RUNNER = dlv debug $(MAIN_SOURCE) --
 endif
 
-LIGHT_SOURCE = ./cmd/viws/
+LIGHT_SOURCE = ./cmd/viws-light/
 LIGHT_RUNNER = go run $(LIGHT_SOURCE)
 ifeq ($(DEBUG), true)
 	LIGHT_RUNNER = dlv debug $(LIGHT_SOURCE) --
