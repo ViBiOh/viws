@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"maps"
 	"net/http"
 	"os"
 	"strings"
@@ -139,9 +140,7 @@ func (a App) serveFile(w http.ResponseWriter, r *http.Request, filepath, hash st
 }
 
 func (a App) addCustomHeaders(w http.ResponseWriter) {
-	for key, value := range a.headers {
-		w.Header()[key] = value
-	}
+	maps.Copy(w.Header(), a.headers)
 }
 
 func setCacheHeader(w http.ResponseWriter, r *http.Request) {
