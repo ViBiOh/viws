@@ -28,8 +28,8 @@ func newClients(ctx context.Context, config configuration) (clients, error) {
 		return output, fmt.Errorf("telemetry: %w", err)
 	}
 
-	logger.AddOpenTelemetryToDefaultLogger(output.telemetry)
-	request.AddOpenTelemetryToDefaultClient(output.telemetry.MeterProvider(), output.telemetry.TracerProvider())
+	telemetry.AddOpenTelemetryToDefaultLogger(output.telemetry)
+	request.SetDefaultClient(telemetry.AddOpenTelemetryToClient(request.GetDefaultClient(), output.telemetry.MeterProvider(), output.telemetry.TracerProvider()))
 
 	service, version, env := output.telemetry.GetServiceVersionAndEnv()
 	output.pprof = pprof.New(config.pprof, service, version, env)
